@@ -688,6 +688,13 @@
             window.history.replaceState({}, document.title, "/dashboard");
         }
 
+        // EARLY CHECK: If no token at all, redirect to login immediately
+        if (!token) {
+            console.log('No token found, redirecting to login...');
+            window.location.href = '/login';
+            return;
+        }
+
         try { // B. Fetch Current User Data
             // We use the 'getMe' endpoint we created in authController
             const response = await fetch('/api/auth/me', {
@@ -726,11 +733,13 @@
                 data = JSON.parse(responseText);
             } catch (e) {
                 console.error("Failed to parse Dashboard Stats:", responseText);
-                Toastify({ 
-                    text: "Server Error: " + responseText.substring(0, 50).replace(/<[^>]*>?/gm, '') + "...", 
-                    duration: 5000, 
-                    backgroundColor: "#ff5b5c" 
-                }).showToast();
+                if (typeof Toastify !== 'undefined') {
+                    Toastify({ 
+                        text: "Server Error: " + responseText.substring(0, 50).replace(/<[^>]*>?/gm, '') + "...", 
+                        duration: 5000, 
+                        backgroundColor: "#ff5b5c" 
+                    }).showToast();
+                }
                 return; 
             }
 
