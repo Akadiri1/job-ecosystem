@@ -18,7 +18,7 @@ const validate = (req, res, next) => {
 // ==========================================
 
 const signupValidator = [
-    body('full_name')
+    body('name')
         .trim()
         .notEmpty().withMessage('Full name is required')
         .isLength({ min: 2, max: 100 }).withMessage('Name must be 2-100 characters'),
