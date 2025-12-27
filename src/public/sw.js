@@ -1,29 +1,42 @@
-const CACHE_NAME = 'zeno-job-ecosystem-v1';
+const CACHE_NAME = 'job-ecosystem-v2';
+
+// Core assets to cache for offline support
 const ASSETS_TO_CACHE = [
   '/',
+  '/login',
   '/dashboard',
-  '/build/assets/main.js',
-  '/build/assets/app-ZxPcUqmw.css',
-  '/build/assets/images/brand-logos/toggle-logo.png',
-  'https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css'
+  '/assets/css/style.css',
+  '/assets/css/preloader.css',
+  '/modules/materialize/materialize.min.css',
+  '/modules/materialize/materialize.js',
+  '/modules/jquery/jquery-2.2.4.min.js',
+  '/assets/images/icons/android-icon-192x192.png'
 ];
 
+// Install event - cache core assets
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(ASSETS_TO_CACHE);
+        console.log('[SW] Caching core assets');
+        return cache.addAll(ASSETS_TO_CACHE).catch(err => {
+          console.warn('[SW] Some assets failed to cache:', err);
+        });
       })
   );
   self.skipWaiting();
 });
 
+// Activate event - clean old caches
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -33,28 +46,46 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Fetch event - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
-    // For navigation requests (HTML pages), try network first, fall back to cache
-    if (event.request.mode === 'navigate') {
-        event.respondWith(
-            fetch(event.request)
-                .catch(() => {
-                    return caches.match(event.request)
-                        .then((response) => {
-                             if(response) return response;
-                             // Fallback to offline page if we had one
-                             return caches.match('/dashboard'); 
-                        });
-                })
-        );
-        return;
-    }
-
-    // For static assets, try cache first, then network
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') return;
+  
+  // Skip API requests (don't cache dynamic data)
+  if (event.request.url.includes('/api/')) return;
+  
+  // For navigation requests, try network first
+  if (event.request.mode === 'navigate') {
     event.respondWith(
-        caches.match(event.request)
+      fetch(event.request)
+        .catch(() => {
+          return caches.match(event.request)
             .then((response) => {
-                return response || fetch(event.request);
-            })
+              if (response) return response;
+              // Fallback to cached dashboard
+              return caches.match('/dashboard');
+            });
+        })
     );
+    return;
+  }
+
+  // For static assets, cache first then network
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        if (response) return response;
+        
+        return fetch(event.request).then((networkResponse) => {
+          // Cache successful responses
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse;
+        });
+      })
+  );
 });
