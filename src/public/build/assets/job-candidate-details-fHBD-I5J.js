@@ -1,0 +1,1 @@
+(function(){new Swiper(".swiper-related-profiles",{slidesPerView:1,spaceBetween:10,mousewheel:!0,loop:!0,direction:"vertical",autoplay:{enabled:!1,delay:2500,disableOnInteraction:!1},breakpoints:{398:{slidesPerView:1,spaceBetween:10},399:{slidesPerView:3,spaceBetween:10},1400:{slidesPerView:2,spaceBetween:10},1434:{slidesPerView:3,spaceBetween:10}}})})();

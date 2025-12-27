@@ -1,0 +1,1 @@
+(function(){var o=GLightbox({selector:".glightbox"});o.on("slide_changed",({prev:l,current:e})=>{console.log("Prev slide",l),console.log("Current slide",e);const{slideIndex:i,slideNode:d,slideConfig:s,player:n}=e})})();

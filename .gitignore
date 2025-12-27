@@ -23,4 +23,7 @@ Thumbs.db
 
 # Build artifacts
 dist/
-build/
+/build/
+
+# But include the public build folder for template assets
+!src/public/build/
