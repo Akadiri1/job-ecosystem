@@ -132,7 +132,11 @@ exports.getTeamMembers = async (req, res) => {
              if(company) companyId = company.id;
         }
 
-        if (!companyId) return res.status(404).json({ success: false, message: 'Company not found' });
+        if (!companyId) return res.status(404).json({ 
+            success: false, 
+            message: 'No company found. Please create a company first in Company Settings.',
+            needs_company: true
+        });
 
         const members = await TeamMember.findAll({
             where: { company_id: companyId },
