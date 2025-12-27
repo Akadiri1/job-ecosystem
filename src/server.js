@@ -272,6 +272,7 @@ app.get('/dashboard/employer/team/manage', (req, res) => res.render('manage-team
 app.get('/dashboard/employer/channels', (req, res) => res.render('manage-channels', { sidebar: 'includes/sidebar-employer' }));
 app.get('/dashboard/employer/groups', (req, res) => res.render('manage-groups', { sidebar: 'includes/sidebar-employer' }));
 app.get('/dashboard/employer/company/settings', (req, res) => res.render('create-company', { sidebar: 'includes/sidebar-employer' }));
+app.get('/dashboard/employer/company', (req, res) => res.redirect('/dashboard/employer/company/settings')); // Redirect shortcut
 app.get('/dashboard/employer/profile', (req, res) => res.render('profile', { sidebar: 'includes/sidebar-employer' }));
 app.get('/dashboard/employer/billing', (req, res) => res.render('billing', { sidebar: 'includes/sidebar-employer' }));
 app.get('/dashboard/employer/ai-insights', (req, res) => res.render('ai-insights', { sidebar: 'includes/sidebar-employer' }));
