@@ -156,7 +156,10 @@ exports.getTasks = async (req, res) => {
         }
 
         if (!company) {
-            return res.status(400).json({ error: 'No company found' });
+            return res.status(400).json({ 
+                error: 'No company found. Please create a company first in Company Settings.',
+                needs_company: true
+            });
         }
 
         // Build filter
