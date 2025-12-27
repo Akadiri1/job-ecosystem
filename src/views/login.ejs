@@ -1,0 +1,203 @@
+<%- include('includes/header', { title: 'Login - Job Ecosystem' }) %>
+
+<style>
+    /* --- SAME STYLES AS REGISTER PAGE FOR CONSISTENCY --- */
+    /* Force Dark Inputs (Fixes white autofill box) */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #455a64 inset !important; 
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Style Standard Materialize Inputs */
+    .input-field input[type=text],
+    .input-field input[type=email],
+    .input-field input[type=password] {
+        border-bottom: 1px solid rgba(255,255,255,0.5) !important;
+        color: white !important;
+    }
+
+    .input-field input:focus {
+        border-bottom: 1px solid #ba68c8 !important; /* Purple focus */
+        box-shadow: 0 1px 0 0 #ba68c8 !important;
+    }
+
+    .input-field label {
+        color: rgba(255,255,255,0.7) !important;
+    }
+    
+    .input-field input:focus + label {
+        color: #ba68c8 !important;
+    }
+
+    /* Button Styling */
+    .btn-login {
+        background: #7b1fa2;
+        background: linear-gradient(45deg, #7b1fa2, #ba68c8);
+        border-radius: 50px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        width: 80%;
+    }
+</style>
+
+<div class="content-area">
+    <div class="login-bg access-login"></div> 
+    
+    <div class="container login-area">
+        <div class="section">
+
+            <h3 class="bot-20 center white-text" style="font-weight: 300;">Login</h3>
+            <p class="center white-text" style="opacity: 0.8; margin-top: -15px; margin-bottom: 30px;">
+                Seekers, Employers & Team Members
+            </p>
+            
+            <form id="loginForm">
+                <div class="row">
+                    <div class="input-field col s10 offset-s1">
+                        <input id="email311" type="email" class="validate" required>
+                        <label for="email311">Email</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s10 offset-s1">
+                        <input id="pass311" type="password" class="validate" required>
+                        <label for="pass311">Password</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s10 offset-s1">
+                        <div id="messageBox" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></div>
+                    </div>
+                </div>
+
+                <div class="row center">
+                    <button type="submit" class="waves-effect waves-light btn-large btn-login">
+                        Login
+                    </button>
+                    
+                    <div class="spacer" style="height: 15px;"></div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <a href="/api/auth/google" class="btn-floating waves-effect waves-light white" title="Login with Google">
+                            <i class="mdi mdi-google" style="color:#DB4437; font-size: 20px; line-height: 40px;"></i>
+                        </a>
+                        <a href="/api/auth/facebook" class="btn-floating waves-effect waves-light white" title="Login with Facebook">
+                            <i class="mdi mdi-facebook" style="color:#4267B2; font-size: 24px; line-height: 40px;"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="spacer" style="height: 20px;"></div>
+                    
+                    <div class="links white-text">
+                        <a href="/forgot-password" style="color: rgba(255,255,255,0.8);">Forgot Password</a>
+                        <span class="sep" style="margin: 0 10px;">|</span>
+                        <a href="/signup" style="color: rgba(255,255,255,0.8); text-decoration: underline;">Register</a>
+                    </div>
+                    
+                    <div class="spacer"></div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        // Clear existing session data to prevent "Ghost User" issues
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        sessionStorage.removeItem('openChatWith');
+                        sessionStorage.clear();
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const email = urlParams.get('email');
+                        const password = urlParams.get('password');
+                        const demoAction = urlParams.get('demo_action');
+                        
+                        if (email) {
+                            document.getElementById('email311').value = email;
+                            document.getElementById('email311').focus(); // Trigger label animation
+                        }
+                        
+                        if (password) {
+                            document.getElementById('pass311').value = password;
+                            document.getElementById('pass311').focus(); // Trigger label animation
+                        }
+
+                        if(demoAction === 'auto_fill' && email && password) {
+                            // Optional: Auto-submit or just show a toast
+                            const msgBox = document.getElementById('messageBox');
+                            if(msgBox) {
+                                msgBox.innerHTML = "<span style='color:#00e676'>Credentials auto-filled from invite link!</span>";
+                            }
+                        }
+                    });
+                </script>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Stop page reload
+
+        const messageBox = document.getElementById('messageBox');
+        messageBox.innerText = "Verifying credentials...";
+        messageBox.style.color = "white";
+
+        const formData = {
+            email: document.getElementById('email311').value,
+            password: document.getElementById('pass311').value
+        };
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // 1. LOGIN SUCCESS
+                messageBox.style.color = "#00e676"; // Green
+                messageBox.innerHTML = "✅ Login Successful! Redirecting...";
+
+                // 2. Save the Token and User Info
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                // 3. Redirect to Dashboard (UPDATED LINE)
+                // 3. Redirect to Dashboard (UPDATED LINE)
+                setTimeout(() => {
+                    const role = data.user.role || 'seeker';
+                    const target = role === 'job_seeker' ? 'seeker' : role; // Normalize job_seeker -> seeker if needed, but keeping role is safer if routes match role strings
+                    // Check routes in server.js: /dashboard/employer, /dashboard/seeker
+                    // If role is 'job_seeker', route is /dashboard/seeker? server.js says: app.get('/dashboard/seeker'...)
+                    // Let's rely on strict mapping.
+                    
+                    let redirectPath = '/dashboard';
+                    if (role === 'employer') redirectPath = '/dashboard/employer';
+                    else if (role === 'employee') redirectPath = '/dashboard/employee';
+                    else redirectPath = '/dashboard/seeker';
+
+                    window.location.href = redirectPath; 
+                }, 1500);
+
+            } else {
+                // 4. LOGIN FAILED
+                messageBox.style.color = "#ff5252"; // Red
+                messageBox.innerText = "❌ " + (data.error || "Login failed");
+            }
+        } catch (err) {
+            console.error(err);
+            messageBox.style.color = "#ff5252";
+            messageBox.innerText = "❌ Server Error. Please try again.";
+        }
+    });
+</script>
+
+<%- include('includes/footer') %>

@@ -1,0 +1,223 @@
+<%- include('includes/header2', { title: 'Candidate Details' }) %>
+
+<div class="page">
+    <%- include('includes/sidebar') %>
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Page Header -->
+            <div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
+                <div>
+
+                    <h1 class="page-title fw-medium fs-18 mb-0">Candidate Details</h1>
+                </div>
+                <div class="btn-list">
+                    <button class="btn btn-primary-light btn-wave waves-effect waves-light">
+                        <i class="ri-upload-cloud-line align-middle me-1"></i> Export report
+                    </button>
+                    <!-- Status Dropdown (Functional) -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Status: <%= application.status.charAt(0).toUpperCase() + application.status.slice(1) %>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('pending')">Pending</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('reviewed')">Reviewed</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('shortlisted')">Shortlisted</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('rejected')">Rejected</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('hired')">Hired</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="row">
+                <div class="col-xxl-8">
+                    <div class="card custom-card job-candidate-details">
+                        <div class="candidate-bg-shape primary"></div>
+                        <div class="card-body pt-5">
+                            <div class="mb-3 lh-1 mt-4">
+                                <span class="avatar avatar-xxl avatar-rounded">
+                                    <img src="<%= application.seeker.profile_picture_url || '/build/assets/images/faces/1.jpg' %>" class="rounded-circle img-fluid shadow" alt="" onerror="this.src='/build/assets/images/faces/1.jpg'">
+                                </span>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap mb-3">
+                                <div class="flex-fill">
+                                    <h6 class="mb-1 fw-semibold">
+                                        <a href="javascript:void(0);"> <%= application.seeker.name %> 
+                                            <i class="ri-check-line text-success fs-16" data-bs-toggle="tooltip" aria-label="Verified candidate" data-bs-original-title="Verified candidate"></i>
+                                        </a>
+                                    </h6>
+                                    <p class="mb-0 text-muted">Candidate for <%= application.job.title %></p>
+                                    <div class="d-flex flex-wrap gap-2 align-items-center fs-12 text-muted">
+                                        <p class="mb-0">Applied: </p>
+                                        <span class="text-dark fw-medium"><%= new Date(application.createdAt).toLocaleDateString() %></span>
+                                    </div>
+                                    <div class="d-flex fs-14 mt-3 gap-2 flex-wrap">
+                                        <div class="me-3">
+                                            <p class="mb-1"><i class="ri-map-pin-line me-2 text-muted"></i>Available Remote/On-site</p>
+                                            <p class="mb-0"><i class="ri-briefcase-line me-2 text-muted"></i>See Resume</p>
+                                        </div>
+                                        <div>
+                                            <p class="mb-1"><i class="ri-mail-line me-2 text-muted"></i>Mail : <span class="fw-medium"><%= application.seeker.email %></span></p>
+                                            <% if(application.seeker.phone_number) { %>
+                                                <p class="mb-0"><i class="ri-phone-line me-2 text-muted"></i>Phone : <span class="fw-medium"><%= application.seeker.phone_number %></span></p>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-list ms-auto">
+                                    <% if(application.resume_url) { %>
+                                        <a href="<%= application.resume_url %>" target="_blank" class="btn btn-primary rounded-pill btn-wave waves-effect"><i class="ri-download-cloud-line me-1"></i> Download CV</a>
+                                    <% } else { %>
+                                        <button class="btn btn-light rounded-pill btn-wave waves-effect" disabled>No Resume</button>
+                                    <% } %>
+                                    
+                                    <a href="javascript:void(0);" class="btn btn-success-light rounded-pill btn-wave waves-effect waves-light align-middle">
+                                        <i class="ri-heart-line lh-1 my-auto align-middle"></i> Shortlist
+                                    </a>
+                                </div>
+                            </div>   
+                            <div class="d-flex gap-3 align-items-center flex-wrap">
+                                <h6 class="mb-0">Availability:</h6>
+                                <div class="popular-tags d-flex gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="badge rounded-pill fs-11 bg-info-transparent"><i class="ri-remote-control-line me-1"></i>Full Time</a>
+                                    <a href="javascript:void(0);" class="badge rounded-pill fs-11 bg-danger-transparent"><i class="ri-time-line me-1"></i>Immediate Joinee</a>
+                                </div>
+                                <a href="mailto:<%= application.seeker.email %>" class="ms-auto text-secondary px-2 py-1 rounded-pill fs-12 bg-secondary-transparent">
+                                    <i class="ri-chat-1-line me-1"></i> Message Now
+                                </a>
+                            </div>                             
+                        </div>
+                    </div>
+
+                    <!-- Cover Letter Section (Replacing Static Profile Info for now since we have Cover Letter) -->
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Cover Letter / Personal Statement
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <% if(application.cover_letter) { %> 
+                                <p class="op-9"><%= application.cover_letter %></p>
+                            <% } else { %>
+                                <p class="text-muted">No cover letter provided.</p>
+                            <% } %>
+                        </div>
+                    </div>
+                    
+                    <!-- Placeholder for Education/Experience (Static for Design) -->
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Experience & Education (Placeholder)
+                            </div>
+                        </div>
+                        <div class="card-body p-0 candidate-edu-timeline">
+                            <div class="p-3 border-bottom">
+                                <div class="row">
+                                    <div class="col-xl-7">
+                                        <h5 class="fw-medium fs-17 d-flex align-items-center gap-2"><span class="avatar avatar-rounded bg-primary avatar-sm"><i class="ri-graduation-cap-line fs-13"></i></span> Education :</h5>
+                                        <div class="ms-4 ps-3">
+                                            <p class="fw-medium fs-14 mb-0">Bachelor of Science</p>
+                                            <p class="mb-3 text-muted"> (Date not provided)</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-5">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                        
+                    
+                </div>
+                <div class="col-xxl-4"> 
+                    
+                    <div class="card custom-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Skills
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="popular-tags d-flex gap-2 flex-wrap">
+                                <!-- Placeholders -->
+                                <a href="javascript:void(0);" class="badge rounded-pill bg-info-transparent">Communication</a>
+                                <a href="javascript:void(0);" class="badge rounded-pill bg-primary-transparent">Teamwork</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card custom-card overflow-hidden">
+                        <div class="card-header">
+                            <div class="card-title">
+                                Contact Information
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-responsive">
+                                    <tbody>
+                                        <tr>
+                                            <td class="w-50">
+                                                <span class="fw-medium">Full Name</span> 
+                                            </td>
+                                            <td>: <%= application.seeker.name %></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w-50">
+                                                <span class="fw-medium">Email</span> 
+                                            </td>
+                                            <td>: <%= application.seeker.email %></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card custom-card">
+                        <div class="card-body">
+                            <h6 class="fw-medium mb-3">Internal Notes</h6>
+                            <textarea class="form-control" rows="3" placeholder="Add notes about this candidate..."></textarea>
+                            <button class="btn btn-primary mt-2">Save Note</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+    </div>
+</div>
+
+<script>
+    async function updateStatus(status) {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch('/api/applications/<%= application.id %>/status', {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ status })
+            });
+            if(response.ok) {
+                location.reload();
+            } else {
+                alert('Error updating status');
+            }
+        } catch(e) {
+            console.error(e);
+            alert('Error updating status');
+        }
+    }
+</script>
+
+<%- include('includes/footer2') %>

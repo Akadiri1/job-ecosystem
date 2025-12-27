@@ -1,0 +1,394 @@
+<%- include('includes/header2', { title: 'Profile Settings' }) %>
+
+<style>
+    /* Profile Hero */
+    .profile-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .profile-hero h1 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .profile-hero p {
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Profile Card */
+    .profile-card {
+        background: var(--custom-white);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        overflow: hidden;
+    }
+    
+    .profile-tabs {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .profile-tabs .nav-link {
+        border-radius: 10px;
+        padding: 0.6rem 1.25rem;
+        font-weight: 500;
+        color: var(--default-text-color);
+        transition: all 0.2s ease;
+    }
+    
+    .profile-tabs .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+    }
+    
+    .profile-tabs .nav-link:hover:not(.active) {
+        background: rgba(102, 126, 234, 0.1);
+    }
+    
+    .profile-content {
+        padding: 1.5rem;
+    }
+    
+    .avatar-upload {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .avatar-upload .avatar-preview {
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 3px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .avatar-upload .btn-upload {
+        position: absolute;
+        bottom: -5px;
+        right: -5px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: 3px solid var(--custom-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .btn-save-profile {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: #fff;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-save-profile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: #fff;
+    }
+    
+    .notification-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+</style>
+
+<div class="page" id="mainPage" style="display:none;">
+    <!-- SIDEBAR -->
+    <%- include(sidebar) %>
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Modern Hero Header -->
+            <div class="profile-hero" style="margin-top: 1.5rem;">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h1><i class="ri-user-settings-line me-2"></i>Profile Settings</h1>
+                        <p>Manage your account details and preferences</p>
+                    </div>
+                    <a href="/dashboard" class="btn btn-light">
+                        <i class="ri-arrow-left-line me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-xl-9">
+                    <div class="card custom-card overflow-hidden">
+                        <div class="card-header border-bottom-0 pb-0">
+                             <ul class="nav nav-pills nav-style-1 mb-0" id="profileTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account-pane" type="button" role="tab" aria-selected="true"><i class="ri-user-settings-line me-1 align-middle"></i> Account</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="notification-tab" data-bs-toggle="tab" data-bs-target="#notification-pane" type="button" role="tab" aria-selected="false"><i class="ri-notification-3-line me-1 align-middle"></i> Notifications</button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body pt-4">
+                            <div class="tab-content">
+                                <!-- ACCOUNT TAB -->
+                                <div class="tab-pane show active" id="account-pane" role="tabpanel" tabindex="0">
+                                    <form id="profileForm" onsubmit="event.preventDefault(); saveProfile();">
+                                        
+                                        <!-- Profile Picture Section -->
+                                        <div class="d-flex align-items-center mb-5 gap-4">
+                                            <div class="position-relative">
+                                                <span class="avatar avatar-xxl avatar-rounded shadow-sm">
+                                                    <img src="/build/assets/images/faces/9.jpg" alt="profile" id="preview-image" style="object-fit: cover;">
+                                                </span>
+                                                <button type="button" class="btn btn-sm btn-icon btn-primary rounded-circle position-absolute bottom-0 end-0" onclick="document.getElementById('profile-file').click()" title="Change Picture">
+                                                    <i class="ri-camera-fill"></i>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Profile Photo</h6>
+                                                <p class="fs-12 text-muted mb-2">Supported formats: JPG, PNG, GIF. Max size: 5MB.</p>
+                                                <div class="d-flex gap-2">
+                                                    <button type="button" class="btn btn-sm btn-primary-light" onclick="document.getElementById('profile-file').click()">Upload New</button>
+                                                    <button type="button" class="btn btn-sm btn-danger-ghost" onclick="resetImage()">Reset</button>
+                                                </div>
+                                                <input type="file" id="profile-file" name="profile_picture" class="d-none" accept="image/*" onchange="previewFile()">
+                                            </div>
+                                        </div>
+
+                                        <!-- Form Fields -->
+                                        <div class="row gy-4">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Full Name</label>
+                                                <input type="text" class="form-control" name="name" id="field-name" placeholder="John Doe">
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label class="form-label">Email Address</label>
+                                                <input type="email" class="form-control" name="email" id="field-email" placeholder="john@example.com">
+                                                <div id="email-hint" class="form-text d-none text-warning"><i class="ri-lock-line"></i> Managed by your organization.</div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label">Phone Number</label>
+                                                <input type="tel" class="form-control" name="phone" id="field-phone" placeholder="+1 123 456 7890">
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <label class="form-label">Role</label>
+                                                <input type="text" class="form-control bg-light" id="field-role" readonly>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <label class="form-label">Bio</label>
+                                                <textarea class="form-control" name="bio" id="field-bio" rows="4" placeholder="Tell us a little about yourself..."></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end mt-4">
+                                            <button type="submit" class="btn btn-primary btn-wave px-4">Save Changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- NOTIFICATION TAB -->
+                                <div class="tab-pane" id="notification-pane" role="tabpanel" tabindex="0">
+                                    <h6 class="fw-bold mb-3">Email Preferences</h6>
+                                    <div class="list-group">
+                                        <div class="list-group-item d-flex align-items-center justify-content-between border-0 px-0">
+                                            <div>
+                                                <p class="mb-1 fw-medium">Job Alerts</p>
+                                                <p class="fs-12 text-muted mb-0">Get notified when new jobs match your profile.</p>
+                                            </div>
+                                            <div class="form-check form-switch mb-0">
+                                                <input class="form-check-input" type="checkbox" role="switch" checked>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item d-flex align-items-center justify-content-between border-0 px-0">
+                                            <div>
+                                                <p class="mb-1 fw-medium">Application Updates</p>
+                                                <p class="fs-12 text-muted mb-0">Receive status updates on your applications.</p>
+                                            </div>
+                                            <div class="form-check form-switch mb-0">
+                                                <input class="form-check-input" type="checkbox" role="switch" checked>
+                                            </div>
+                                        </div>
+                                         <div class="list-group-item d-flex align-items-center justify-content-between border-0 px-0">
+                                            <div>
+                                                <p class="mb-1 fw-medium">Marketing Emails</p>
+                                                <p class="fs-12 text-muted mb-0">News, tips, and promotions.</p>
+                                            </div>
+                                            <div class="form-check form-switch mb-0">
+                                                <input class="form-check-input" type="checkbox" role="switch">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-primary" onclick="Toastify({text:'Notification settings saved (simulated)', backgroundColor:'#00b074'}).showToast()">Save Preferences</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+    // Init Page
+    document.addEventListener("DOMContentLoaded", async function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/auth/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                populateForm(data.user);
+                document.getElementById('mainPage').style.display = 'block';
+            } else {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        } catch (e) {
+            console.error("Boot error", e);
+        }
+    });
+
+    function populateForm(user) {
+        document.getElementById('field-name').value = user.full_name || '';
+        document.getElementById('field-email').value = user.email || '';
+        document.getElementById('field-phone').value = user.phone_number || '';
+        document.getElementById('field-role').value = user.role ? user.role.toUpperCase() : 'USER';
+        document.getElementById('field-bio').value = user.bio || '';
+
+        if(user.profile_picture_url) {
+            document.getElementById('preview-image').src = user.profile_picture_url;
+        } else {
+             document.getElementById('preview-image').src = '/build/assets/images/faces/9.jpg';
+        }
+
+        // Employee Restriction
+        if(user.role === 'employee') {
+            const emailField = document.getElementById('field-email');
+            emailField.readOnly = true;
+            emailField.classList.add('bg-light');
+            document.getElementById('email-hint').classList.remove('d-none');
+        }
+    }
+
+    function previewFile() {
+        const file = document.getElementById('profile-file').files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-image').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function resetImage() {
+        document.getElementById('profile-file').value = '';
+        document.getElementById('preview-image').src = '/build/assets/images/faces/9.jpg'; 
+        // Note: Ideally this should reset to the user's *current saved* image, 
+        // but for now we reset to default placeholder logic.
+        // A better UX would be to store the initial loaded URL and revert to that.
+    }
+
+    async function saveProfile() {
+        const token = localStorage.getItem('token');
+        const form = document.getElementById('profileForm');
+        
+        // Use FormData to handle file upload + text fields
+        const formData = new FormData(form);
+        
+        // Note: FormData automatically gets inputs by 'name' attribute
+        // 'profile_picture' is the name of the file input
+        // 'name', 'email', 'phone', 'bio' are text inputs
+
+        try {
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Saving...';
+            btn.disabled = true;
+
+            const response = await fetch('/api/auth/updatedetails', {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                    // Do NOT set Content-Type header when using FormData, 
+                    // the browser sets it automatically with the boundary!
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
+
+            if (response.ok) {
+                Toastify({ 
+                    text: "Profile Updated Successfully!", 
+                    backgroundColor: "#00b074",
+                    duration: 3000
+                }).showToast();
+                
+                // Update Local User Object if needed (optional)
+            } else {
+                Toastify({ 
+                    text: data.error || "Update Failed", 
+                    backgroundColor: "#ff5b5c" 
+                }).showToast();
+            }
+
+        } catch (error) {
+            console.error(error);
+            Toastify({ text: "Network Error", backgroundColor: "#ff5b5c" }).showToast();
+        }
+    }
+</script>

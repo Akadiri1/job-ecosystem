@@ -1,0 +1,208 @@
+const { Op } = require('sequelize');
+const { sendTeamInvitation } = require('../services/emailService');
+
+exports.searchUsers = async (req, res) => {
+    try {
+        const { query } = req.query; // email or name
+        const { User } = req.db_models;
+
+        if (!query || query.length < 2) return res.json({ success: true, users: [] });
+
+        const users = await User.findAll({
+            where: {
+                [Op.or]: [
+                    { email: { [Op.like]: `%${query}%` } },
+                    { full_name: { [Op.like]: `%${query}%` } }
+                ],
+                role: 'job_seeker' // Only invite seekers or unaffiliated? Or anyone? Assuming seekers for now.
+            },
+            attributes: ['id', 'full_name', 'email', 'profile_picture_url'],
+            limit: 10
+        });
+
+        res.json({ success: true, users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.inviteMember = async (req, res) => {
+    try {
+        const { userId, email, name, role, permissions } = req.body;
+        const { TeamMember, User, Company } = req.db_models;
+        const ownerId = req.user.id;
+
+        // Verify Company Ownership
+        const company = await Company.findOne({ where: { owner_id: ownerId } });
+        if (!company) return res.status(403).json({ success: false, message: 'Company not found' });
+
+        // Get inviter's name
+        const inviter = await User.findByPk(ownerId, { attributes: ['full_name'] });
+        const inviterName = inviter ? inviter.full_name : 'Your employer';
+
+        let targetUserId = userId;
+        let generatedPassword = null;
+        let targetEmail = email;
+
+        // If no userId provided, lookup or create by Email
+        if (!targetUserId && email) {
+            let user = await User.findOne({ where: { email } });
+            
+            if (!user) {
+                const tempPassword = Math.random().toString(36).slice(-8);
+                generatedPassword = tempPassword;
+                
+                user = await User.create({
+                    full_name: name || email.split('@')[0],
+                    email: email,
+                    password_hash: tempPassword,
+                    role: 'job_seeker'
+                });
+            }
+            targetUserId = user.id;
+            targetEmail = user.email;
+        }
+
+        if (!targetUserId) {
+            return res.status(400).json({ success: false, message: 'User ID or Email is required' });
+        }
+
+        // Check if already member
+        const existing = await TeamMember.findOne({ where: { company_id: company.id, user_id: targetUserId } });
+        if (existing) return res.status(400).json({ success: false, message: 'User already in team' });
+
+        // Add to Team
+        await TeamMember.create({
+            company_id: company.id,
+            user_id: targetUserId,
+            role: role || 'member',
+            permissions: permissions || [],
+            status: 'active'
+        });
+
+        // Update User Role & Company Link
+        await User.update({ 
+            role: 'employee',
+            company_id: company.id
+        }, { where: { id: targetUserId } });
+
+        // Generate Login URL
+        const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+        const loginUrl = `${baseUrl}/login`;
+        
+        // Debug Link (for development)
+        let debug_link = `${baseUrl}/login?email=${encodeURIComponent(targetEmail)}&demo_action=auto_fill`;
+        if (generatedPassword) {
+            debug_link += `&password=${encodeURIComponent(generatedPassword)}`;
+        }
+
+        // Send Invitation Email
+        const emailSent = await sendTeamInvitation({
+            to: targetEmail,
+            inviteeName: name || email.split('@')[0],
+            inviterName: inviterName,
+            companyName: company.name,
+            tempPassword: generatedPassword,
+            loginUrl: loginUrl
+        });
+
+        res.json({ 
+            success: true, 
+            message: 'Member added successfully', 
+            email_sent: emailSent,
+            debug_link 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.getTeamMembers = async (req, res) => {
+    try {
+        const { TeamMember, User, Company } = req.db_models;
+        const userId = req.user.id;
+        
+        // Find company by owner or if user is employee
+        // Ideally req.user.company_id is populated if logged in as employee/employer
+        let companyId = req.user.company_id;
+        if(!companyId) {
+             const company = await Company.findOne({ where: { owner_id: userId } });
+             if(company) companyId = company.id;
+        }
+
+        if (!companyId) return res.status(404).json({ success: false, message: 'Company not found' });
+
+        const members = await TeamMember.findAll({
+            where: { company_id: companyId },
+            include: [{ model: User, as: 'user', attributes: ['id', 'full_name', 'email', 'profile_picture_url'] }]
+        });
+
+        res.json({ success: true, members });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.updatePermissions = async (req, res) => {
+    try {
+         const { memberId } = req.params;
+         const { permissions, role } = req.body;
+         const { TeamMember } = req.db_models;
+
+         const member = await TeamMember.findByPk(memberId);
+         if(!member) return res.status(404).json({ success: false, message: 'Member not found' });
+
+         // TODO: Verify requestor is owner/admin of that company
+         
+         await member.update({ permissions, role });
+         res.json({ success: true, member });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+exports.toggleMemberStatus = async (req, res) => {
+    try {
+        const { memberId } = req.params;
+        const { status } = req.body; // active, suspended
+        const { TeamMember, User } = req.db_models;
+
+        const member = await TeamMember.findByPk(memberId);
+        if(!member) return res.status(404).json({ success: false, message: 'Member not found' });
+
+        await member.update({ status: status === 'suspend' ? 'suspended' : 'active' });
+        
+        // Also update User login access if needed?
+        // simple toggle for now
+        
+        res.json({ success: true, message: 'Status updated' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.removeMember = async (req, res) => {
+    try {
+        const { memberId } = req.params;
+        const { TeamMember, User } = req.db_models;
+
+        const member = await TeamMember.findByPk(memberId);
+        if(!member) return res.status(404).json({ success: false, message: 'Member not found' });
+
+        const userId = member.user_id;
+
+        // Reset User role?
+        await User.update({ role: 'job_seeker', company_id: null }, { where: { id: userId } });
+        
+        await member.destroy();
+
+        res.json({ success: true, message: 'Member removed' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};

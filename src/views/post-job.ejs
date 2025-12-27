@@ -1,0 +1,583 @@
+<%- include('includes/header2', { title: 'Post a New Job' }) %>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+<style>
+    /* Post Job Page Styles */
+    .post-job-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .post-job-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .post-job-hero h1 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .post-job-hero p {
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .form-section {
+        background: var(--custom-white);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .section-title i {
+        color: #667eea;
+        font-size: 1.25rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .skill-tag, .lang-tag {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 0.4rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .skill-tag .btn-remove, .lang-tag .btn-remove {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 10px;
+        color: #fff;
+        padding: 0;
+    }
+    
+    .company-card {
+        background: var(--custom-white);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        overflow: hidden;
+        position: sticky;
+        top: 5rem;
+    }
+    
+    .company-card-header {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .company-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        object-fit: cover;
+        border: 3px solid rgba(255,255,255,0.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .btn-post-job {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: #fff;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-post-job:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: #fff;
+    }
+    
+    .input-group-modern {
+        background: var(--custom-white);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .input-group-modern .form-control,
+    .input-group-modern .form-select {
+        border: none;
+        border-radius: 0;
+    }
+    
+    .input-group-modern .form-select {
+        border-right: 1px solid rgba(255,255,255,0.1);
+    }
+</style>
+
+<div class="page" id="mainPage">
+
+    <!-- SIDEBAR -->
+    <%- include(sidebar) %>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Modern Hero Header -->
+        <div class="post-job-hero" style="margin-top: 1.5rem;">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h1><i class="ri-briefcase-4-line me-2"></i>Post a New Job</h1>
+                    <p>Fill in the details below to create a new job listing</p>
+                </div>
+                <a href="/jobs/manage" class="btn btn-light">
+                    <i class="ri-arrow-left-line me-1"></i>Back to Jobs
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Main Form Column -->
+            <div class="col-xxl-8 col-xl-8">
+                
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="ri-file-text-line"></i>
+                        Basic Information
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="job-title" class="form-label">Job Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="job-title" placeholder="e.g. Senior React Developer">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Job Category</label>
+                            <select class="form-select" id="job-category">
+                                <option value="Development">Development</option>
+                                <option value="IT Software">IT Software</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Design">Design</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Finance">Finance</option>
+                                <option value="HR">Human Resources</option>
+                                <option value="Operations">Operations</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Job Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="job-type">
+                                <option value="full_time">Full Time</option>
+                                <option value="part_time">Part Time</option>
+                                <option value="contract">Contract</option>
+                                <option value="freelance">Freelance</option>
+                                <option value="internship">Internship</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Work Location <span class="text-danger">*</span></label>
+                            <select class="form-select" id="location-type">
+                                <option value="remote">Remote</option>
+                                <option value="on_site">On-Site</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="job-description" class="form-label">Job Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="job-description" rows="5" placeholder="Describe the role, responsibilities, and what success looks like in this position..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requirements Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="ri-user-settings-line"></i>
+                        Requirements
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Experience Level</label>
+                            <select class="form-select" id="experience">
+                                <option value="0-1 Years">0 - 1 Years (Entry Level)</option>
+                                <option value="1-3 Years">1 - 3 Years (Junior)</option>
+                                <option value="3-5 Years">3 - 5 Years (Mid-Level)</option>
+                                <option value="5-10 Years">5 - 10 Years (Senior)</option>
+                                <option value="10+ Years">10+ Years (Expert)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Qualification</label>
+                            <select class="form-select" id="qualification">
+                                <option value="Any Qualification">Any Qualification</option>
+                                <option value="High School">High School</option>
+                                <option value="Associate Degree">Associate Degree</option>
+                                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                                <option value="Master's Degree">Master's Degree</option>
+                                <option value="Doctorate">Doctorate</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="skills-input" class="form-label">Required Skills</label>
+                            <input type="text" class="form-control" id="skills-input" placeholder="Type a skill and press Enter...">
+                            <div id="skills-list" class="mt-2 d-flex flex-wrap gap-2"></div>
+                            <input type="hidden" id="skills" name="skills">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="language-input" class="form-label">Languages</label>
+                            <input type="text" class="form-control" id="language-input" placeholder="Type a language and press Enter...">
+                            <div id="language-list" class="mt-2 d-flex flex-wrap gap-2"></div>
+                            <input type="hidden" id="language" name="language">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compensation Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="ri-money-dollar-circle-line"></i>
+                        Compensation & Details
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Salary Range</label>
+                            <div class="input-group input-group-modern">
+                                <select class="form-select" id="currency" style="max-width: 100px;">
+                                    <option value="NGN">NGN</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                </select>
+                                <input type="text" class="form-control" id="salary-range" placeholder="e.g. 50,000 - 80,000 / Year">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Vacancies</label>
+                            <input type="number" class="form-control" id="vacancies" value="1" min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="priority">
+                                <option value="Normal">Normal</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="job-deadline" class="form-label">Application Deadline</label>
+                            <input type="date" class="form-control" id="job-deadline">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Preferred Gender</label>
+                            <select class="form-select" id="gender">
+                                <option value="Any">Any</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-flex justify-content-end gap-3 mb-4">
+                    <a href="/jobs/manage" class="btn btn-light px-4">Cancel</a>
+                    <button type="button" id="postJobBtn" onclick="postJob()" class="btn-post-job">
+                        <i class="ri-send-plane-line me-2"></i>Post Job
+                    </button>
+                </div>
+            </div>
+
+            <!-- Company Sidebar -->
+            <div class="col-xxl-4 col-xl-4">
+                <div class="company-card">
+                    <div class="company-card-header">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge bg-primary-transparent">Auto-filled</span>
+                        </div>
+                        <h6 class="mt-2 mb-0">Company Details</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <img src="/build/assets/images/media/media-1.jpg" id="company-logo" alt="Company Logo" class="company-logo">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Company Name</label>
+                                <input type="text" class="form-control" id="company-name" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Website</label>
+                                <input type="text" class="form-control" id="company-website" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Industry</label>
+                                <input type="text" class="form-control" id="company-industry" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Location</label>
+                                <input type="text" class="form-control" id="company-location" readonly>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <a href="/company/create" class="btn btn-outline-primary btn-sm">
+                                <i class="ri-edit-line me-1"></i>Edit Company Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+    // Store skills and languages as arrays
+    let skillsArray = [];
+    let languagesArray = [];
+
+    // 1. AUTH CHECK & INITIALIZE TAG INPUTS
+    document.addEventListener("DOMContentLoaded", function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+        } else {
+            document.getElementById('mainPage').style.display = 'block';
+        }
+
+        // Initialize Skills tag input
+        const skillsInput = document.getElementById('skills-input');
+        if (skillsInput) {
+            skillsInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = this.value.trim();
+                    if (value && !skillsArray.includes(value)) {
+                        skillsArray.push(value);
+                        renderTags('skills');
+                        this.value = '';
+                    }
+                }
+            });
+        }
+
+        // Initialize Languages tag input
+        const languageInput = document.getElementById('language-input');
+        if (languageInput) {
+            languageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = this.value.trim();
+                    if (value && !languagesArray.includes(value)) {
+                        languagesArray.push(value);
+                        renderTags('language');
+                        this.value = '';
+                    }
+                }
+            });
+        }
+
+        // Load company details
+        loadCompanyDetails();
+    });
+
+    // Load company details from API
+    async function loadCompanyDetails() {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch('/api/company/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const { company } = await response.json();
+                document.getElementById('company-name').value = company.name || 'Not set';
+                document.getElementById('company-website').value = company.website || 'Not set';
+                document.getElementById('company-industry').value = company.industry || 'Not set';
+                document.getElementById('company-location').value = company.location || 'Not set';
+                if (company.logo_url) {
+                    document.getElementById('company-logo').src = company.logo_url;
+                }
+            }
+        } catch (error) {
+            console.log('Could not load company details');
+        }
+    }
+
+    // Render tags in the list container
+    function renderTags(type) {
+        const array = type === 'skills' ? skillsArray : languagesArray;
+        const container = document.getElementById(`${type}-list`);
+        const hiddenInput = document.getElementById(type);
+        
+        container.innerHTML = '';
+        array.forEach((item, index) => {
+            const tag = document.createElement('span');
+            tag.className = 'badge bg-primary-transparent d-flex align-items-center gap-1';
+            tag.style.cssText = 'padding: 6px 10px; font-size: 13px;';
+            tag.innerHTML = `
+                ${item}
+                <button type="button" class="btn-close btn-close-sm ms-1" style="font-size: 8px;" onclick="removeTag('${type}', ${index})"></button>
+            `;
+            container.appendChild(tag);
+        });
+        
+        // Update hidden input with comma-separated values
+        hiddenInput.value = array.join(',');
+    }
+
+    // Remove a tag
+    function removeTag(type, index) {
+        if (type === 'skills') {
+            skillsArray.splice(index, 1);
+        } else {
+            languagesArray.splice(index, 1);
+        }
+        renderTags(type);
+    }
+
+    // 2. HELPER: SHOW TOAST FUNCTION
+    function showToast(message, type = 'success') {
+        let bg = type === 'success' ? "linear-gradient(to right, #00b09b, #96c93d)" : "linear-gradient(to right, #ff5f6d, #ffc371)";
+        
+        if (type === 'warning') {
+            bg = "linear-gradient(to right, #f8b500, #fceabb)";
+        }
+
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            gravity: "top", 
+            position: "right", 
+            stopOnFocus: true, 
+            style: {
+                background: bg,
+                borderRadius: "10px",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                fontWeight: "500"
+            },
+        }).showToast();
+    }
+
+    // 3. POST JOB FUNCTION
+    async function postJob() {
+        const btn = document.getElementById('postJobBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Posting...`;
+        btn.disabled = true;
+
+        const token = localStorage.getItem('token');
+        
+        // Gather Form Data from clean inputs
+        const formData = {
+            title: document.getElementById('job-title').value.trim(),
+            description: document.getElementById('job-description').value.trim(),
+            type: document.getElementById('job-type').value,
+            location_type: document.getElementById('location-type').value,
+            salary_range: document.getElementById('salary-range').value.trim(),
+            currency: document.getElementById('currency').value,
+            category: document.getElementById('job-category').value,
+            experience: document.getElementById('experience').value,
+            status: 'active',
+            vacancies: parseInt(document.getElementById('vacancies').value) || 1,
+            skills: skillsArray, // Send as JSON array
+            deadline: document.getElementById('job-deadline').value || null,
+            qualification: document.getElementById('qualification').value,
+            gender: document.getElementById('gender').value,
+            languages: languagesArray // Send as JSON array
+        };
+
+        // Validation
+        if (!formData.title) {
+            showToast("❌ Job Title is required", "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        if (!formData.description) {
+            showToast("❌ Job Description is required", "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/jobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast("🎉 Job Posted Successfully! Redirecting...", "success");
+                
+                setTimeout(() => {
+                    window.location.href = '/jobs/manage';
+                }, 2000);
+
+            } else {
+                if(data.error && data.error.includes("Company Profile")) {
+                    showToast("⚠️ Company Profile Required. Redirecting...", "warning");
+                    setTimeout(() => { window.location.href = '/company/create'; }, 2500);
+                } else {
+                    showToast("❌ " + (data.error || "Unknown error occurred"), "error");
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+        } catch (error) {
+            console.error("Network Error:", error);
+            showToast("❌ Network Error. Check connection.", "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+</script>
+
+<%- include('includes/footer2') %>

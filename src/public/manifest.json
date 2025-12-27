@@ -1,0 +1,20 @@
+{
+  "name": "Zeno",
+  "short_name": "Zeno",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4466f2",
+  "icons": [
+    {
+      "src": "/build/assets/images/brand-logos/toggle-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/build/assets/images/brand-logos/desktop-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

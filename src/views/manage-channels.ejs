@@ -1,0 +1,735 @@
+<%- include('includes/header2') %>
+
+<style>
+    /* ============================================
+       MODERN CHANNEL MANAGEMENT STYLES
+       ============================================ */
+    
+    /* Gradient Header Banner */
+    .channels-hero {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+        margin-top: 0.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .channels-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .channels-hero h1 {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .channels-hero p {
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Channel Cards Grid */
+    .channels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+    }
+    
+    .channel-card {
+        background: var(--custom-white);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .channel-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(17, 153, 142, 0.15);
+    }
+    
+    .channel-card::before {
+        content: '#';
+        position: absolute;
+        right: -20px;
+        top: -20px;
+        font-size: 120px;
+        font-weight: 800;
+        color: rgba(0,0,0,0.02);
+        line-height: 1;
+    }
+    
+    .channel-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #fff;
+    }
+    
+    .channel-icon.public {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+    
+    .channel-icon.private {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
+    
+    .channel-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--default-text-color);
+        margin-bottom: 0.25rem;
+    }
+    
+    .channel-desc {
+        color: #888;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        min-height: 2.7rem;
+    }
+    
+    .channel-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .channel-meta .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #666;
+        font-size: 0.85rem;
+    }
+    
+    .type-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .type-badge.public {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        color: #fff;
+    }
+    
+    .type-badge.private {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        color: #fff;
+    }
+    
+    .channel-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .channel-actions .btn {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Create Button FAB */
+    .create-fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: #fff;
+        border: none;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .create-fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 35px rgba(17, 153, 142, 0.5);
+    }
+    
+    /* Modal Enhancements */
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .modal-header.channels-modal {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: #fff;
+        border: none;
+        padding: 1.5rem;
+    }
+    
+    .modal-header.channels-modal .btn-close {
+        filter: brightness(0) invert(1);
+    }
+    
+    /* Members Section in Modal */
+    .members-section {
+        background: rgba(17, 153, 142, 0.08);
+        border-radius: 12px;
+        padding: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .member-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        background: var(--custom-white);
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .member-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .member-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-right: 0.75rem;
+    }
+    
+    .add-all-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: #fff;
+        padding: 0.75rem;
+        border-radius: 10px;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .add-all-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    /* Modal body dark mode */
+    .modal-body {
+        background: var(--custom-white);
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--custom-white);
+        border-radius: 20px;
+        border: 2px dashed #e0e0e0;
+        grid-column: 1 / -1;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+    
+    /* Skeleton */
+    .skeleton-card {
+        background: var(--custom-white);
+        border-radius: 16px;
+        padding: 1.5rem;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+</style>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+
+        <!-- Hero Banner -->
+        <div class="channels-hero">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1><i class="ri-hashtag me-2"></i>Channel Management</h1>
+                    <p>Create and manage communication channels for your team</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Channels Grid -->
+        <div class="channels-grid" id="channels-grid">
+            <!-- Skeleton Loading -->
+            <% for(let i = 0; i < 3; i++) { %>
+            <div class="skeleton-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="skeleton-box" style="width:56px;height:56px;border-radius:14px;"></div>
+                    <div class="ms-3 flex-fill">
+                        <div class="skeleton-box skeleton-text" style="width:50%;height:20px;margin-bottom:8px;"></div>
+                        <div class="skeleton-box skeleton-text" style="width:80%;height:14px;"></div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        </div>
+
+    </div>
+</div>
+
+<!-- Floating Create Button -->
+<button class="create-fab" data-bs-toggle="modal" data-bs-target="#createChannelModal" title="Create Channel">
+    <i class="ri-add-line"></i>
+</button>
+
+<!-- Create Channel Modal -->
+<div class="modal fade" id="createChannelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header channels-modal">
+                <h6 class="modal-title"><i class="ri-hashtag me-2"></i>Create New Channel</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Channel Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">#</span>
+                        <input type="text" class="form-control form-control-lg border-start-0" id="new-channel-name" placeholder="general">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Privacy</label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="channel-type" id="type-public" value="public" checked>
+                            <label class="btn btn-outline-success w-100 py-3" for="type-public">
+                                <i class="ri-global-line d-block fs-4 mb-1"></i>
+                                Public
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <input type="radio" class="btn-check" name="channel-type" id="type-private" value="private">
+                            <label class="btn btn-outline-danger w-100 py-3" for="type-private">
+                                <i class="ri-lock-line d-block fs-4 mb-1"></i>
+                                Private
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-0">
+                     <label class="form-label fw-medium">Description <span class="text-muted fw-normal">(optional)</span></label>
+                     <textarea class="form-control" id="new-channel-desc" rows="2" placeholder="What's this channel about?"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success btn-lg px-4" id="btn-create-channel" onclick="createChannel()">
+                    <i class="ri-add-line me-1"></i> Create Channel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Members Modal -->
+<div class="modal fade" id="manageMembersModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header channels-modal">
+                <h6 class="modal-title"><i class="ri-group-line me-2"></i>Manage Members: <span id="manage-channel-name"></span></h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                 <div class="row g-4">
+                      <div class="col-md-6">
+                           <h6 class="fw-bold mb-3"><i class="ri-user-line me-1"></i> Current Members</h6>
+                           <div class="members-section" id="current-members-list">
+                               <div class="text-center text-muted py-4">Loading...</div>
+                           </div>
+                      </div>
+                      <div class="col-md-6">
+                           <h6 class="fw-bold mb-3"><i class="ri-user-add-line me-1"></i> Add Members</h6>
+                           <div class="mb-3">
+                               <select class="form-select form-select-lg" id="add-member-select">
+                                   <option>Loading team...</option>
+                               </select>
+                           </div>
+                           <button class="btn btn-primary w-100 mb-4" id="btn-add-member" onclick="addSelectedMember()">
+                               <i class="ri-user-add-line me-1"></i> Add Selected Member
+                           </button>
+                           
+                           <div class="text-center my-3">
+                               <span class="text-muted">— OR —</span>
+                           </div>
+                           
+                           <button class="add-all-btn" id="btn-add-all" onclick="addAllTeam()">
+                               <i class="ri-group-line me-1"></i> Add ALL Team Members
+                           </button>
+                      </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Channel Modal -->
+<div class="modal fade" id="editChannelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header channels-modal">
+                <h6 class="modal-title"><i class="ri-edit-line me-2"></i>Edit Channel</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Channel Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">#</span>
+                        <input type="text" class="form-control border-start-0" id="edit-channel-name">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Privacy</label>
+                    <select class="form-select" id="edit-channel-type">
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                    </select>
+                </div>
+                <div class="mb-0">
+                     <label class="form-label fw-medium">Description</label>
+                     <textarea class="form-control" id="edit-channel-desc" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-update-channel" onclick="updateChannel()">
+                    <i class="ri-save-line me-1"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+    let currentManageChannelId = null;
+    let currentEditChannelId = null;
+    let allChannels = [];
+
+    document.addEventListener("DOMContentLoaded", function() {
+        loadChannels();
+    });
+
+    async function loadChannels() {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('/api/chat/channels', { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            
+            const grid = document.getElementById('channels-grid');
+            
+            if(data.success && data.channels.length > 0) {
+                allChannels = data.channels;
+                grid.innerHTML = data.channels.map(c => `
+                    <div class="channel-card">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="channel-icon ${c.type}">
+                                <i class="ri-${c.type === 'public' ? 'global-line' : 'lock-line'}"></i>
+                            </div>
+                            <div class="ms-3 flex-fill">
+                                <div class="channel-name">#${escapeHtml(c.name)}</div>
+                                <span class="type-badge ${c.type}">${c.type}</span>
+                            </div>
+                        </div>
+                        <div class="channel-desc">${escapeHtml(c.description) || 'No description'}</div>
+                        <div class="channel-meta">
+                            <div class="meta-item">
+                                <i class="ri-calendar-line"></i>
+                                <span>${new Date(c.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div class="channel-actions">
+                            <button class="btn btn-outline-primary" onclick="openManageMembers('${c.id}', '${escapeHtml(c.name)}')">
+                                <i class="ri-group-line me-1"></i>Members
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="openEditChannel('${c.id}', '${escapeHtml(c.name)}', '${c.type}', '${escapeHtml(c.description || '')}')">
+                                <i class="ri-edit-line me-1"></i>Edit
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteChannel('${c.id}')">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="ri-hashtag"></i>
+                        <h4>No Channels Yet</h4>
+                        <p class="text-muted">Create your first channel to start team communication</p>
+                        <button class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#createChannelModal">
+                            <i class="ri-add-line me-1"></i> Create Channel
+                        </button>
+                    </div>
+                `;
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    async function createChannel() {
+        const name = document.getElementById('new-channel-name').value;
+        const type = document.querySelector('input[name="channel-type"]:checked').value;
+        const description = document.getElementById('new-channel-desc').value;
+        
+        if(!name) {
+            Toastify({ text: "Please enter a channel name", backgroundColor: "#ff5b5c" }).showToast();
+            return;
+        }
+
+        const btn = document.getElementById('btn-create-channel');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Creating...';
+        btn.disabled = true;
+        
+        const token = localStorage.getItem('token');
+        try {
+             const res = await fetch('/api/chat/channels', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                 body: JSON.stringify({ name, type, description })
+             });
+             const data = await res.json();
+             if(data.success) {
+                 bootstrap.Modal.getInstance(document.getElementById('createChannelModal')).hide();
+                 loadChannels();
+                 Toastify({ text: "Channel created! 🎉", backgroundColor: "#00b074" }).showToast();
+                 // Reset form
+                 document.getElementById('new-channel-name').value = '';
+                 document.getElementById('new-channel-desc').value = '';
+                 document.getElementById('type-public').checked = true;
+             } else {
+                  Toastify({ text: data.message || "Failed to create", backgroundColor: "#ff5b5c" }).showToast();
+             }
+        } catch(e) { console.error(e); }
+        finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async function deleteChannel(id) {
+        if(!confirm("Delete this channel and all messages? This cannot be undone.")) return;
+        
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`/api/chat/channels/${id}`, {
+                 method: 'DELETE',
+                 headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if(res.ok) {
+                 Toastify({ text: "Channel Deleted", backgroundColor: "#00b074" }).showToast();
+                 loadChannels();
+            } else {
+                 const data = await res.json();
+                 Toastify({ text: data.message || "Failed to delete", backgroundColor: "#ff5b5c" }).showToast();
+            }
+        } catch(e) { console.error(e); }
+    }
+    
+    function openEditChannel(id, name, type, desc) {
+        currentEditChannelId = id;
+        document.getElementById('edit-channel-name').value = name;
+        document.getElementById('edit-channel-type').value = type;
+        document.getElementById('edit-channel-desc').value = desc;
+        new bootstrap.Modal(document.getElementById('editChannelModal')).show();
+    }
+    
+    async function updateChannel() {
+        if(!currentEditChannelId) return;
+        
+        const name = document.getElementById('edit-channel-name').value;
+        const type = document.getElementById('edit-channel-type').value;
+        const description = document.getElementById('edit-channel-desc').value;
+         
+        const btn = document.getElementById('btn-update-channel');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+        btn.disabled = true;
+
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`/api/chat/channels/${currentEditChannelId}`, {
+                 method: 'PUT',
+                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                 body: JSON.stringify({ name, type, description })
+            });
+            if(res.ok) {
+                 Toastify({ text: "Channel Updated", backgroundColor: "#00b074" }).showToast();
+                 bootstrap.Modal.getInstance(document.getElementById('editChannelModal')).hide();
+                 loadChannels();
+            } else {
+                 Toastify({ text: "Failed to update", backgroundColor: "#ff5b5c" }).showToast();
+            }
+        } catch(e) { console.error(e); }
+        finally {
+             btn.innerHTML = originalText;
+             btn.disabled = false;
+        }
+    }
+
+    async function openManageMembers(channelId, name) {
+        currentManageChannelId = channelId;
+        document.getElementById('manage-channel-name').textContent = '#' + name;
+        
+        new bootstrap.Modal(document.getElementById('manageMembersModal')).show();
+        loadMemberDetails(channelId);
+    }
+    
+    async function loadMemberDetails(channelId) {
+        const list = document.getElementById('current-members-list');
+        const select = document.getElementById('add-member-select');
+        list.innerHTML = '<div class="text-center text-muted py-4">Loading...</div>';
+        
+        const token = localStorage.getItem('token');
+        
+        const [resMembers, resTeam] = await Promise.all([
+             fetch(`/api/chat/channels/${channelId}/members`, { headers: { 'Authorization': `Bearer ${token}` } }),
+             fetch('/api/team/members', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        
+        const dataMembers = await resMembers.json();
+        const dataTeam = await resTeam.json();
+        
+        const currentMembers = dataMembers.success ? dataMembers.members : [];
+        const allTeam = dataTeam.success ? dataTeam.members : [];
+        
+        // Render Current Members
+        if(currentMembers.length > 0) {
+            list.innerHTML = currentMembers.map(m => `
+                <div class="member-item">
+                    <img src="${m.avatar || '/assets/images/faces/9.jpg'}" alt="">
+                    <div class="flex-fill">
+                        <div class="fw-medium">${escapeHtml(m.full_name)}</div>
+                        <small class="text-muted">${m.role}</small>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            list.innerHTML = '<div class="text-center text-muted py-4">No members yet</div>';
+        }
+        
+        // Render Add Dropdown
+        const existingIds = currentMembers.map(m => m.id);
+        const potential = allTeam.filter(t => !existingIds.includes(t.user.id));
+        
+        if(potential.length > 0) {
+            select.innerHTML = '<option value="">Select member...</option>' + 
+                 potential.map(t => `<option value="${t.user.id}">${escapeHtml(t.user.full_name)}</option>`).join('');
+        } else {
+            select.innerHTML = '<option value="">All team members added</option>';
+        }
+    }
+    
+    async function addSelectedMember() {
+        const userId = document.getElementById('add-member-select').value;
+        if(!userId) return;
+        
+        const btn = document.getElementById('btn-add-member');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Adding...';
+        btn.disabled = true;
+
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/chat/channels/${currentManageChannelId}/members`, {
+            method: 'POST',
+             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+             body: JSON.stringify({ userId })
+        });
+        const data = await res.json();
+        
+        if(data.success) {
+             Toastify({ text: "Member added!", backgroundColor: "#00b074" }).showToast();
+             loadMemberDetails(currentManageChannelId);
+        } else {
+             Toastify({ text: data.message || "Failed to add", backgroundColor: "#ff5b5c" }).showToast();
+        }
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+    
+    async function addAllTeam() {
+        if(!confirm("Add ALL team members to this channel?")) return;
+        
+        const btn = document.getElementById('btn-add-all');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Adding All...';
+        btn.disabled = true;
+
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/chat/channels/${currentManageChannelId}/add-all`, {
+             method: 'POST',
+             headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if(data.success) {
+             Toastify({ text: "All team members added! 🎉", backgroundColor: "#00b074" }).showToast();
+             loadMemberDetails(currentManageChannelId);
+        } else {
+             Toastify({ text: data.message || "Failed", backgroundColor: "#ff5b5c" }).showToast();
+        }
+        
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.toString().replace(/[&<>"']/g, function(m) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+    }
+</script>

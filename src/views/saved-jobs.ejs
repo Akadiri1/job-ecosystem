@@ -1,0 +1,183 @@
+<%- include('includes/header2', { title: 'My Saved Jobs - Job Ecosystem' }) %>
+
+<style>
+    .job-card {
+        transition: transform 0.2s;
+    }
+    .job-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="page">
+    <%- include(sidebar) %> 
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Page Header -->
+            <div class="d-flex align-items-center justify-content-between my-4 page-header-breadcrumb">
+                <div>
+                    <h4 class="mb-0 fw-bold text-default">Saved Jobs</h4>
+                    <p class="fs-13 text-muted mb-0">Manage your bookmarked opportunities</p>
+                </div>
+            </div>
+
+            <!-- Saved Jobs List -->
+            <div class="row" id="saved-jobs-container">
+                <!-- Skeleton Cards -->
+                <% for(let i=0; i<3; i++) { %>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card custom-card">
+                        <div class="card-body">
+                            <div class="d-flex mb-3">
+                                <div class="skeleton-box skeleton-avatar me-3"></div>
+                                <div class="flex-grow-1">
+                                    <div class="skeleton-box skeleton-text" style="width: 70%;"></div>
+                                    <div class="skeleton-box skeleton-text" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton-box skeleton-text" style="width: 100%; height: 60px;"></div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <div class="skeleton-box skeleton-btn"></div>
+                                <div class="skeleton-box skeleton-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            
+            <!-- Empty State (Hidden by default) -->
+            <div id="empty-state" class="d-none text-center mt-5">
+                <div class="mb-4">
+                     <span class="avatar avatar-xxl bg-danger-transparent rounded-circle">
+                        <i class="ri-heart-line fs-32"></i>
+                     </span>
+                </div>
+                <h5>No Saved Jobs Yet</h5>
+                <p class="text-muted">You haven't saved any jobs. Browse the feed to find opportunities you like!</p>
+                <a href="/jobs/feed" class="btn btn-primary btn-wave">Find Jobs</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', loadSavedJobs);
+
+    async function loadSavedJobs() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/jobs/seeker/saved', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Failed to load saved jobs');
+
+            const data = await response.json();
+            renderJobs(data.jobs);
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById('saved-jobs-container').innerHTML = 
+                '<div class="col-12 text-danger text-center">Error loading saved jobs.</div>';
+        }
+    }
+
+    function renderJobs(jobs) {
+        const container = document.getElementById('saved-jobs-container');
+        const emptyState = document.getElementById('empty-state');
+
+        container.innerHTML = '';
+        
+        if (!jobs || jobs.length === 0) {
+            emptyState.classList.remove('d-none');
+            return;
+        }
+
+        emptyState.classList.add('d-none');
+
+        jobs.forEach(job => {
+            // Note: Data structure depends on backend query structure.
+            // job might be the job object itself if mapped, or nested.
+            // In jobController getSavedJobs logic, we returned user.saved_jobs which are Job instances.
+            
+            const card = `
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card custom-card job-card h-100 position-relative">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start justify-content-between mb-3">
+                                <div class="d-flex gap-3 align-items-center">
+                                    <span class="avatar avatar-lg bg-light border p-1 rounded">
+                                        <img src="/build/assets/images/media/jobs/${(job.id.charCodeAt(0) % 4) + 1}.png" alt="logo">
+                                    </span>
+                                    <div>
+                                        <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 200px;">
+                                            <a href="/jobs/${job.id}" class="text-default">${job.title}</a>
+                                        </h6>
+                                        <p class="fs-12 text-muted mb-0"><i class="ri-building-line me-1"></i> ${job.company ? job.company.name : 'Company'}</p>
+                                    </div>
+                                </div>
+                                <button onclick="removeSavedJob('${job.id}')" class="btn btn-icon btn-sm btn-danger-transparent rounded-pill" title="Remove">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="d-flex gap-2 mb-3">
+                                <span class="badge bg-light text-muted border rounded-pill">${job.type ? job.type.replace('_', ' ') : 'Full Time'}</span>
+                                <span class="badge bg-light text-muted border rounded-pill">${job.location || 'Remote'}</span>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top border-dashed">
+                                <span class="fw-medium">${formatSalary(job.salary_range, job.currency)}</span>
+                                <a href="/jobs/${job.id}" class="btn btn-sm btn-primary-light">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += card;
+        });
+    }
+
+    async function removeSavedJob(jobId) {
+        if(!confirm('Remove this job from your saved list?')) return;
+
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`/api/jobs/${jobId}/save`, {
+                method: 'POST', // Toggle endpoint handles removal too
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                // Reload list
+                loadSavedJobs();
+                // Optionally update dashboard count if we care to
+            } else {
+                alert('Failed to remove job');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function formatSalary(range, currency) {
+        if(!range) return 'Competitive';
+        const symbol = currency === 'USD' ? '$' : (currency === 'EUR' ? '€' : '₦');
+        return `${symbol} ${range}`;
+    }
+    
+    // Simple Sidebar toggle logic inclusion if sidebar isn't auto-handling
+    // Assuming standard sidebar script is loaded in footer
+</script>
+
+<%- include('includes/footer2') %>

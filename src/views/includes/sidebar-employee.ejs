@@ -1,0 +1,78 @@
+<aside class="app-sidebar sticky" id="sidebar">
+    <div class="main-sidebar-header">
+        <a href="/dashboard" class="header-logo">
+            <img src="/build/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
+            <img src="/build/assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
+            <img src="/build/assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark">
+            <img src="/build/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+        </a>
+    </div>
+
+    <div class="main-sidebar" id="sidebar-scroll">
+        <nav class="main-menu-container nav nav-pills flex-column sub-open">
+            <div class="slide-left" id="slide-left"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"><path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path></svg></div>
+            
+            <ul class="main-menu">
+                <!-- DASHBOARD -->
+                <li class="slide">
+                    <a href="/dashboard/employee" class="side-menu__item">
+                        <i class="ri-home-4-line side-menu__icon"></i>
+                        <span class="side-menu__label">Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- EMPLOYEE MENU -->
+                <li class="slide__category"><span class="category-name">Team Workspace</span></li>
+                <li class="slide">
+                    <a href="/dashboard/employee/chat" class="side-menu__item">
+                        <i class="ri-chat-1-line side-menu__icon"></i>
+                        <span class="side-menu__label">Team Chat</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="/dashboard/employee/tasks" class="side-menu__item">
+                        <i class="ri-task-line side-menu__icon"></i>
+                        <span class="side-menu__label">My Tasks</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="/dashboard/employee/docs" class="side-menu__item">
+                        <i class="ri-book-open-line side-menu__icon"></i>
+                        <span class="side-menu__label">Company Docs</span>
+                    </a>
+                </li>
+
+                <!-- SETTINGS MENU -->
+                <li class="slide__category"><span class="category-name">Settings</span></li>
+                <li class="slide">
+                    <a href="/dashboard/employee/profile" class="side-menu__item">
+                        <i class="ri-user-settings-line side-menu__icon"></i>
+                        <span class="side-menu__label">User Profile</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="javascript:void(0);" onclick="logout()" class="side-menu__item">
+                        <i class="ri-logout-box-r-line side-menu__icon"></i>
+                        <span class="side-menu__label">Log Out</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24"><path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path></svg></div>
+        </nav>
+    </div>
+</aside>
+
+<!-- Script to handle active state -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const currentPath = window.location.pathname;
+    const menuItems = document.querySelectorAll('.side-menu__item');
+    
+    menuItems.forEach(item => {
+        if (item.getAttribute('href') === currentPath) {
+            item.classList.add('active');
+            item.parentElement.classList.add('active');
+        }
+    });
+});
+</script>

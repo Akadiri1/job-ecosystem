@@ -1,0 +1,229 @@
+<%- include('includes/header2', { title: 'My Applications' }) %>
+
+<div class="page">
+<style>
+    .employer-only, .seeker-only { display: none !important; }
+</style>
+
+    <%- include(sidebar) %>
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Page Header -->
+            <div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
+                <div>
+
+                    <h1 class="page-title fw-medium fs-18 mb-0">My Applications</h1>
+                </div>
+            </div>
+
+            <!-- Start::row-1 -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-header justify-content-between">
+                            <div class="card-title">
+                                Application History
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table text-nowrap table-hover border table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Job Title</th>
+                                            <th>Company</th>
+                                            <th>Applied On</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applications-table-body">
+                                        <% for(let i=0; i<5; i++) { %>
+                                        <tr>
+                                            <td><div class="d-flex align-items-center"><div class="skeleton-box skeleton-avatar me-2" style="border-radius: 4px;"></div><div><div class="skeleton-box skeleton-text" style="width: 120px;"></div><div class="skeleton-box skeleton-text" style="width: 80px;"></div></div></div></td>
+                                            <td><div class="skeleton-box skeleton-text" style="width: 100px;"></div></td>
+                                            <td><div class="skeleton-box skeleton-text" style="width: 100px;"></div></td>
+                                            <td><div class="skeleton-box skeleton-btn" style="width: 80px;"></div></td>
+                                            <td><div class="skeleton-box skeleton-btn" style="width: 80px;"></div></td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination mb-0 float-end" id="pagination">
+                                    <!-- Pagination handled by JS if needed -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadApplications();
+    });
+
+    async function loadApplications() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/applications/my-applications', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                renderApplications(data.applications);
+            } else {
+                document.getElementById('applications-table-body').innerHTML = `
+                    <tr><td colspan="5" class="text-center text-danger">Error loading applications</td></tr>
+                `;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('applications-table-body').innerHTML = `
+                <tr><td colspan="5" class="text-center text-danger">Network Error</td></tr>
+            `;
+        }
+    }
+
+    function renderApplications(applications) {
+        const tbody = document.getElementById('applications-table-body');
+        
+        if (!applications || applications.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center p-5">
+                        <div class="text-muted mb-2"><i class="ri-file-search-line fs-1"></i></div>
+                        <h5>No applications yet</h5>
+                        <p class="mb-3">You haven't applied to any jobs yet.</p>
+                        <a href="/jobs/feed" class="btn btn-primary btn-sm">Find Jobs</a>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = applications.map(app => {
+            const job = app.job || {};
+            const company = job.company || {};
+            
+            let statusBadge = 'bg-primary-transparent';
+            if (app.status === 'hired') statusBadge = 'bg-success-transparent';
+            if (app.status === 'rejected') statusBadge = 'bg-danger-transparent';
+            if (app.status === 'shortlisted') statusBadge = 'bg-info-transparent';
+
+            return `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="avatar avatar-sm me-2 avatar-rounded">
+                                <img src="${getJobIcon(job)}" alt="">
+                            </span>
+                            <div>
+                                <div class="fw-medium">${job.title || 'Unknown Job'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="avatar avatar-xs me-2 avatar-rounded">
+                                <img src="${company.logo_url || '/build/assets/images/media/media-24.jpg'}" alt="">
+                            </span>
+                            ${company.name || 'Unknown Company'}
+                        </div>
+                    </td>
+                    <td>${new Date(app.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <span class="badge ${statusBadge}">${app.status.toUpperCase()}</span>
+                    </td>
+                    <td>
+                        <div class="hstack gap-2 justify-content-center">
+                            <a href="/jobs/${job.id}" class="btn btn-icon btn-sm btn-light btn-wave" title="View Job">
+                                <i class="ri-eye-line"></i>
+                            </a>
+                            <button onclick="withdrawApplication('${app.id}')" class="btn btn-icon btn-sm btn-danger-light btn-wave" title="Withdraw Application">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    async function withdrawApplication(appId) {
+        if(!confirm('Are you sure you want to withdraw this application? This action cannot be undone.')) return;
+
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`/api/applications/${appId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                // simple reload or re-fetch
+                loadApplications();
+                // success toast
+            } else {
+                alert('Failed to withdraw application');
+            }
+        } catch(e) {
+            console.error(e);
+            alert('Error withdrawing application');
+        }
+    }
+
+    // Helper (copied from manage-jobs)
+    function getJobIcon(job) {
+             const title = (job.title || '').toLowerCase();
+            const category = (job.category || '').toLowerCase();
+            let skills = '';
+            // Simplified check
+             if (typeof job.skills === 'string') skills = job.skills.toLowerCase();
+             
+            if (title.includes('react') || skills.includes('react')) return '/build/assets/images/media/jobs/1.png';
+            if (title.includes('html') || title.includes('css')) return '/build/assets/images/media/jobs/2.png';
+            return `/build/assets/images/media/jobs/4.png`; // Fallback
+    }
+    function logout() {
+        localStorage.clear();
+        window.location.href = '/login';
+    }
+
+    // Role-based Sidebar Check
+    (function checkRole() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const role = payload.role;
+                const style = document.createElement('style');
+                if (role === 'employer') {
+                    style.innerHTML = '.employer-only { display: block !important; }';
+                } else if (role === 'seeker') {
+                     style.innerHTML = '.seeker-only { display: block !important; }';
+                }
+                document.head.appendChild(style);
+            } catch (e) { console.error('Token parse fail', e); }
+        }
+    })();
+</script>
+
+<%- include('includes/footer2') %>

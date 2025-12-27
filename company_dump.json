@@ -1,0 +1,30 @@
+[
+  {
+    "id": "2b5d647a-1e91-4fc5-8d10-a6d1ee75507c",
+    "name": "Fresh Start Corp 3750",
+    "description": "New DB rules.",
+    "website": null,
+    "location": null,
+    "logo_url": null,
+    "industry": null,
+    "is_active": true,
+    "deactivated_at": null,
+    "owner_id": "d73ee967-984e-4f58-bb98-526b86e15dab",
+    "createdAt": "2025-12-20T16:45:20.294Z",
+    "updatedAt": "2025-12-20T16:45:20.294Z"
+  },
+  {
+    "id": "e0d0614e-f280-4b61-a85e-0a0c10ae33bf",
+    "name": "MasterPiece",
+    "description": "We Create and Build",
+    "website": "https://www.masterpiece.com.ng",
+    "location": "United State Of America",
+    "logo_url": "/uploads/logos/d73ee967-984e-4f58-bb98-526b86e15dab_1766323925330.jpg",
+    "industry": "IT Company",
+    "is_active": true,
+    "deactivated_at": null,
+    "owner_id": "d73ee967-984e-4f58-bb98-526b86e15dab",
+    "createdAt": "2025-12-21T13:31:00.767Z",
+    "updatedAt": "2025-12-21T17:32:55.561Z"
+  }
+]

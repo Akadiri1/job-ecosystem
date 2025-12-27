@@ -1,0 +1,683 @@
+<%- include('includes/header2', { title: 'Manage Jobs - Job Ecosystem' }) %>
+
+<style>
+    .employer-only, .seeker-only { display: none !important; }
+    
+    /* Manage Jobs Hero */
+    .manage-jobs-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .manage-jobs-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .manage-jobs-hero h1 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .manage-jobs-hero p {
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Stats Row */
+    .jobs-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .jobs-stat-card {
+        background: var(--custom-white);
+        border-radius: 12px;
+        padding: 1.25rem;
+        border: 1px solid rgba(255,255,255,0.08);
+        text-align: center;
+    }
+    
+    .jobs-stat-card .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+    
+    .jobs-stat-card .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    /* Table Card */
+    .jobs-table-card {
+        background: var(--custom-white);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        overflow: hidden;
+    }
+    
+    .jobs-table-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .jobs-table-title {
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .jobs-table-title i {
+        color: #667eea;
+    }
+    
+    .search-box {
+        position: relative;
+    }
+    
+    .search-box input {
+        padding-left: 2.5rem;
+        border-radius: 10px;
+        min-width: 250px;
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+    
+    .btn-post-new {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: #fff;
+        padding: 0.6rem 1.25rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-post-new:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: #fff;
+    }
+    
+    /* Enhanced Table */
+    .jobs-table {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .jobs-table thead {
+        background: rgba(102, 126, 234, 0.1);
+    }
+    
+    .jobs-table thead th {
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #667eea;
+        background: transparent;
+    }
+    
+    .jobs-table tbody tr {
+        transition: all 0.2s ease;
+        background: transparent;
+    }
+    
+    .jobs-table tbody tr:hover {
+        background: rgba(102, 126, 234, 0.05);
+    }
+    
+    .jobs-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: rgba(255,255,255,0.05);
+        background: transparent;
+    }
+    
+    .job-title-cell {
+        font-weight: 600;
+    }
+    
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .pagination-wrapper {
+        padding: 1rem 1.25rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+</style>
+
+<div class="page">
+    
+    <!-- SIDEBAR -->
+    <%- include(sidebar) %>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+
+        <!-- Modern Hero Header -->
+        <div class="manage-jobs-hero" style="margin-top: 1.5rem;">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h1><i class="ri-briefcase-line me-2"></i>Manage Jobs</h1>
+                    <p>View, edit, and manage all your job postings</p>
+                </div>
+                <a href="/dashboard" class="btn btn-light">
+                    <i class="ri-arrow-left-line me-1"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="jobs-stats" id="jobs-stats">
+            <div class="jobs-stat-card">
+                <div class="stat-value" id="stat-total">-</div>
+                <div class="stat-label">Total Jobs</div>
+            </div>
+            <div class="jobs-stat-card">
+                <div class="stat-value text-success" id="stat-active">-</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="jobs-stat-card">
+                <div class="stat-value text-warning" id="stat-pending">-</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="jobs-stat-card">
+                <div class="stat-value text-danger" id="stat-closed">-</div>
+                <div class="stat-label">Closed</div>
+            </div>
+        </div>
+
+        <!-- Jobs Table Card -->
+        <div class="jobs-table-card">
+            <div class="jobs-table-header">
+                <div class="jobs-table-title">
+                    <i class="ri-file-list-3-line"></i>
+                    All Job Listings
+                </div>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="search-box">
+                        <i class="ri-search-line"></i>
+                        <input class="form-control form-control-sm" id="job-search" type="text" placeholder="Search jobs...">
+                    </div>
+                    <div class="dropdown">
+                        <a href="javascript:void(0);" class="btn btn-outline-primary btn-sm" data-bs-toggle="dropdown" id="sort-btn">
+                            Sort By<i class="ri-arrow-down-s-line ms-1"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item sort-option" href="javascript:void(0);" data-sort="newest">Newest First</a></li>
+                            <li><a class="dropdown-item sort-option" href="javascript:void(0);" data-sort="oldest">Oldest First</a></li>
+                            <li><a class="dropdown-item sort-option" href="javascript:void(0);" data-sort="title">By Title (A-Z)</a></li>
+                            <li><a class="dropdown-item sort-option" href="javascript:void(0);" data-sort="type">By Job Type</a></li>
+                        </ul>
+                    </div>
+                    <a href="/jobs/create" class="btn-post-new">
+                        <i class="ri-add-line me-1"></i>Post New Job
+                    </a>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table jobs-table text-nowrap">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="ps-3">Job Title</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Applications</th>
+                            <th scope="col">Posted</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Expires</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobs-tbody">
+                        <!-- Loading skeleton -->
+                        <% for(let i=0; i<5; i++) { %>
+                        <tr>
+                            <td><div class="skeleton-box skeleton-text" style="width: 150px;"></div></td>
+                            <td><div class="skeleton-box skeleton-text" style="width: 100px;"></div></td>
+                            <td><div class="skeleton-box skeleton-text" style="width: 80px;"></div></td>
+                            <td><div class="skeleton-box skeleton-text" style="width: 100px;"></div></td>
+                            <td><div class="skeleton-box skeleton-text" style="width: 90px;"></div></td>
+                            <td><div class="skeleton-box skeleton-btn" style="width: 60px;"></div></td>
+                            <td><div class="skeleton-box skeleton-text" style="width: 100px;"></div></td>
+                            <td><div class="d-flex gap-2"><div class="skeleton-box skeleton-btn" style="width: 30px;"></div><div class="skeleton-box skeleton-btn" style="width: 30px;"></div></div></td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <div class="text-muted small">
+                    Showing <b id="showing-start">1</b> to <b id="showing-end">10</b> of <b id="total-count">0</b> entries
+                </div>
+                <ul class="pagination mb-0" id="pagination-list">
+                    <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                    <li class="page-item"><a class="page-link" href="javascript:void(0);">Next</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<script>
+    // Global state
+    let allJobs = [];
+    let filteredJobs = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let currentSort = 'newest';
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
+        // Load employer's jobs
+        await loadMyJobs();
+
+        // Setup search
+        const searchInput = document.getElementById('job-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                filterJobs(query);
+            });
+        }
+
+        // Setup sort
+        document.querySelectorAll('.sort-option').forEach(option => {
+            option.addEventListener('click', function() {
+                currentSort = this.dataset.sort;
+                document.getElementById('sort-btn').innerHTML = `${this.textContent}<i class="ri-arrow-down-s-line align-middle ms-1 d-inline-block"></i>`;
+                sortJobs();
+            });
+        });
+    });
+
+    async function loadMyJobs() {
+        const token = localStorage.getItem('token');
+        const tbody = document.getElementById('jobs-tbody');
+        
+        try {
+            const response = await fetch('/api/jobs/my', {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.jobs && data.jobs.length > 0) {
+                    allJobs = data.jobs;
+                    filteredJobs = [...allJobs];
+                    sortJobs();
+                } else {
+                    showEmptyState();
+                }
+            } else {
+                // If API returns error (e.g. 500 or 401)
+                console.error("API Error:", data.error);
+                showErrorState(`Error: ${data.error || response.statusText}`);
+            }
+        } catch (error) {
+            console.error("Network Error:", error);
+            showErrorState(`Network/JS Error: ${error.message}`);
+        }
+    }
+
+    function showErrorState(message = "Error loading jobs. Please try again.") {
+        const tbody = document.getElementById('jobs-tbody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center py-5">
+                    <div class="text-danger mb-2">
+                        <i class="ri-error-warning-line ri-2x"></i>
+                    </div>
+                    <h6 class="text-danger">${message}</h6>
+                    <button class="btn btn-sm btn-outline-primary mt-2" onclick="loadMyJobs()">Try Again</button>
+                    ${message.includes('token') || message.includes('authorized') ? 
+                      `<br><a href="/login" class="btn btn-primary mt-3">Go to Login</a>` : ''}
+                </td>
+            </tr>
+        `;
+    }
+
+    function filterJobs(query) {
+        if (!query) {
+            filteredJobs = [...allJobs];
+        } else {
+            filteredJobs = allJobs.filter(job => 
+                job.title.toLowerCase().includes(query) ||
+                (job.category && job.category.toLowerCase().includes(query)) ||
+                (job.type && job.type.toLowerCase().includes(query))
+            );
+        }
+        currentPage = 1;
+        sortJobs();
+    }
+
+    function sortJobs() {
+        switch(currentSort) {
+            case 'newest':
+                filteredJobs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                break;
+            case 'oldest':
+                filteredJobs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                break;
+            case 'title':
+                filteredJobs.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'type':
+                filteredJobs.sort((a, b) => (a.type || '').localeCompare(b.type || ''));
+                break;
+        }
+        renderJobsTable();
+        renderPagination();
+    }
+
+    function renderJobsTable() {
+        const tbody = document.getElementById('jobs-tbody');
+        tbody.innerHTML = '';
+
+        if (filteredJobs.length === 0) {
+            showEmptyState();
+            return;
+        }
+
+        // Paginate
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageJobs = filteredJobs.slice(start, end);
+
+        pageJobs.forEach((job, index) => {
+            const postedDate = new Date(job.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const jobType = formatJobType(job.type);
+            const locationType = formatLocationType(job.location_type);
+            const statusBadge = getStatusBadge(job.status);
+            const companyName = job.company?.name || 'Your Company';
+            const companyLogo = job.company?.logo_url || '/build/assets/images/company-logos/1.png';
+            const jobIcon = getJobIcon(job);
+
+            const expiresDate = job.deadline ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : getExpiresDate(job.createdAt);
+
+            const row = document.createElement('tr');
+            row.className = 'joblist-list';
+            row.id = `job-row-${job.id}`;
+            row.innerHTML = `
+                <td class="ps-3">
+                    <div class="d-flex">
+                        <span class="avatar avatar-md border p-1 bg-light">
+                            <img src="${jobIcon}" alt="" onerror="this.src='/build/assets/images/media/jobs/1.png'">
+                        </span>
+                        <div class="ms-2">
+                            <p class="fw-medium mb-0"><a href="/jobs/${job.id}">${job.title}</a></p>
+                            <p class="fs-12 text-muted mb-0">${locationType}</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <span class="avatar avatar-sm p-1 me-1 bg-light avatar-rounded">
+                            <img src="${companyLogo}" alt="" onerror="this.src='/build/assets/images/company-logos/1.png'">
+                        </span>
+                        <span class="fw-medium">${companyName}</span>
+                    </div>
+                </td>
+                <td>${job.category || 'Development'}</td>
+                <td>${job.applicationCount || 0}</td>
+                <td><span class="badge bg-primary-transparent"><i class="bi bi-clock me-1"></i>${postedDate}</span></td>
+                <td>${job.vacancies || 1}</td>
+                <td>${jobType}</td>
+                <td>${statusBadge}</td>
+                <td>${expiresDate}</td>
+                <td>
+                    <a href="/jobs/${job.id}" class="btn btn-icon btn-sm btn-primary-light btn-wave" title="View Job"><i class="ri-eye-line"></i></a>
+                    <a href="/jobs/${job.id}/edit" class="btn btn-icon btn-sm btn-info-light btn-wave" title="Edit Job"><i class="ri-edit-line"></i></a>
+                    <a href="/jobs/${job.id}/candidates" class="btn btn-icon btn-sm btn-warning-light btn-wave" title="View Candidates"><i class="ri-group-line"></i></a>
+                    <a href="javascript:void(0);" onclick="deleteJob('${job.id}')" class="btn btn-icon btn-sm btn-danger-light btn-wave" title="Delete Job"><i class="ri-delete-bin-line"></i></a>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Update entries text
+        updateEntriesText();
+    }
+
+    function getJobIcon(job) {
+        const title = (job.title || '').toLowerCase();
+        const category = (job.category || '').toLowerCase();
+        let skills = '';
+        if (Array.isArray(job.skills)) {
+            skills = job.skills.map(s => String(s).toLowerCase()).join(' ');
+        } else if (typeof job.skills === 'string') {
+            skills = job.skills.toLowerCase();
+        }
+
+        // Map keywords to icon numbers (1-4 available in template)
+        if (title.includes('react') || skills.includes('react')) return '/build/assets/images/media/jobs/1.png';
+        if (title.includes('html') || title.includes('css') || skills.includes('html')) return '/build/assets/images/media/jobs/2.png';
+        if (title.includes('vue') || skills.includes('vue')) return '/build/assets/images/media/jobs/3.png';
+        if (title.includes('wordpress') || title.includes('php')) return '/build/assets/images/media/jobs/4.png';
+        if (title.includes('python') || skills.includes('python')) return '/build/assets/images/media/jobs/1.png';
+        if (title.includes('java') || skills.includes('java')) return '/build/assets/images/media/jobs/2.png';
+        if (title.includes('node') || skills.includes('node')) return '/build/assets/images/media/jobs/3.png';
+        if (title.includes('angular') || skills.includes('angular')) return '/build/assets/images/media/jobs/4.png';
+        if (category.includes('design')) return '/build/assets/images/media/jobs/1.png';
+        if (category.includes('marketing')) return '/build/assets/images/media/jobs/2.png';
+        
+        // Default based on job ID for variety
+        const iconNum = (parseInt(job.id) % 4) + 1;
+        return `/build/assets/images/media/jobs/${iconNum}.png`;
+    }
+
+    function renderPagination() {
+        const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
+        const paginationContainer = document.querySelector('.pagination');
+        if (!paginationContainer) return;
+
+        paginationContainer.innerHTML = '';
+
+        // Previous button
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="javascript:void(0);" onclick="goToPage(${currentPage - 1})">Previous</a>`;
+        paginationContainer.appendChild(prevLi);
+
+        // Page numbers
+        const maxVisible = 5;
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+        
+        if (endPage - startPage < maxVisible - 1) {
+            startPage = Math.max(1, endPage - maxVisible + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const li = document.createElement('li');
+            li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            li.innerHTML = `<a class="page-link" href="javascript:void(0);" onclick="goToPage(${i})">${i}</a>`;
+            paginationContainer.appendChild(li);
+        }
+
+        // Next button
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="javascript:void(0);" onclick="goToPage(${currentPage + 1})">Next</a>`;
+        paginationContainer.appendChild(nextLi);
+    }
+
+    function goToPage(page) {
+        const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
+        if (page < 1 || page > totalPages) return;
+        currentPage = page;
+        renderJobsTable();
+        renderPagination();
+    }
+
+    function updateEntriesText() {
+        const entriesDiv = document.querySelector('.card-footer .mb-2');
+        if (!entriesDiv) return;
+        
+        const total = filteredJobs.length;
+        const start = total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+        const end = Math.min(currentPage * itemsPerPage, total);
+        
+        entriesDiv.innerHTML = `Showing <b>${start}</b> to <b>${end}</b> of <b>${total}</b> entries <i class="bi bi-arrow-right ms-2 fw-medium"></i>`;
+    }
+
+    function showEmptyState() {
+        const tbody = document.getElementById('jobs-tbody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center py-5">
+                    <span class="avatar avatar-xl bg-light text-muted mb-3 rounded-circle">
+                        <i class="ri-briefcase-line fs-24"></i>
+                    </span>
+                    <h5 class="text-muted">No jobs found</h5>
+                    <p class="text-muted mb-3">Try adjusting your search or post a new job!</p>
+                    <a href="/jobs/create" class="btn btn-primary">Post a Job</a>
+                </td>
+            </tr>
+        `;
+    }
+
+
+
+    function formatJobType(type) {
+        const types = { 'full_time': 'Full Time', 'part_time': 'Part Time', 'contract': 'Contract', 'freelance': 'Freelance', 'internship': 'Internship' };
+        return types[type] || type || 'Full Time';
+    }
+
+    function formatLocationType(type) {
+        const types = { 'remote': 'Remote', 'on_site': 'On-Site', 'hybrid': 'Hybrid' };
+        return types[type] || type || 'Remote';
+    }
+
+    function getStatusBadge(status) {
+        const badges = {
+            'active': '<span class="badge rounded-pill bg-success-transparent">Active</span>',
+            'closed': '<span class="badge rounded-pill bg-danger-transparent">Closed</span>',
+            'draft': '<span class="badge rounded-pill bg-warning-transparent">Draft</span>'
+        };
+        return badges[status] || badges['active'];
+    }
+
+    // Calculate expires date (30 days from created)
+    function getExpiresDate(createdAt) {
+        const created = new Date(createdAt);
+        created.setDate(created.getDate() + 30);
+        return created.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function editJob(jobId) {
+        window.location.href = `/jobs/${jobId}/edit`;
+    }
+
+    async function deleteJob(jobId) {
+        if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`/api/jobs/${jobId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                // Remove from local arrays
+                allJobs = allJobs.filter(j => j.id !== jobId);
+                filteredJobs = filteredJobs.filter(j => j.id !== jobId);
+                
+                // Show success message
+                if (typeof Toastify !== 'undefined') {
+                    Toastify({ text: 'Job deleted successfully!', duration: 3000, gravity: 'top', position: 'right', backgroundColor: '#10b981' }).showToast();
+                } else {
+                    alert('Job deleted successfully!');
+                }
+                
+                // Re-render table
+                renderJobsTable();
+                renderPagination();
+            } else {
+                const error = await response.json();
+                alert('Error deleting job: ' + (error.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('Error deleting job. Please try again.');
+        }
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '/login';
+    }
+</script>
+
+<%- include('includes/footer2') %>

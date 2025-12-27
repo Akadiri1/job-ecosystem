@@ -1,0 +1,443 @@
+<%- include('includes/header2', { title: 'Edit Job' }) %>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+<div id="auth-loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 9999; display: flex; justify-content: center; align-items: center; background: #fff;">
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Verifying Access...</p>
+    </div>
+</div>
+
+<div class="page" id="mainPage" style="display: none;">
+
+    <%- include('includes/sidebar') %>
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
+            <div>
+
+                <h1 class="page-title fw-medium fs-18 mb-0">Edit Job</h1>
+            </div>
+            <div class="btn-list">
+                <a href="/jobs/manage" class="btn btn-light btn-wave">
+                    <i class="ri-arrow-left-line me-1"></i> Back to Manage Jobs
+                </a>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+
+        <!-- Start::row-1 -->
+        <div class="row">
+            <div class="col-xxl-9 col-xl-8">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">Edit Job Details</div>
+                        <span class="badge bg-primary-transparent" id="job-status-badge">Loading...</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row gy-4"> 
+                            <div class="col-xl-6">
+                                <label for="job-title" class="form-label">Job Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="job-title" placeholder="e.g. Senior React Developer">
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Job Category</label>
+                                <select class="form-control" id="job-category" name="category">
+                                    <option value="Development">Development</option>
+                                    <option value="IT Software">IT Software</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="Operations">Operations</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Working Experience</label>
+                                <select class="form-control" id="experience" name="experience">
+                                    <option value="0-1 Years">0 - 1 Years</option>
+                                    <option value="1-3 Years">1 - 3 Years</option>
+                                    <option value="3-5 Years">3 - 5 Years</option>
+                                    <option value="5-10 Years">5 - 10 Years</option>
+                                    <option value="10+ Years">10+ Years</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Job Type <span class="text-danger">*</span></label>
+                                <select class="form-control" id="job-type" name="jobtype">
+                                    <option value="full_time">Full Time</option>
+                                    <option value="part_time">Part Time</option>
+                                    <option value="contract">Contract</option>
+                                    <option value="freelance">Freelance</option>
+                                    <option value="internship">Internship</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Work Location <span class="text-danger">*</span></label>
+                                <select class="form-control" id="location-type" name="location_type">
+                                    <option value="remote">Remote</option>
+                                    <option value="on_site">On-Site</option>
+                                    <option value="hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Job Status</label>
+                                <select class="form-control" id="job-status" name="status">
+                                    <option value="active">Active</option>
+                                    <option value="closed">Closed</option>
+                                    <option value="draft">Draft</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Vacancies</label>
+                                <input type="number" class="form-control" id="vacancies" name="vacancies" placeholder="e.g. 5" min="1">
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Salary Range</label>
+                                <div class="input-group">
+                                    <select class="form-control" id="currency" name="currency" style="max-width: 110px;">
+                                        <option value="NGN">NGN (₦)</option>
+                                        <option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="GBP">GBP (£)</option>
+                                    </select>
+                                    <input type="text" class="form-control" id="salary-range" name="salary_range" placeholder="e.g. 50,000 - 80,000 / Year">
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="skills" class="form-label">Skills (type and press Enter)</label>
+                                <input type="text" class="form-control" id="skills-input" placeholder="Type a skill and press Enter...">
+                                <div id="skills-list" class="mt-2 d-flex flex-wrap gap-2"></div>
+                                <input type="hidden" id="skills" name="skills" value="">
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="job-deadline" class="form-label">Job Deadline</label>
+                                <input type="date" class="form-control" id="job-deadline" name="deadline">
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Qualification</label>
+                                <select class="form-control" id="qualification" name="qualification">
+                                    <option value="Any Qualification">Any Qualification</option>
+                                    <option value="High School">High School</option>
+                                    <option value="Associate Degree">Associate Degree</option>
+                                    <option value="Bachelor's Degree">Bachelor's Degree</option>
+                                    <option value="Master's Degree">Master's Degree</option>
+                                    <option value="Doctorate">Doctorate</option>
+                                    <option value="Diploma">Diploma</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-6">
+                                <label class="form-label">Gender</label>
+                                <select class="form-control" id="gender" name="gender">
+                                    <option value="Any">Any</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-12">
+                                <label for="job-description" class="form-label">Job Description <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="job-description" rows="5" placeholder="Enter detailed job description..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <button type="button" class="btn btn-danger-light" onclick="if(confirm('Are you sure you want to delete this job?')) deleteJob()">
+                            <i class="ri-delete-bin-line me-1"></i> Delete Job
+                        </button>
+                        <button type="button" id="updateJobBtn" onclick="updateJob()" class="btn btn-primary btn-wave">
+                            <i class="ri-save-line me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-xl-4">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Company Details</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3" id="company-logo-container">
+                            <img src="/build/assets/images/media/media-1.jpg" id="company-logo" alt="Company Logo" class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                        </div>
+                        <div class="row gy-3">
+                            <div class="col-xl-12">
+                                <label class="form-label text-muted">Company Name</label>
+                                <input type="text" class="form-control bg-light" id="company-name" readonly>
+                            </div>
+                            <div class="col-xl-12">
+                                <label class="form-label text-muted">Location</label>
+                                <input type="text" class="form-control bg-light" id="company-location" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <div class="card-title">Quick Actions</div>
+                    </div>
+                    <div class="card-body">
+                        <a href="#" id="view-job-link" class="btn btn-primary-light d-block mb-2">
+                            <i class="ri-eye-line me-1"></i> View Job Listing
+                        </a>
+                        <a href="/jobs/create" class="btn btn-success-light d-block">
+                            <i class="ri-add-line me-1"></i> Post New Job
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End::row-1 -->
+    </div>
+</div>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+    let skillsArray = [];
+    let currentJobId = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+        // document.getElementById('mainPage').style.display = 'block'; <--- REMOVED: Don't show yet!
+
+        // Get job ID from URL
+        const pathParts = window.location.pathname.split('/');
+        currentJobId = pathParts[2]; // /jobs/:id/edit
+
+        if (currentJobId) {
+            loadJobDetails();
+            document.getElementById('view-job-link').href = `/jobs/${currentJobId}`;
+        }
+
+        // Initialize Skills tag input
+        const skillsInput = document.getElementById('skills-input');
+        if (skillsInput) {
+            skillsInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = this.value.trim();
+                    if (value && !skillsArray.includes(value)) {
+                        skillsArray.push(value);
+                        renderTags();
+                        this.value = '';
+                    }
+                }
+            });
+        }
+    });
+
+    async function loadJobDetails() {
+        const token = localStorage.getItem('token');
+        
+        // Parse User ID from Token
+        let currentUserId = null;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            currentUserId = payload.id;
+        } catch (e) { }
+
+        try {
+            const response = await fetch(`/api/jobs/${currentJobId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                showToast('Job not found', 'error');
+                setTimeout(() => window.location.href = '/jobs/manage', 2000);
+                return;
+            }
+
+            const data = await response.json();
+            const job = data.job;
+
+            if (job.employer_id !== currentUserId) {
+                alert("⛔ Unauthorized Access\nYou do not have permission to edit this job.");
+                window.location.href = '/dashboard';
+                return;
+            }
+
+            // AUTHORIZED: Show page
+            document.getElementById('auth-loader').style.display = 'none';
+            document.getElementById('mainPage').style.display = 'block';
+
+            // Populate form fields
+            document.getElementById('job-title').value = job.title || '';
+            document.getElementById('job-description').value = job.description || '';
+            document.getElementById('job-type').value = job.type || 'full_time';
+            document.getElementById('location-type').value = job.location_type || 'remote';
+            document.getElementById('salary-range').value = job.salary_range || '';
+            document.getElementById('currency').value = job.currency || 'NGN';
+            document.getElementById('job-category').value = job.category || 'Development';
+            document.getElementById('experience').value = job.experience || '0-1 Years';
+            document.getElementById('job-status').value = job.status || 'active';
+            document.getElementById('vacancies').value = job.vacancies || 1;
+
+            if (job.deadline) {
+                document.getElementById('job-deadline').value = job.deadline.split('T')[0];
+            }
+
+            document.getElementById('qualification').value = job.qualification || 'Any Qualification';
+            document.getElementById('gender').value = job.gender || 'Any';
+
+            // Load skills
+            if (job.skills) {
+                if (Array.isArray(job.skills)) {
+                    skillsArray = job.skills;
+                } else if (typeof job.skills === 'string') {
+                    // Try parsing JSON first, fallback to comma split
+                    try {
+                        const parsed = JSON.parse(job.skills);
+                        if (Array.isArray(parsed)) skillsArray = parsed;
+                        else skillsArray = job.skills.split(',').map(s => s.trim());
+                    } catch (e) {
+                        skillsArray = job.skills.split(',').map(s => s.trim()).filter(s => s);
+                    }
+                }
+                renderTags();
+            }
+
+            // Update status badge
+            const statusBadge = document.getElementById('job-status-badge');
+            statusBadge.textContent = job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : 'Active';
+            statusBadge.className = `badge bg-${job.status === 'active' ? 'success' : job.status === 'closed' ? 'danger' : 'warning'}-transparent`;
+
+            // Load company details
+            if (job.company) {
+                document.getElementById('company-name').value = job.company.name || '';
+                document.getElementById('company-location').value = job.company.location || '';
+                if (job.company.logo_url) {
+                    document.getElementById('company-logo').src = job.company.logo_url;
+                }
+            }
+
+        } catch (error) {
+            console.error('Error loading job:', error);
+            showToast('Error loading job details', 'error');
+        }
+    }
+
+    function renderTags() {
+        const container = document.getElementById('skills-list');
+        const hiddenInput = document.getElementById('skills');
+        
+        container.innerHTML = '';
+        skillsArray.forEach((item, index) => {
+            const tag = document.createElement('span');
+            tag.className = 'badge bg-primary-transparent d-flex align-items-center gap-1';
+            tag.style.cssText = 'padding: 6px 10px; font-size: 13px;';
+            tag.innerHTML = `${item}<button type="button" class="btn-close btn-close-sm ms-1" style="font-size: 8px;" onclick="removeTag(${index})"></button>`;
+            container.appendChild(tag);
+        });
+        
+        hiddenInput.value = skillsArray.join(',');
+    }
+
+    function removeTag(index) {
+        skillsArray.splice(index, 1);
+        renderTags();
+    }
+
+    function showToast(message, type = 'success') {
+        let bg = type === 'success' ? "linear-gradient(to right, #00b09b, #96c93d)" : "linear-gradient(to right, #ff5f6d, #ffc371)";
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            gravity: "top", 
+            position: "right",
+            style: { background: bg, borderRadius: "10px" }
+        }).showToast();
+    }
+
+    async function updateJob() {
+        const btn = document.getElementById('updateJobBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Saving...`;
+        btn.disabled = true;
+
+        const token = localStorage.getItem('token');
+        
+        const formData = {
+            title: document.getElementById('job-title').value.trim(),
+            description: document.getElementById('job-description').value.trim(),
+            type: document.getElementById('job-type').value,
+            location_type: document.getElementById('location-type').value,
+            salary_range: document.getElementById('salary-range').value.trim(),
+            currency: document.getElementById('currency').value,
+            category: document.getElementById('job-category').value,
+            experience: document.getElementById('experience').value,
+            status: document.getElementById('job-status').value,
+            vacancies: parseInt(document.getElementById('vacancies').value) || 1,
+            // Send skills as JSON array
+            skills: skillsArray, 
+            deadline: document.getElementById('job-deadline').value || null,
+            qualification: document.getElementById('qualification').value,
+            gender: document.getElementById('gender').value
+        };
+
+        if (!formData.title) {
+            showToast("Job Title is required", "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/jobs/${currentJobId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast("Job updated successfully!", "success");
+                setTimeout(() => window.location.href = '/jobs/manage', 1500);
+            } else {
+                showToast(data.error || "Error updating job", "error");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            console.error("Update Error:", error);
+            showToast("Network error. Please try again.", "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async function deleteJob() {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`/api/jobs/${currentJobId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                showToast("Job deleted successfully!", "success");
+                setTimeout(() => window.location.href = '/jobs/manage', 1500);
+            } else {
+                const data = await response.json();
+                showToast(data.error || "Error deleting job", "error");
+            }
+        } catch (error) {
+            showToast("Network error", "error");
+        }
+    }
+</script>
+
+<%- include('includes/footer2') %>

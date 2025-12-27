@@ -1,0 +1,150 @@
+<aside class="app-sidebar sticky" id="sidebar">
+    <div class="main-sidebar-header">
+        <a href="/dashboard" class="header-logo">
+            <img src="/build/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
+            <img src="/build/assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
+        </a>
+    </div>
+
+    <div class="main-sidebar" id="sidebar-scroll">
+        <nav class="main-menu-container nav nav-pills flex-column sub-open">
+            <ul class="main-menu">
+                
+                <!-- 1. DASHBOARD (Always Visible) -->
+                <li class="slide">
+                    <a href="/dashboard" class="side-menu__item">
+                        <i class="ri-home-4-line side-menu__icon"></i>
+                        <span class="side-menu__label">Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- 2. EMPLOYER SECTION -->
+                <li class="slide__category group-employer" style="display: none !important;"><span class="category-name">Employer Controls</span></li>
+                <li class="slide has-sub group-employer" style="display: none !important;">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="ri-briefcase-line side-menu__icon"></i>
+                        <span class="side-menu__label">Recruitment</span>
+                        <i class="ri-arrow-right-s-line side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide"><a href="/dashboard/employer/jobs/create" class="side-menu__item">Post a Job</a></li>
+                        <li class="slide"><a href="/dashboard/employer/jobs/manage" class="side-menu__item">Active Jobs</a></li>
+                        <li class="slide"><a href="/dashboard/employer/candidates" class="side-menu__item">Talent Pipeline</a></li>
+                    </ul>
+                </li>
+                <li class="slide has-sub group-employer" style="display: none !important;">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="ri-team-line side-menu__icon"></i>
+                        <span class="side-menu__label">Workspace</span>
+                        <i class="ri-arrow-right-s-line side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide"><a href="/dashboard/employer/chat" class="side-menu__item">Chat Rooms</a></li>
+                        <li class="slide"><a href="/dashboard/employer/tasks" class="side-menu__item">Task Board</a></li>
+                        <li class="slide"><a href="/dashboard/employer/team/manage" class="side-menu__item">Manage Staff</a></li>
+                    </ul>
+                </li>
+                <li class="slide group-employer" style="display: none !important;">
+                    <a href="/dashboard/employer/billing" class="side-menu__item"><i class="ri-bank-card-line side-menu__icon"></i><span class="side-menu__label">Billing</span></a>
+                </li>
+                <li class="slide group-employer" style="display: none !important;">
+                        <a href="/dashboard/employer/company/settings" class="side-menu__item"><i class="ri-settings-3-line side-menu__icon"></i><span class="side-menu__label">Company Settings</span></a>
+                </li>
+
+                <!-- 3. EMPLOYEE SECTION -->
+                <li class="slide__category group-employee" style="display: none !important;"><span class="category-name">Team Workspace</span></li>
+                <li class="slide group-employee" style="display: none !important;">
+                    <a href="/dashboard/employee/chat" class="side-menu__item"><i class="ri-chat-1-line side-menu__icon"></i><span class="side-menu__label">Team Chat</span></a>
+                </li>
+                <li class="slide group-employee" style="display: none !important;">
+                    <a href="/dashboard/employee/tasks" class="side-menu__item"><i class="ri-task-line side-menu__icon"></i><span class="side-menu__label">My Tasks</span></a>
+                </li>
+                <li class="slide group-employee" style="display: none !important;">
+                    <a href="/dashboard/employee/docs" class="side-menu__item"><i class="ri-book-open-line side-menu__icon"></i><span class="side-menu__label">Company Docs</span></a>
+                </li>
+
+                <!-- 4. JOB SEEKER SECTION -->
+                <li class="slide__category group-seeker" style="display: none !important;"><span class="category-name">Job Seeker</span></li>
+                <li class="slide group-seeker" style="display: none !important;">
+                    <a href="/dashboard/seeker/jobs/feed" class="side-menu__item"><i class="ri-search-eye-line side-menu__icon"></i><span class="side-menu__label">Find Jobs</span></a>
+                </li>
+                <li class="slide group-seeker" style="display: none !important;">
+                    <a href="/dashboard/seeker/applications" class="side-menu__item"><i class="ri-file-list-3-line side-menu__icon"></i><span class="side-menu__label">My Applications</span></a>
+                </li>
+                <li class="slide group-seeker" style="display: none !important;">
+                    <a href="/dashboard/seeker/saved-jobs" class="side-menu__item"><i class="ri-heart-3-line side-menu__icon"></i><span class="side-menu__label">Saved Jobs</span></a>
+                </li>
+                
+                <!-- 5. COMMON SETTINGS (Profile link needs to be dynamic or use a smart redirect? For now, leave as generic /profile/edit or better /dashboard/profile if we made one? 
+                     Actually, since this sidebar uses JS to show sections, I might need to duplicate the profile link into the sections or use JS to rewrite it?
+                     Simpler: Leave profile as /profile/edit which defaults to seeker sidebar, OR create specific profile links in the hidden groups.
+                     I'll replicate the profile link into the groups for safety.
+                -->
+
+                <!-- 5. COMMON SETTINGS -->
+                <li class="slide__category"><span class="category-name">Settings</span></li>
+                <li class="slide">
+                    <a href="/profile/edit" class="side-menu__item">
+                         <i class="ri-user-settings-line side-menu__icon"></i><span class="side-menu__label">User Profile</span>
+                    </a>
+                </li>
+                <li class="slide">
+                    <a href="javascript:void(0);" onclick="logout()" class="side-menu__item">
+                        <i class="ri-logout-box-r-line side-menu__icon"></i><span class="side-menu__label">Log Out</span>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+</aside>
+
+<!-- Script to handle active state and role visibility -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Highlight Active Link
+    const currentPath = window.location.pathname;
+    const menuItems = document.querySelectorAll('.side-menu__item');
+    
+    menuItems.forEach(item => {
+        if (item.getAttribute('href') === currentPath) {
+            item.classList.add('active');
+            item.parentElement.classList.add('active');
+            
+            // Handle Dropdowns
+            const parentSlide = item.closest('.slide.has-sub');
+            if (parentSlide) {
+                parentSlide.classList.add('open');
+                const subMenu = parentSlide.querySelector('.slide-menu');
+                if(subMenu) subMenu.style.display = 'block';
+            }
+        }
+    });
+
+    // 2. Handle Role Visibility (Seeker vs Employer vs Employee)
+    // 2. Handle Role Visibility (Group-based)
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            const role = (user.role || '').toLowerCase().trim();
+            console.log("Feature Sidebar: Role =", role);
+
+            // Hide all groups first (strict safety)
+            const allGroups = document.querySelectorAll('.group-employer, .group-employee, .group-seeker');
+            allGroups.forEach(el => el.style.setProperty('display', 'none', 'important'));
+
+            // Show relevant group
+            if (role === 'employer') {
+                document.querySelectorAll('.group-employer').forEach(el => el.style.setProperty('display', 'block', 'important'));
+            } else if (role === 'employee') {
+                 document.querySelectorAll('.group-employee').forEach(el => el.style.setProperty('display', 'block', 'important'));
+            } else {
+                // Job Seeker (Default)
+                 document.querySelectorAll('.group-seeker').forEach(el => el.style.setProperty('display', 'block', 'important'));
+            }
+
+        } catch (e) { console.error("Sidebar user parse error", e); }
+    }
+});
+</script>

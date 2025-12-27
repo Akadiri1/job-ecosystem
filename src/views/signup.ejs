@@ -1,0 +1,299 @@
+<%- include('includes/header', { title: 'Register - Job Ecosystem' }) %>
+
+<style>
+    /* --- 1. GENERAL INPUT FIXES --- */
+    /* Force Dark Inputs (Fixes white autofill box) */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #455a64 inset !important; 
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Style Standard Materialize Inputs */
+    .input-field input[type=text],
+    .input-field input[type=email],
+    .input-field input[type=password],
+    .input-field input[type=tel] {
+        border-bottom: 1px solid rgba(255,255,255,0.5) !important;
+        color: white !important;
+    }
+
+    .input-field input:focus {
+        border-bottom: 1px solid #ba68c8 !important; /* Light purple on focus */
+        box-shadow: 0 1px 0 0 #ba68c8 !important;
+    }
+
+    .input-field label {
+        color: rgba(255,255,255,0.7) !important;
+    }
+    .input-field input:focus + label {
+        color: #ba68c8 !important;
+    }
+
+    /* --- 2. ROLE SELECTION CARDS (THE FIX) --- */
+    .role-selection-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 15px; /* Space between buttons */
+        margin-top: 10px;
+    }
+
+    /* The clickable label container */
+    .role-option {
+        flex: 1; /* Both boxes take equal width */
+        max-width: 150px;
+        position: relative;
+        cursor: pointer;
+        margin: 0 !important; /* Reset materialize defaults */
+        padding: 0;
+    }
+
+    /* Hide the actual radio circle completely */
+    .role-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* The Visual Box (The visible card) */
+    .role-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px 10px;
+        
+        /* Glass/Dark Effect */
+        background: rgba(0, 0, 0, 0.5); 
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        
+        color: rgba(255, 255, 255, 0.6);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .role-box i {
+        font-size: 28px;
+        margin-bottom: 8px;
+        color: rgba(255, 255, 255, 0.6);
+        transition: color 0.3s ease;
+    }
+
+    .role-box span {
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- HOVER STATE --- */
+    .role-option:hover .role-box {
+        background: rgba(0, 0, 0, 0.7);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* --- CHECKED/SELECTED STATE --- */
+    .role-option input:checked + .role-box {
+        background: #7b1fa2; /* Deep Purple */
+        background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);
+        border-color: #e1bee7; /* Light border to make it pop */
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        transform: translateY(-3px); /* Slight lift effect */
+    }
+
+    .role-option input:checked + .role-box i {
+        color: white;
+    }
+
+    /* Helper for the section title */
+    .section-title {
+        color: white; 
+        text-align: center; 
+        margin-bottom: 15px; 
+        font-size: 1.1rem; 
+        font-weight: 300;
+        opacity: 0.9;
+    }
+
+    /* Submit Button styling update */
+    .btn-register {
+        background: #7b1fa2;
+        background: linear-gradient(45deg, #7b1fa2, #ba68c8);
+        border-radius: 50px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="content-area">
+    <div class="login-bg access-register"></div>
+    <div class="container login-area register">
+        <div class="section pb0">
+
+            <h3 class="bot-20 center white-text" style="font-weight: 300; letter-spacing: 1px;">Create Account</h3>
+
+            <form id="signupForm">
+                
+                <div class="row">
+                    <div class="input-field col s10 offset-s1">
+                        <input id="name3" type="text" class="validate" required>
+                        <label for="name3">Full Name</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s10 offset-s1">
+                        <input id="email3" type="email" class="validate" required>
+                        <label for="email3">Email</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s10 offset-s1">
+                        <input id="pass3" type="password" class="validate" required minlength="6">
+                        <label for="pass3">Password</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s10 offset-s1">
+                        <input id="phone3" type="tel" class="validate">
+                        <label for="phone3">Mobile No.</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s12">
+                        <p class="section-title">I want to use this account as:</p>
+                        
+                        <div class="role-selection-wrapper">
+                            
+                            <label class="role-option">
+                                <input name="role" type="radio" value="job_seeker" checked />
+                                <div class="role-box">
+                                    <i class="mdi mdi-account"></i>
+                                    <span>Job Seeker</span>
+                                </div>
+                            </label>
+
+                            <label class="role-option">
+                                <input name="role" type="radio" value="employer" />
+                                <div class="role-box">
+                                    <i class="mdi mdi-briefcase"></i>
+                                    <span>Employer</span>
+                                </div>
+                            </label>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col s10 offset-s1">
+                        <div id="messageBox" style="text-align: center; font-weight: bold; margin-bottom: 10px;"></div>
+                    </div>
+                </div>
+
+                <div class="row center">
+                    <button type="submit" class="waves-effect waves-light btn-large btn-register" style="width: 80%;">
+                        Register Now
+                    </button>
+                    
+                    <div class="spacer" style="height: 15px;"></div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <a href="/api/auth/google" class="btn-floating waves-effect waves-light white" title="Register with Google">
+                            <i class="mdi mdi-google" style="color:#DB4437; font-size: 20px; line-height: 40px;"></i>
+                        </a>
+                        <a href="/api/auth/facebook" class="btn-floating waves-effect waves-light white" title="Register with Facebook">
+                            <i class="mdi mdi-facebook" style="color:#4267B2; font-size: 24px; line-height: 40px;"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="spacer" style="height: 20px;"></div>
+                    <div class="links">
+                        <a href="/login" style="color: rgba(255,255,255,0.8); text-decoration: underline;">Already Registered? Login</a>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+
+        const messageBox = document.getElementById('messageBox');
+        messageBox.innerText = "Sending data to server...";
+        messageBox.style.color = "white";
+
+        // 1. Gather data
+        const formData = {
+            name: document.getElementById('name3').value,
+            email: document.getElementById('email3').value,
+            password: document.getElementById('pass3').value,
+            phone: document.getElementById('phone3').value,
+            role: document.querySelector('input[name="role"]:checked').value
+        };
+
+        // Debug: Log what we are sending
+        console.log("🚀 Attempting to register with data:", formData);
+
+        try {
+            const response = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            // 2. Read the response text first (safely)
+            const resultText = await response.text();
+            console.log("⬇️ Server Raw Response:", resultText);
+
+            // Try to parse it as JSON
+            let data;
+            try {
+                data = JSON.parse(resultText);
+            } catch (jsonError) {
+                // If the server returned HTML (like a crash page), this catches it
+                throw new Error("Server returned non-JSON response (likely a 500 error). Check Server Terminal.");
+            }
+
+            if (response.ok) {
+                // SUCCESS
+                messageBox.style.color = "#00e676"; 
+                messageBox.innerHTML = "✅ Success! Redirecting...";
+                setTimeout(() => { window.location.href = '/login'; }, 2000);
+            } else {
+                // ERROR - Show the specific message from backend
+                console.error("❌ Registration Error:", data);
+                
+                // Check if the server sends 'error', 'message', or 'msg'
+                const errorMsg = data.error || data.message || data.msg || "Unknown error occurred";
+                
+                // Check if duplicate email
+                if(errorMsg.toLowerCase().includes("email already exists")) {
+                    messageBox.style.color = "#ff9e80"; // Orange-ish
+                    messageBox.innerHTML = `
+                        ⚠️ Email already registered.<br>
+                        <a href="/login" class="waves-effect waves-light btn-small" style="margin-top:10px; background-color:rgba(255,255,255,0.2);">Login Instead</a>
+                    `;
+                } else {
+                    messageBox.style.color = "#ff5252"; 
+                    messageBox.innerText = "❌ Server says: " + errorMsg;
+                }
+            }
+        } catch (err) {
+            console.error("🔥 Network/Code Error:", err);
+            messageBox.style.color = "#ff5252";
+            messageBox.innerText = "❌ Error: " + err.message;
+        }
+    });
+</script>
+
+<%- include('includes/footer') %>

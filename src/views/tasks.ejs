@@ -1,0 +1,763 @@
+<%- include('includes/header2', { title: 'Task Board' }) %>
+
+<div class="page">
+    <%- include(sidebar) %>
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+                    	
+                    <!-- Page Header -->
+
+                    <!-- Page Header Close -->
+
+                    <!-- Start::row-1 -->
+                    <div class="row">
+                        <div class="col-xxl-3">
+                            <div class="card custom-card overflow-hidden main-content-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
+                                        <div>
+                                            <span class="text-muted d-block mb-1">New Tasks</span>
+                                            <h4 class="fw-medium mb-0" id="stat-new">0</h4>
+                                        </div>
+                                        <div class="lh-1">
+                                            <span class="avatar avatar-md avatar-rounded bg-primary">
+                                                <i class="ri-task-line fs-5"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-3">
+                            <div class="card custom-card overflow-hidden main-content-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
+                                        <div>
+                                            <span class="text-muted d-block mb-1">Completed Tasks</span>
+                                            <h4 class="fw-medium mb-0" id="stat-completed">0</h4>
+                                        </div>
+                                        <div class="lh-1">
+                                            <span class="avatar avatar-md avatar-rounded bg-success">
+                                                <i class="ri-check-line fs-5"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-3">
+                            <div class="card custom-card overflow-hidden main-content-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
+                                        <div>
+                                            <span class="text-muted d-block mb-1">Pending Tasks</span>
+                                            <h4 class="fw-medium mb-0" id="stat-pending">0</h4>
+                                        </div>
+                                        <div class="lh-1">
+                                            <span class="avatar avatar-md avatar-rounded bg-info">
+                                                <i class="ri-time-line fs-5"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xxl-3">
+                            <div class="card custom-card overflow-hidden main-content-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start justify-content-between mb-2">
+                                        <div>
+                                            <span class="text-muted d-block mb-1">Inprogress Tasks</span>
+                                            <h4 class="fw-medium mb-0" id="stat-inprogress">0</h4>
+                                        </div>
+                                        <div class="lh-1">
+                                            <span class="avatar avatar-md avatar-rounded bg-secondary">
+                                                <i class="ri-loader-line fs-5"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End::row-1 -->
+
+                    <!-- Start::row-2 -->
+                    <div class="row">
+                        <div class="col-xxl-12 col-xl-12">
+                            <div class="card custom-card">
+                                <div class="card-header justify-content-between">
+                                    <div class="card-title">
+                                        Total Tasks
+                                    </div>
+                                    <div class="d-flex">
+                                        <button class="btn btn-sm btn-primary btn-wave waves-light waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#create-task"><i class="ri-add-line fw-medium align-middle me-1"></i> Create Task</button>
+                                        <!-- Start::add task modal -->
+                                        <div class="modal fade" id="create-task" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h6 class="modal-title">Add Task</h6>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row gy-2">
+                                                            <div class="col-xl-6">
+                                                                <label for="task-name" class="form-label">Task Name</label>
+                                                                <input type="text" class="form-control" id="task-name" placeholder="Task Name">
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <label for="task-id" class="form-label">Task ID</label>
+                                                                <input type="text" class="form-control" id="task-id" placeholder="Auto-generated" readonly>
+                                                            </div>
+
+                                                            <div class="col-xl-6">
+                                                                <label class="form-label">Assigned Date</label>
+                                                                <div class="form-group">
+                                                                    <div class="input-group">
+                                                                        <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                                        <input type="text" class="form-control flatpickr-input" id="assignedDate" placeholder="Choose date and time" readonly="readonly">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <label class="form-label">Due Date</label>
+                                                                <div class="form-group">
+                                                                    <div class="input-group">
+                                                                        <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                                        <input type="text" class="form-control flatpickr-input" id="dueDate" placeholder="Choose date and time" readonly="readonly">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <label class="form-label">Status</label>
+                                                                <select class="form-select" id="taskStatus">
+                                                                    <option value="todo">To Do</option>
+                                                                    <option value="in_progress">In Progress</option>
+                                                                    <option value="review">Review</option>
+                                                                    <option value="completed">Completed</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <label class="form-label">Priority</label>
+                                                                <select class="form-select" id="taskPriority">
+                                                                    <option value="low">Low</option>
+                                                                    <option value="medium" selected>Medium</option>
+                                                                    <option value="high">High</option>
+                                                                    <option value="urgent">Urgent</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-xl-12">
+                                                                <label class="form-label">Assigned To</label>
+                                                                <select class="form-select" id="taskAssignee" name="assigned_to">
+                                                                    <option value="">Unassigned</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-xl-12">
+                                                                <label class="form-label">Description</label>
+                                                                <textarea class="form-control" id="taskDescription" rows="3" placeholder="Enter task description..."></textarea>
+                                                            </div>
+                                                            <div class="col-xl-12">
+                                                                <label class="form-label">Attachments</label>
+                                                                <input type="file" class="form-control" id="taskAttachments" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
+                                                                <small class="text-muted">Upload images or documents (max 10MB each)</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="button" class="btn btn-primary" id="btnCreateTask" onclick="handleTaskSubmit()">Add Task</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End::add task modal -->
+                                        <div class="dropdown ms-2">
+                                            <button class="btn btn-icon btn-secondary-light btn-sm btn-wave waves-light waves-effect waves-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="ti ti-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="javascript:void(0);">New Tasks</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">Pending Tasks</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">Completed Tasks</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">Inprogress Tasks</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="p-3 border-bottom">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light border-end-0"><i class="ri-search-line"></i></span>
+                                                    <input type="text" class="form-control border-start-0 ps-0" id="taskSearch" placeholder="Search tasks by title..." oninput="handleSearch()">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4 text-end">
+                                               <button class="btn btn-danger-light" id="btnBulkDelete" onclick="deleteSelectedTasks()" style="display:none;"><i class="ri-delete-bin-line me-1"></i>Delete Selected</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table text-nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <input class="form-check-input check-all" type="checkbox" id="all-tasks" value="" aria-label="...">
+                                                    </th>
+                                                    <th scope="col">Task</th>
+                                                    <th scope="col">Task ID</th>
+                                                    <th scope="col">Assigned Date</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Due Date</th>
+                                                    <th scope="col">Priority</th>
+                                                    <th scope="col">Assigned To</th>
+                                                    <th scope="col">Action</th>
+                                                    <th scope="col">Status Update</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tasks-tbody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer border-top-0">
+                                    <nav aria-label="Page navigation">
+                                            <ul class="pagination mb-0 float-end" id="pagination-controls"></ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+let tasks = [], teamMembers = [];
+let filteredTasks = [];
+let currentTaskId = null; // null = create mode, 'id' = edit mode
+let currentPage = 1;
+const itemsPerPage = 5;
+const token = localStorage.getItem('token');
+
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!token) { window.location.href = '/login'; return; }
+    
+    // Show skeletons immediately
+    renderSkeletonStats();
+    renderSkeletonTable();
+    
+    await loadTeamMembers();
+    await loadTasks();
+    
+    // Initialize date pickers
+    if(typeof flatpickr !== 'undefined') {
+        flatpickr("#dueDate", { enableTime: false, dateFormat: "Y-m-d" });
+        flatpickr("#assignedDate", { enableTime: false, dateFormat: "Y-m-d" });
+    }
+
+    // Reset modal on close
+    const modalEl = document.getElementById('create-task');
+    if(modalEl) {
+        modalEl.addEventListener('hidden.bs.modal', () => resetModal());
+    }
+
+    // Master Checkbox
+    const checkAll = document.getElementById('all-tasks');
+    if(checkAll) {
+        checkAll.addEventListener('change', (e) => toggleAll(e.target.checked));
+    }
+});
+
+function resetModal() {
+    currentTaskId = null;
+    document.querySelector('#create-task .modal-title').textContent = 'Add Task';
+    const btn = document.getElementById('btnCreateTask');
+    if(btn) btn.textContent = 'Add Task';
+    
+    // Clear inputs
+    const ids = ['task-name', 'task-id', 'taskDescription', 'dueDate', 'assignedDate', 'taskAssignee', 'taskPriority', 'taskStatus'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = '';
+    });
+    // Set defaults
+    const priority = document.getElementById('taskPriority');
+    if(priority) priority.value = 'medium';
+    const status = document.getElementById('taskStatus');
+    if(status) status.value = 'todo';
+}
+
+function handleTaskSubmit() {
+    if (currentTaskId) {
+        updateTask(currentTaskId);
+    } else {
+        saveNewTask();
+    }
+}
+
+async function loadTeamMembers() {
+    try {
+        // FIXED: Endpoint is /api/team/members
+        const res = await fetch('/api/team/members', { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) { teamMembers = (await res.json()).members || []; populateAssigneeDropdown(); }
+    } catch (e) { console.error(e); }
+}
+
+function populateAssigneeDropdown() {
+    const select = document.getElementById('taskAssignee');
+    if (!select) return;
+    select.innerHTML = '<option value="">Unassigned</option>';
+    
+    teamMembers.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.user?.id || m.user_id;
+        opt.textContent = m.user?.full_name || m.full_name || 'Unknown';
+        select.appendChild(opt);
+    });
+}
+
+function getUserIdFromToken() {
+    if(!token) return null;
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+        return payload.id || payload.userId;
+    } catch(e) { return null; }
+}
+
+async function loadTasks() {
+    try {
+        const res = await fetch('/api/tasks', { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) { 
+            tasks = (await res.json()).tasks || []; 
+            tasks.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            handleSearch(); 
+            updateStats();
+        }
+    } catch (e) { console.error(e); }
+}
+
+function handleSearch() {
+    const term = document.getElementById('taskSearch')?.value.toLowerCase() || '';
+    filteredTasks = tasks.filter(t => 
+        t.title.toLowerCase().includes(term) || 
+        (t.description && t.description.toLowerCase().includes(term))
+    );
+    currentPage = 1;
+    renderTasksTable();
+}
+
+function updateStats() {
+    const todo = tasks.filter(t => t.status === 'todo').length;
+    const completed = tasks.filter(t => t.status === 'completed').length;
+    const inProgress = tasks.filter(t => t.status === 'in_progress').length;
+    const review = tasks.filter(t => t.status === 'review').length;
+    
+    // Clear skeletons by setting text
+    const setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+    setTxt('stat-new', todo);
+    setTxt('stat-completed', completed);
+    setTxt('stat-pending', review);
+    setTxt('stat-inprogress', inProgress);
+}
+
+// SKELETON FUNCTIONS
+function renderSkeletonStats() {
+    const ids = ['stat-new', 'stat-completed', 'stat-pending', 'stat-inprogress'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = '<span class="skeleton" style="width: 40px; height: 24px;"></span>';
+    });
+}
+
+function renderSkeletonTable() {
+    const tbody = document.getElementById('tasks-tbody');
+    if(!tbody) return;
+    // 5 skeleton rows
+    let html = '';
+    for(let i=0; i<5; i++) {
+        html += `
+        <tr>
+            <td><span class="skeleton" style="width: 20px;"></span></td>
+            <td><span class="skeleton" style="width: 150px;"></span></td>
+            <td><span class="skeleton" style="width: 80px;"></span></td>
+            <td><span class="skeleton" style="width: 100px;"></span></td>
+            <td><span class="skeleton" style="width: 80px;"></span></td>
+            <td><span class="skeleton" style="width: 100px;"></span></td>
+            <td><span class="skeleton" style="width: 80px;"></span></td>
+            <td><span class="skeleton" style="width: 40px; border-radius: 50%;"></span></td>
+            <td><span class="skeleton" style="width: 60px;"></span></td>
+            <td><span class="skeleton" style="width: 100px;"></span></td>
+        </tr>`;
+    }
+    tbody.innerHTML = html;
+}
+
+function renderTasksTable() {
+    const tbody = document.getElementById('tasks-tbody');
+    if (!tbody) return;
+    
+    if (filteredTasks.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">No tasks found.</td></tr>';
+        document.getElementById('pagination-controls').innerHTML = '';
+        updateBulkDeleteBtn();
+        return;
+    }
+
+    const totalPages = Math.ceil(filteredTasks.length / itemsPerPage);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    
+    const start = (currentPage - 1) * itemsPerPage;
+    const pagedTasks = filteredTasks.slice(start, start + itemsPerPage);
+    const myId = getUserIdFromToken();
+    
+    tbody.innerHTML = pagedTasks.map(task => {
+        const isMyTask = task.assigned_to && task.assigned_to === myId;
+        const needsAcceptance = isMyTask && !task.is_accepted;
+        
+        return `
+        <tr class="task-list">
+            <td class="task-checkbox">
+                <input class="form-check-input task-check" type="checkbox" value="${task.id}" onchange="updateBulkDeleteBtn()">
+            </td>
+            <td>
+                <span class="fw-medium text-dark">${escapeHtml(task.title)}</span>
+                ${needsAcceptance ? '<span class="badge bg-warning-transparent ms-2">Pending Acceptance</span>' : ''}
+            </td>
+            <td><span class="fw-medium text-muted">TSK-${task.id.slice(-4).toUpperCase()}</span></td>
+            <td>${formatDate(task.createdAt)}</td>
+            <td><span class="fw-medium ${getStatusClass(task.status)}">${formatStatus(task.status)}</span></td>
+            <td>${task.due_date ? formatDate(task.due_date) : '-'}</td>
+            <td><span class="badge ${getPriorityBadge(task.priority)}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span></td>
+            <td>${renderAssignee(task.assignee)}</td>
+            <td>
+                <div class="d-flex align-items-center gap-1">
+                    ${needsAcceptance ? 
+                        `<button class="btn btn-success btn-sm" onclick="acceptTask('${task.id}')" title="Accept Task"><i class="ri-check-line"></i> Accept</button>` 
+                        : ''}
+                    <button class="btn btn-info-light btn-icon btn-sm" onclick="viewTask('${task.id}')" title="View Details"><i class="ri-eye-line"></i></button>
+                    <button class="btn btn-primary-light btn-icon btn-sm" onclick="editTask('${task.id}')" title="Edit"><i class="ri-edit-line"></i></button>
+                    <button class="btn btn-danger-light btn-icon btn-sm" onclick="deleteTask('${task.id}')" title="Delete"><i class="ri-delete-bin-5-line"></i></button>
+                </div>
+            </td>
+            <td>
+                <select class="form-select form-select-sm border-0 bg-light" onchange="updateStatus('${task.id}', this.value)" style="width:130px; cursor:pointer;" ${needsAcceptance ? 'disabled' : ''}>
+                    <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>To Do</option>
+                    <option value="in_progress" ${task.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="review" ${task.status === 'review' ? 'selected' : ''}>Review</option>
+                    <option value="completed" ${task.status === 'completed' ? 'selected' : ''}>Completed</option>
+                </select>
+            </td>
+        </tr>
+    `}).join('');
+    
+    renderPagination(totalPages);
+    document.getElementById('all-tasks').checked = false;
+    updateBulkDeleteBtn();
+}
+
+async function acceptTask(id) {
+    try {
+        const res = await fetch(`/api/tasks/${id}/accept`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) {
+            const task = tasks.find(t => t.id === id);
+            if (task) task.is_accepted = true;
+            renderTasksTable(); // Re-render to remove button
+            showToast('Task accepted!', '#10b981');
+        } else {
+             showToast((await res.json()).message || 'Error accepting task', '#ef4444');
+        }
+    } catch(e) { console.error(e); }
+}
+
+function renderPagination(totalPages) {
+    const container = document.getElementById('pagination-controls');
+    if (!container) return;
+    
+    // Always show, but maybe disabled if 1 page
+    if (totalPages < 1) totalPages = 1;
+    
+    let html = '';
+    html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="javascript:void(0);" onclick="goToPage(${currentPage - 1})">Previous</a>
+             </li>`;
+    for(let i=1; i<=totalPages; i++) {
+        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="javascript:void(0);" onclick="goToPage(${i})">${i}</a>
+                 </li>`;
+    }
+    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="javascript:void(0);" onclick="goToPage(${currentPage + 1})">Next</a>
+             </li>`;
+    container.innerHTML = html;
+}
+
+function goToPage(p) {
+    currentPage = p;
+    renderTasksTable();
+}
+
+function toggleAll(checked) {
+    document.querySelectorAll('.task-check').forEach(cb => cb.checked = checked);
+    updateBulkDeleteBtn();
+}
+
+function updateBulkDeleteBtn() {
+    const count = document.querySelectorAll('.task-check:checked').length;
+    const btn = document.getElementById('btnBulkDelete');
+    if(btn) btn.style.display = count > 0 ? 'inline-block' : 'none';
+}
+
+async function deleteSelectedTasks() {
+    const checked = Array.from(document.querySelectorAll('.task-check:checked')).map(cb => cb.value);
+    if(checked.length === 0) return;
+    if(!confirm(`Delete ${checked.length} tasks?`)) return;
+    
+    try {
+        // Parallel deletes (or use bulk endpoint if available, assuming singular for now)
+        await Promise.all(checked.map(id => 
+             fetch(`/api/tasks/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
+        ));
+        
+        // Remove from local and re-render
+        tasks = tasks.filter(t => !checked.includes(t.id));
+        handleSearch(); // Re-filter
+        updateStats();
+        showToast(`${checked.length} tasks deleted`, '#0d6efd');
+    } catch(e) { console.error(e); }
+}
+
+function editTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    currentTaskId = id;
+    document.querySelector('#create-task .modal-title').textContent = 'Edit Task';
+    document.getElementById('btnCreateTask').textContent = 'Update Task';
+    
+    setVal('task-name', task.title);
+    setVal('task-id', 'TSK-'+task.id.slice(-4).toUpperCase()); 
+    setVal('taskDescription', task.description);
+    setVal('taskPriority', task.priority);
+    setVal('taskStatus', task.status);
+    setVal('taskAssignee', task.assigned_to);
+    
+    if(task.due_date && typeof flatpickr !== 'undefined') {
+        document.getElementById('dueDate')._flatpickr.setDate(task.due_date);
+    }
+    if(task.createdAt && typeof flatpickr !== 'undefined') {
+        document.getElementById('assignedDate')._flatpickr.setDate(task.createdAt);
+    }
+    
+    new bootstrap.Modal(document.getElementById('create-task')).show();
+}
+
+function setVal(id, val) {
+    const el = document.getElementById(id);
+    if(el) el.value = val || '';
+}
+
+async function saveNewTask() {
+    const btn = document.getElementById('btnCreateTask');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="ri-loader-4-line spin me-1"></i>Saving...';
+    btn.disabled = true;
+
+    const data = getFormData();
+    if (!validateTaskData(data)) {
+        resetBtn(btn, original);
+        return;
+    }
+    
+    try {
+        const res = await fetch('/api/tasks', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        if (res.ok) {
+            const result = await res.json();
+            tasks.unshift(result.task);
+            handleSearch(); // Update list
+            updateStats();
+            hideModal();
+            showToast('Task created!', '#10b981');
+        } else {
+            showToast((await res.json()).message || 'Error', '#ef4444');
+        }
+    } catch (e) { showToast('Network error', '#ef4444'); }
+    
+    resetBtn(btn, original);
+}
+
+async function updateTask(id) {
+    const btn = document.getElementById('btnCreateTask');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="ri-loader-4-line spin me-1"></i>Updating...';
+    btn.disabled = true;
+
+    const data = getFormData();
+    if (!validateTaskData(data)) {
+        resetBtn(btn, original);
+        return;
+    }
+    
+    try {
+        const res = await fetch(`/api/tasks/${id}`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        if (res.ok) {
+            const result = await res.json();
+            const idx = tasks.findIndex(t => t.id === id);
+            if (idx !== -1) tasks[idx] = result.task;
+            
+            handleSearch();
+            updateStats();
+            hideModal();
+            showToast('Task updated!', '#10b981');
+        } else {
+             showToast((await res.json()).message || 'Error', '#ef4444');
+        }
+    } catch (e) { showToast('Network error', '#ef4444'); }
+    
+    resetBtn(btn, original);
+}
+
+function validateTaskData(data) {
+    if (!data.title?.trim()) {
+        showToast('Task name is required', '#ef4444');
+        return false;
+    }
+    const assignedDate = document.getElementById('assignedDate')?.value;
+    const dueDate = data.due_date;
+    if (assignedDate && dueDate && new Date(dueDate) < new Date(assignedDate)) {
+        showToast('Due date cannot be earlier than assigned date', '#ef4444');
+        return false;
+    }
+    return true;
+}
+
+function getFormData() {
+    return {
+        title: document.getElementById('task-name')?.value,
+        description: document.getElementById('taskDescription')?.value || null,
+        priority: document.getElementById('taskPriority')?.value || 'medium',
+        status: document.getElementById('taskStatus')?.value || 'todo',
+        due_date: document.getElementById('dueDate')?.value || null,
+        assigned_to: document.getElementById('taskAssignee')?.value || null
+    };
+}
+
+function hideModal() {
+    const el = document.getElementById('create-task');
+    const modal = bootstrap.Modal.getInstance(el);
+    if (modal) modal.hide();
+}
+
+function resetBtn(btn, html) { btn.innerHTML = html; btn.disabled = false; }
+function showToast(text, color) { Toastify({ text, backgroundColor: color }).showToast(); }
+
+async function updateStatus(taskId, newStatus) {
+    try {
+        const res = await fetch(`/api/tasks/${taskId}/status`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) task.status = newStatus;
+            updateStats(); handleSearch();
+            showToast('Status updated!', '#10b981');
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function deleteTask(taskId) {
+    if (!confirm('Delete this task?')) return;
+    try {
+        await fetch(`/api/tasks/${taskId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        tasks = tasks.filter(t => t.id !== taskId);
+        handleSearch(); updateStats();
+        showToast('Task deleted', '#ef4444');
+    } catch (e) { console.error(e); }
+}
+
+function getStatusClass(status) {
+    const map = { todo: 'text-primary', in_progress: 'text-secondary', review: 'text-warning', completed: 'text-success' };
+    return map[status] || '';
+}
+
+function formatStatus(status) {
+    const map = { todo: 'New', in_progress: 'In Progress', review: 'Review', completed: 'Completed' };
+    return map[status] || status;
+}
+
+function getPriorityBadge(priority) {
+    const map = { low: 'bg-success-transparent', medium: 'bg-secondary-transparent', high: 'bg-danger-transparent', urgent: 'bg-danger' };
+    return map[priority] || 'bg-secondary-transparent';
+}
+
+function renderAssignee(assignee) {
+    if (!assignee) return '<span class="text-muted">-</span>';
+    return `<span class="avatar avatar-sm avatar-rounded"><img src="${assignee.profile_picture_url || '/build/assets/images/faces/1.jpg'}" alt="img" title="${assignee.full_name}"></span>`;
+}
+
+function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text || ''; return div.innerHTML; }
+function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'; }
+
+function viewTask(id) {
+    // Determine current dashboard path (employer or employee)
+    const path = window.location.pathname;
+    if (path.includes('/employee/')) {
+        window.location.href = `/dashboard/employee/tasks/${id}`;
+    } else {
+        window.location.href = `/dashboard/employer/tasks/${id}`;
+    }
+}
+</script>
+
+<style>
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; display: inline-block; }
+
+/* Skeleton Loading */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e2e5e7 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+    display: inline-block;
+    height: 1em;
+    vertical-align: middle;
+}
+@keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Design Polish */
+.custom-card {
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.custom-card.main-content-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+.task-list { transition: background-color 0.15s; }
+.task-list:hover { background-color: #f8f9fa; }
+.table thead th { border-bottom-width: 1px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+
+/* Status Select Styles */
+.form-select-sm { padding-top: 2px; padding-bottom: 2px; font-size: 0.85rem; }
+</style>

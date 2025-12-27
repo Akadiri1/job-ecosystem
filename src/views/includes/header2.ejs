@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="light" data-toggled="close">
+
+    
+<!-- Mirrored from laravelui.spruko.com/zeno/index by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 20 Dec 2025 12:56:42 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+
+        <!-- Meta Data -->
+        <meta charset="UTF-8">
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="Description" content="Laravel Bootstrap Responsive Admin Web Dashboard Template">
+        <meta name="Author" content="Spruko Technologies Private Limited">
+        <meta name="keywords" content="laravel template, laravel admin, admin, admin panel template, laravel dashboard, dashboard admin template, template admin, admin panel laravel, laravel, dashboard for laravel, laravel framework, admin, bootstrapdashboard, bootstrap template, dashboard, dashboard admin.">
+    
+        <!-- Title-->
+        <title> ZEN </title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+        <!-- Favicon -->
+        <link rel="icon" href="/build/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+    
+        <!-- Main Theme Js -->
+        <script src="/build/assets/main.js"></script>
+
+        <!-- ICONS CSS -->
+        <link href="/build/assets/icon-fonts/icons.css" rel="stylesheet">
+
+        <!-- Choices JS -->
+        <script src="/build/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+        
+        <!-- Bootstrap Css -->
+        <link id="style" href="/build/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" >
+
+        <!-- Node Waves Css -->
+        <link href="/build/assets/libs/node-waves/waves.min.css" rel="stylesheet" > 
+
+        <!-- Simplebar Css -->
+        <link href="/build/assets/libs/simplebar/simplebar.min.css" rel="stylesheet" >
+        
+        <!-- Color Picker Css -->
+        <link rel="stylesheet" href="/build/assets/libs/flatpickr/flatpickr.min.css">
+        <link rel="stylesheet" href="/build/assets/libs/%40simonwep/pickr/themes/nano.min.css">
+
+        <!-- Choices Css -->
+        <link rel="stylesheet" href="/build/assets/libs/choices.js/public/assets/styles/choices.min.css">
+
+        <!-- FlatPickr CSS -->
+        <link rel="stylesheet" href="/build/assets/libs/flatpickr/flatpickr.min.css">
+
+        <!-- Auto Complete CSS -->
+        <link rel="stylesheet" href="/build/assets/libs/%40tarekraafat/autocomplete.js/css/autoComplete.css">
+      
+        <!-- APP CSS & APP SCSS -->
+        <link rel="preload" as="style" href="/build/assets/app-ZxPcUqmw.css" /><link rel="stylesheet" href="/build/assets/app-ZxPcUqmw.css" />
+        
+        <!-- FlatPickr CSS -->
+        <link rel="stylesheet" href="/build/assets/libs/flatpickr/flatpickr.min.css">
+
+
+        <!-- Skeleton Loader CSS -->
+    <style>
+        /* Glassmorphism Redesign - THEME AWARE */
+        :root {
+            --glas-bg: rgba(255, 255, 255, 0.85);
+            --glas-border: rgba(0, 0, 0, 0.05);
+            --glas-text-primary: #333;
+            --glas-text-secondary: #555;
+            --glas-text-muted: #888;
+            --glas-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme-mode="dark"] {
+            --glas-bg: rgba(30, 30, 48, 0.95);
+            --glas-border: rgba(255, 255, 255, 0.05);
+            --glas-text-primary: #fff;
+            --glas-text-secondary: rgba(255, 255, 255, 0.7);
+            --glas-text-muted: rgba(255, 255, 255, 0.5);
+            --glas-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .glas-notification-dropdown {
+            background: var(--glas-bg) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid var(--glas-border) !important;
+            box-shadow: var(--glas-shadow) !important;
+            border-radius: 12px !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            width: 380px !important;
+        }
+
+        .glas-notification-header {
+            background: transparent; /* Let container bg show through */
+            border-bottom: 1px solid var(--glas-border);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .glas-notification-title {
+            color: var(--glas-text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .glas-text-primary { color: var(--glas-text-primary) !important; }
+        .glas-text-secondary { color: var(--glas-text-secondary) !important; }
+        .glas-text-muted { color: var(--glas-text-muted) !important; }
+
+        .glas-notification-badge {
+            background: linear-gradient(135deg, #ff00cc, #333399); 
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background: rgba(125, 125, 125, 0.1) !important;
+        }
+
+        #header-notification-scroll {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        
+        #header-notification-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        #header-notification-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        /* Light/Dark mode resilience: Removed forced overrides in favor of vars */
+        /*.glas-notification-dropdown .text-muted { color: rgba(255,255,255,0.6) !important; }
+        .glas-notification-dropdown .text-dark { color: #fff !important; }*/
+
+        /* GOOGLE TRANSLATE HIDDEN UI */
+        .goog-te-banner-frame.skiptranslate,
+        .goog-te-banner-frame,
+        iframe.goog-te-banner-frame,
+        iframe.skiptranslate {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }
+        body {
+            top: 0px !important; 
+            position: unset !important;
+        }
+        #google_translate_element {
+            visibility: hidden !important;
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .goog-te-gadget-icon {
+             display: none !important;
+        }
+
+        /* Scrollable Language Dropdown */
+        .header-country-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        /* Skeleton & existing styles */
+        .skeleton-box {
+            display: inline-block;
+            height: 1em;
+            position: relative;
+            overflow: hidden;
+            background-color: #f0f2f5;
+            border-radius: 4px;
+        }
+        .skeleton-box::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.5) 20%,
+                rgba(255, 255, 255, 0.8) 60%,
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 1.5s infinite;
+            content: '';
+        }
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+        .skeleton-text { width: 100%; height: 0.8rem; margin-bottom: 0.5rem; }
+        .skeleton-avatar { width: 40px; height: 40px; border-radius: 50%; }
+        .skeleton-btn { width: 80px; height: 32px; border-radius: 4px; }
+        .skeleton-row td { padding: 1rem; }
+
+        /* PRELOADER STYLES */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index: 99999; /* Increased z-index */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        #loader.loaded {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        /* CSS SPINNER */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color, #4466f2); /* Use primary color */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        [data-theme-mode="dark"] #loader {
+            background-color: #1a1e25; 
+        }
+        [data-theme-mode="dark"] .spinner {
+             border: 5px solid rgba(255, 255, 255, 0.1);
+             border-left-color: var(--primary-color, #4466f2);
+        }
+
+        /* ============================================
+           GLOBAL MODERN UI STYLES
+           ============================================ */
+
+        /* Modern Stat Cards */
+        .stat-card-modern {
+            background: var(--custom-white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--stat-color, #667eea), transparent);
+        }
+        
+        .stat-card-modern:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card-modern .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-card-modern .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card-modern .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .stat-card-modern.primary { --stat-color: #667eea; }
+        .stat-card-modern.secondary { --stat-color: #764ba2; }
+        .stat-card-modern.success { --stat-color: #00b074; }
+        .stat-card-modern.warning { --stat-color: #ff9f43; }
+        .stat-card-modern.info { --stat-color: #17a2b8; }
+        .stat-card-modern.danger { --stat-color: #dc3545; }
+
+        /* Modern Table Enhancement */
+        .modern-table {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--custom-white);
+        }
+        
+        .modern-table .table {
+            margin-bottom: 0;
+            background: transparent;
+        }
+        
+        .modern-table thead {
+            background: rgba(102, 126, 234, 0.15);
+        }
+        
+        .modern-table thead th {
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #667eea;
+            background: transparent;
+        }
+        
+        .modern-table tbody tr {
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+        
+        .modern-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.08);
+        }
+        
+        .modern-table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: rgba(255,255,255,0.05);
+            background: transparent;
+        }
+
+        /* Card Enhancement */
+        .card.custom-card {
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: var(--custom-white);
+        }
+        
+        .card.custom-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 1rem 1.25rem;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .card-body {
+            background: transparent;
+        }
+
+        /* Welcome/Hero Headers */
+        .welcome-header, .page-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-header::before, .page-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .welcome-header h1, .welcome-header h2, .page-hero h1 {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .welcome-header p, .page-hero p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* List Group Enhancement */
+        .list-group-flush {
+            background: transparent;
+        }
+        
+        .list-group-flush .list-group-item {
+            background: transparent;
+            border-color: rgba(255,255,255,0.05);
+            padding: 1rem;
+        }
+        
+        .list-group-flush .list-group-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        /* Modern Button Styles */
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: #fff;
+        }
+        
+        .btn-primary-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            color: #fff;
+        }
+
+        /* Floating Action Button */
+        .fab-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fab-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--custom-white);
+            border-radius: 20px;
+            border: 2px dashed rgba(255,255,255,0.1);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Modal Enhancement */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            overflow: hidden;
+            background: var(--custom-white);
+        }
+        
+        .modal-header.gradient-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            padding: 1.5rem;
+        }
+        
+        .modal-header.gradient-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .modal-body {
+            background: var(--custom-white);
+        }
+
+        /* Form Controls Enhancement */
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+    </style>
+    <script>
+        // Force hide loader after max 3 seconds to prevent infinite load
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if(loader) loader.classList.add('loaded');
+        }, 3000);
+
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            if(loader) {
+                // Slight delay to ensure smooth transition
+                setTimeout(() => {
+                    loader.classList.add('loaded');
+                }, 150);
+            }
+        });
+
+        // Global Helper for Chat Status Updates
+        function updateChatStatusUI(userId, status) {
+            const isOnline = status === 'online';
+            
+            // 1. Update List Item Dots
+            const listItems = document.querySelectorAll(`li[data-id="${userId}"]`);
+            listItems.forEach(li => {
+                const avatar = li.querySelector('.avatar');
+                if(avatar) {
+                    if(isOnline) avatar.classList.add('online');
+                    else avatar.classList.remove('online');
+                }
+                
+                // Also check for explicit offline class if used
+                const statusDot = li.querySelector('.status-dot'); 
+                if(statusDot) {
+                    statusDot.className = `status-dot ${isOnline ? 'online' : 'offline'}`;
+                }
+            });
+
+            // 2. Update Main Chat Header (if open)
+            const chatHeader = document.getElementById('main-chat-header');
+            if(chatHeader) {
+                // Check if this is the active user being viewed
+                // We might need to store the current chat User ID properly in a global var or data attribute
+                // For now, we try to match by an attribute if we added one, or rely on variable
+                const currentChatId = typeof window.currentChatId !== 'undefined' ? window.currentChatId : null;
+                
+                if(currentChatId && currentChatId == userId) {
+                     const statusText = chatHeader.querySelector('.chatpersonstatus');
+                     const avatar = chatHeader.querySelector('.chatstatusperson');
+                     
+                     if(statusText) statusText.textContent = isOnline ? 'online' : 'offline';
+                     if(avatar) {
+                         if(isOnline) avatar.classList.add('online');
+                         else avatar.classList.remove('online');
+                     }
+                }
+            }
+        }
+    </script>
+</head>
+
+
+
+    
+<!-- Scripts for Notifications, Language, and Fullscreen -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load Notifications
+        loadNotifications();
+        
+        // --- Language Switcher ---
+        const storedLang = localStorage.getItem('app_language');
+        if(storedLang) {
+            updateLanguageDisplay(storedLang);
+        }
+        
+        const langItems = document.querySelectorAll('.header-country-list .dropdown-item');
+        if(langItems.length > 0) {
+            langItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const lang = this.innerText.trim(); 
+                    const img = this.querySelector('img').src;
+                    
+                    const data = { lang, img };
+                    localStorage.setItem('app_language', JSON.stringify(data));
+                    updateLanguageDisplay(JSON.stringify(data));
+                });
+            });
+        }
+        
+        // --- Fullscreen Toggle ---
+        const fullScreenToggle = document.querySelector('.full-screen-toggle');
+        if(fullScreenToggle) {
+            fullScreenToggle.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+        }
+    });
+
+    function updateLanguageDisplay(data) {
+        try {
+            const { lang, img } = typeof data === 'string' ? JSON.parse(data) : data;
+            const btn = document.querySelector('.country-selector .header-link'); 
+            if(btn) {
+                const svg = btn.querySelector('svg');
+                if(svg) svg.style.display = 'none'; 
+                
+                let flagImg = btn.querySelector('.header-flag-icon');
+                if(!flagImg) {
+                    flagImg = document.createElement('img');
+                    flagImg.className = 'header-flag-icon avatar avatar-xs rounded-circle';
+                    btn.appendChild(flagImg);
+                }
+                flagImg.src = img;
+            }
+        } catch(e) {}
+    }
+
+    async function loadNotifications() {
+        // Clear static list first
+        const container = document.getElementById('header-notification-scroll');
+        if(container) container.innerHTML = '<li class="dropdown-item text-center p-3 text-muted">Loading...</li>';
+
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        try {
+            const res = await fetch('/api/notifications', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if(data.success) {
+                renderNotifications(data.notifications, data.unreadCount);
+            }
+        } catch(e) {
+            console.error("Failed to load notifications", e);
+            if(container) container.innerHTML = '<li class="dropdown-item text-center p-3 text-danger">Failed to load</li>';
+        }
+    }
+
+    function renderNotifications(notifications, unreadCount) {
+        const container = document.getElementById('header-notification-scroll');
+        const badge = document.getElementById('notification-data');
+        const pulse = document.getElementById('notification-pulse');
+        
+        if(!container) return;
+
+        // Update Count Text - DISABLED as per request (replaced with Read All button)
+        // if(badge) badge.textContent = `${unreadCount} Unread`;
+        
+        // Toggle "Read All" button visibility based on unread count
+        const readAllBtn = document.getElementById('mark-all-btn');
+        if(readAllBtn) {
+            readAllBtn.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+        }
+        if(pulse) pulse.style.display = unreadCount > 0 ? 'block' : 'none';
+
+        if(notifications.length === 0) {
+            container.innerHTML = '<li class="dropdown-item text-center p-3 text-muted">No notifications</li>';
+            return;
+        }
+
+        let html = '';
+        notifications.forEach(n => {
+            html += createNotificationHTML(n);
+        });
+        container.innerHTML = html;
+    }
+
+    async function markNotificationRead(id, link) {
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        try {
+            await fetch(`/api/notifications/${id}/read`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            loadNotifications(); 
+            
+            if(link && link !== 'null' && link !== 'undefined') {
+                window.location.href = link;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+    
+    function timeAgo(dateStr) {
+        const date = new Date(dateStr);
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " years ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hrs ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " mins ago";
+        return Math.floor(seconds) + " secs ago";
+    }
+</script>
+    <body class="">
+
+    <!-- Loader HTML -->
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+
+        <!-- Start::main-switcher -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="switcher-canvas" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header border-bottom d-block p-0">
+                <div class="d-flex align-items-center justify-content-between p-3">
+                    <h5 class="offcanvas-title text-default" id="offcanvasRightLabel">Switcher</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <nav class="border-top border-block-start-dashed">
+                    <div class="nav nav-tabs nav-justified" id="switcher-main-tab" role="tablist">
+                        <button class="nav-link active" id="switcher-home-tab" data-bs-toggle="tab" data-bs-target="#switcher-home"
+                            type="button" role="tab" aria-controls="switcher-home" aria-selected="true">Theme Styles</button>
+                        <button class="nav-link" id="switcher-profile-tab" data-bs-toggle="tab" data-bs-target="#switcher-profile"
+                            type="button" role="tab" aria-controls="switcher-profile" aria-selected="false">Theme Colors</button>
+                    </div>
+                </nav>
+            </div>
+            <div class="offcanvas-body">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active border-0" id="switcher-home" role="tabpanel" aria-labelledby="switcher-home-tab"
+                        tabindex="0">
+                        <div class="">
+                            <p class="switcher-style-head">Theme Color Mode:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-light-theme">
+                                            Light
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="theme-style" id="switcher-light-theme"
+                                            checked>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-dark-theme">
+                                            Dark
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="theme-style" id="switcher-dark-theme">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="switcher-style-head">Directions:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-ltr">
+                                            LTR
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="direction" id="switcher-ltr" checked>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-rtl">
+                                            RTL
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="direction" id="switcher-rtl">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="switcher-style-head">Navigation Styles:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-vertical">
+                                            Vertical
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="navigation-style" id="switcher-vertical"
+                                            checked>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-horizontal">
+                                            Horizontal
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="navigation-style"
+                                            id="switcher-horizontal">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="navigation-menu-styles">
+                            <p class="switcher-style-head">Vertical & Horizontal Menu Styles:</p>
+                            <div class="row switcher-style gx-0 pb-2 gy-2">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-menu-click">
+                                            Menu Click
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                            id="switcher-menu-click">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-menu-hover">
+                                            Menu Hover
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                            id="switcher-menu-hover">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-icon-click">
+                                            Icon Click
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                            id="switcher-icon-click">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-icon-hover">
+                                            Icon Hover
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="navigation-menu-styles"
+                                            id="switcher-icon-hover">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sidemenu-layout-styles">
+                            <p class="switcher-style-head">Sidemenu Layout Styles:</p>
+                            <div class="row switcher-style gx-0 pb-2 gy-2">
+                                <div class="col-sm-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-default-menu">
+                                            Default Menu
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                            id="switcher-default-menu" checked>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-closed-menu">
+                                            Closed Menu
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                            id="switcher-closed-menu">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-icontext-menu">
+                                            Icon Text
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                            id="switcher-icontext-menu">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-icon-overlay">
+                                            Icon Overlay
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                            id="switcher-icon-overlay">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-detached">
+                                            Detached
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                            id="switcher-detached">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-double-menu">
+                                            Double Menu
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="sidemenu-layout-styles"
+                                            id="switcher-double-menu">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="switcher-style-head">Page Styles:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-regular">
+                                            Regular
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="page-styles" id="switcher-regular"
+                                        checked>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-classic">
+                                            Classic
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="page-styles" id="switcher-classic">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-modern">
+                                            Modern
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="page-styles" id="switcher-modern">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="switcher-style-head">Layout Width Styles:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-sm-4 col-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-full-width">
+                                            Full Width
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="layout-width" id="switcher-full-width"
+                                            checked>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 col-6">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-boxed">
+                                            Boxed
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="layout-width" id="switcher-boxed">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="switcher-style-head">Menu Positions:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-menu-fixed">
+                                            Fixed
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="menu-positions" id="switcher-menu-fixed"
+                                            checked>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-menu-scroll">
+                                            Scrollable
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="menu-positions" id="switcher-menu-scroll">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="switcher-style-head">Header Positions:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-header-fixed">
+                                            Fixed
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="header-positions"
+                                            id="switcher-header-fixed" checked>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-header-scroll">
+                                            Scrollable
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="header-positions"
+                                            id="switcher-header-scroll">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="switcher-style-head">Loader:</p>
+                            <div class="row switcher-style gx-0">
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-loader-enable">
+                                            Enable
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="page-loader"
+                                            id="switcher-loader-enable">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-check switch-select">
+                                        <label class="form-check-label" for="switcher-loader-disable">
+                                            Disable
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="page-loader"
+                                            id="switcher-loader-disable" checked>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade border-0" id="switcher-profile" role="tabpanel" aria-labelledby="switcher-profile-tab" tabindex="0">
+                        <div>
+                            <div class="theme-colors">
+                                <p class="switcher-style-head">Menu Colors:</p>
+                                <div class="d-flex switcher-style pb-2">
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Light Menu" type="radio" name="menu-colors"
+                                            id="switcher-menu-light" checked>
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-dark" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Dark Menu" type="radio" name="menu-colors"
+                                            id="switcher-menu-dark">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-primary" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Color Menu" type="radio" name="menu-colors"
+                                            id="switcher-menu-primary">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-gradient" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Gradient Menu" type="radio" name="menu-colors"
+                                            id="switcher-menu-gradient">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-transparent"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Transparent Menu"
+                                            type="radio" name="menu-colors" id="switcher-menu-transparent">
+                                    </div>
+                                </div>
+                                <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Menu dynamically change from below Theme Primary color picker</div>
+                            </div>
+                            <div class="theme-colors">
+                                <p class="switcher-style-head">Header Colors:</p>
+                                <div class="d-flex switcher-style pb-2">
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-white" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Light Header" type="radio" name="header-colors"
+                                            id="switcher-header-light" checked>
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-dark" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Dark Header" type="radio" name="header-colors"
+                                            id="switcher-header-dark">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-primary" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Color Header" type="radio" name="header-colors"
+                                            id="switcher-header-primary">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-gradient" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Gradient Header" type="radio" name="header-colors"
+                                            id="switcher-header-gradient">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-transparent" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Transparent Header" type="radio" name="header-colors"
+                                            id="switcher-header-transparent">
+                                    </div>
+                                </div>
+                                <div class="px-4 pb-3 text-muted fs-11">Note:If you want to change color Header dynamically change from below Theme Primary color picker</div>
+                            </div>
+                            <div class="theme-colors">
+                                <p class="switcher-style-head">Theme Primary:</p>
+                                <div class="d-flex flex-wrap align-items-center switcher-style">
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-primary-1" type="radio"
+                                            name="theme-primary" id="switcher-primary">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-primary-2" type="radio"
+                                            name="theme-primary" id="switcher-primary1">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-primary-3" type="radio" name="theme-primary"
+                                            id="switcher-primary2">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-primary-4" type="radio" name="theme-primary"
+                                            id="switcher-primary3">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-primary-5" type="radio" name="theme-primary"
+                                            id="switcher-primary4">
+                                    </div>
+                                    <div class="form-check switch-select ps-0 mt-1 color-primary-light">
+                                        <div class="theme-container-primary"></div>
+                                        <div class="pickr-container-primary"  onchange="updateChartColor(this.value)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="theme-colors">
+                                <p class="switcher-style-head">Theme Background:</p>
+                                <div class="d-flex flex-wrap align-items-center switcher-style">
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-bg-1" type="radio"
+                                            name="theme-background" id="switcher-background">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-bg-2" type="radio"
+                                            name="theme-background" id="switcher-background1">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-bg-3" type="radio" name="theme-background"
+                                            id="switcher-background2">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-bg-4" type="radio"
+                                            name="theme-background" id="switcher-background3">
+                                    </div>
+                                    <div class="form-check switch-select me-3">
+                                        <input class="form-check-input color-input color-bg-5" type="radio"
+                                            name="theme-background" id="switcher-background4">
+                                    </div>
+                                    <div class="form-check switch-select ps-0 mt-1 tooltip-static-demo color-bg-transparent">
+                                        <div class="theme-container-background"></div>
+                                        <div class="pickr-container-background"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="menu-image mb-3">
+                                <p class="switcher-style-head">Menu With Background Image:</p>
+                                <div class="d-flex flex-wrap align-items-center switcher-style">
+                                    <div class="form-check switch-select m-2">
+                                        <input class="form-check-input bgimage-input bg-img1" type="radio"
+                                            name="menu-background" id="switcher-bg-img">
+                                    </div>
+                                    <div class="form-check switch-select m-2">
+                                        <input class="form-check-input bgimage-input bg-img2" type="radio"
+                                            name="menu-background" id="switcher-bg-img1">
+                                    </div>
+                                    <div class="form-check switch-select m-2">
+                                        <input class="form-check-input bgimage-input bg-img3" type="radio" name="menu-background"
+                                            id="switcher-bg-img2">
+                                    </div>
+                                    <div class="form-check switch-select m-2">
+                                        <input class="form-check-input bgimage-input bg-img4" type="radio"
+                                            name="menu-background" id="switcher-bg-img3">
+                                    </div>
+                                    <div class="form-check switch-select m-2">
+                                        <input class="form-check-input bgimage-input bg-img5" type="radio"
+                                            name="menu-background" id="switcher-bg-img4">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between canvas-footer flex-nowrap gap-2">
+                        <a href="javascript:void(0);" id="reset-all" class="btn btn-danger text-nowrap">Reset</a> 
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- End::main-switcher -->
+
+        <!-- Loader -->
+        <div id="loader" >
+            <img src="/build/assets/images/media/loader.svg" alt="">
+        </div>
+        <!-- Loader -->
+
+        <div class="page">
+
+            <!-- Start::main-header -->
+            <header class="app-header sticky" id="header">
+
+				<!-- Start::main-header-container -->
+                <div id="google_translate_element"></div>
+				<div class="main-header-container container-fluid">
+
+					<!-- Start::header-content-left -->
+					<div class="header-content-left">
+
+						<!-- Start::header-element -->
+						<div class="header-element">
+							<div class="horizontal-logo">
+								<a href="/dashboard" class="header-logo">
+									<img src="/build/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
+									<img src="/build/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+									<img src="/build/assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark">
+									<img src="/build/assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
+									<img src="/build/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-white">
+									<img src="/build/assets/images/brand-logos/desktop-white.png" alt="logo" class="desktop-white">
+								</a>
+							</div>
+						</div>
+						<!-- End::header-element -->
+
+						<!-- Start::header-element -->
+						<div class="header-element mx-lg-0 mx-2">
+							<a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
+						</div>
+						<!-- End::header-element -->
+
+						<!-- Start::header-element -->
+						<div class="header-element header-search d-md-block d-none my-auto auto-complete-search">
+							<!-- Start::header-link -->
+							<input type="text" class="header-search-bar form-control" id="header-search" placeholder="Search anything here ..." spellcheck=false autocomplete="off" autocapitalize="off">
+							<a href="javascript:void(0);" class="header-search-icon border-0">
+								<i class="ri-search-line"></i>
+							</a>
+							<!-- End::header-link -->
+						</div>
+						<!-- End::header-element -->
+
+					</div>
+					<!-- End::header-content-left -->
+
+					<!-- Start::header-content-right -->
+					<ul class="header-content-right">
+
+						<!-- Start::header-element -->
+						<li class="header-element d-md-none d-block">
+							<a href="javascript:void(0);" class="header-link" data-bs-toggle="modal" data-bs-target="#header-responsive-search">
+								<!-- Start::header-link-icon -->
+								<i class="bi bi-search header-link-icon"></i>
+								<!-- End::header-link-icon -->
+							</a>  
+						</li>
+						<!-- End::header-element -->
+
+                        <!-- Start::header-element (PWA INSTALL) -->
+                        <li class="header-element d-none" id="pwa-install-item">
+                            <a href="javascript:void(0);" class="header-link" id="pwa-install-btn" title="Install App">
+                                <i class="bi bi-download header-link-icon"></i>
+                            </a>
+                        </li>
+                        <!-- End::header-element -->
+
+						<!-- Start::header-element -->
+						<li class="header-element country-selector dropdown">
+							<!-- Start::header-link|dropdown-toggle -->
+							<a href="javascript:void(0);" class="header-link dropdown-toggle" data-bs-auto-close="outside" data-bs-toggle="dropdown">
+								<img src="/build/assets/images/flags/us_flag.jpg" alt="img" class="rounded-circle header-link-icon" id="header-lang-img" style="width: 20px; height: 20px; object-fit: cover;">
+							</a>
+							<!-- End::header-link|dropdown-toggle -->
+
+							<ul class="main-header-dropdown dropdown-menu dropdown-menu-end header-country-list" data-popper-placement="none">
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('en', '/build/assets/images/flags/us_flag.jpg')">
+										<div class="d-flex align-items-center justify-content-between">
+											<div class="d-flex align-items-center">
+												<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+													<img src="/build/assets/images/flags/us_flag.jpg" alt="img">
+												</span>
+												English
+											</div>
+										</div>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('es', '/build/assets/images/flags/spain_flag.jpg')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="/build/assets/images/flags/spain_flag.jpg" alt="img" >
+										</span>
+										español
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('fr', '/build/assets/images/flags/french_flag.jpg')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="/build/assets/images/flags/french_flag.jpg" alt="img" >
+										</span>
+										français
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('ar', '/build/assets/images/flags/uae_flag.jpg')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="/build/assets/images/flags/uae_flag.jpg" alt="img" >
+										</span>
+										عربي
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('de', '/build/assets/images/flags/germany_flag.jpg')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="/build/assets/images/flags/germany_flag.jpg" alt="img" >
+										</span>
+										Deutsch
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('cn', '/build/assets/images/flags/china_flag.jpg')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="/build/assets/images/flags/china_flag.jpg" alt="img" >
+										</span>
+										中国人
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('it', '/build/assets/images/flags/italy_flag.jpg')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="/build/assets/images/flags/italy_flag.jpg" alt="img" >
+										</span>
+										Italiano
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('ru', '/build/assets/images/flags/russia_flag.jpg')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="/build/assets/images/flags/russia_flag.jpg" alt="img" >
+										</span>
+										Русский
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('pt', 'https://flagcdn.com/w40/pt.png')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="https://flagcdn.com/w40/pt.png" alt="img" >
+										</span>
+										Português
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('ja', 'https://flagcdn.com/w40/jp.png')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="https://flagcdn.com/w40/jp.png" alt="img" >
+										</span>
+										日本語
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('ko', 'https://flagcdn.com/w40/kr.png')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="https://flagcdn.com/w40/kr.png" alt="img" >
+										</span>
+										한국어
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('hi', 'https://flagcdn.com/w40/in.png')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="https://flagcdn.com/w40/in.png" alt="img" >
+										</span>
+										हिन्दी
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('tr', 'https://flagcdn.com/w40/tr.png')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="https://flagcdn.com/w40/tr.png" alt="img" >
+										</span>
+										Türkçe
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="setLanguage('vi', 'https://flagcdn.com/w40/vn.png')">
+										<span class="avatar avatar-rounded avatar-xs lh-1 me-2">
+											<img src="https://flagcdn.com/w40/vn.png" alt="img" >
+										</span>
+										Tiếng Việt
+									</a>
+								</li>
+							</ul>
+						</li>
+						<!-- End::header-element -->
+
+						<!-- Start::header-element -->
+						<li class="header-element header-theme-mode">
+							<!-- Start::header-link|layout-setting -->
+							<a href="javascript:void(0);" class="header-link layout-setting">
+								<span class="light-layout">
+									<!-- Start::header-link-icon -->
+									<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+									</svg>
+									<!-- End::header-link-icon -->
+								</span>
+								<span class="dark-layout">
+									<!-- Start::header-link-icon -->
+									<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+									</svg>
+									<!-- End::header-link-icon -->
+								</span>
+							</a>
+							<!-- End::header-link|layout-setting -->
+						</li>
+						<!-- End::header-element -->
+
+
+
+						<!-- Start::header-element -->
+						<li class="header-element notifications-dropdown d-xl-block d-none dropdown">
+							<!-- Start::header-link|dropdown-toggle -->
+							<a href="javascript:void(0);" class="header-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" id="messageDropdown" aria-expanded="false">
+								<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
+								</svg>
+								<span class="header-icon-pulse bg-danger rounded pulse pulse-secondary" id="notification-pulse" style="display: none;"></span>
+								<!-- Badge Count Removed as per request -->
+								<span class="badge bg-danger rounded-pill position-absolute" id="header-unread-badge" style="top: 8px; right: 8px; font-size: 10px; display: none !important;">0</span>
+							</a>
+							<!-- End::header-link|dropdown-toggle -->
+							<!-- Start::main-header-dropdown -->
+							<div class="main-header-dropdown glas-notification-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
+								<div class="glas-notification-header">
+									<span class="glas-notification-title">Notifications</span>
+                                    <button class="btn btn-sm btn-wave btn-primary-light py-1 px-2 fs-11" onclick="markAllNotificationsRead()" id="mark-all-btn">
+                                        Read All
+                                    </button>
+								</div>
+								<div class="dropdown-divider my-0" style="border-color: rgba(255,255,255,0.05);"></div>
+								<ul class="list-unstyled mb-0" id="header-notification-scroll">
+									<li class="dropdown-item">
+										<div class="d-flex align-items-start">
+											<div class="pe-2 lh-1">
+												<span class="avatar avatar-md avatar-rounded bg-primary">
+													<img src="/build/assets/images/faces/1.jpg" alt="user1">
+												</span>
+											</div>
+											<div class="flex-grow-1 d-flex align-items-start justify-content-between">
+												<div>
+													<p class="mb-0 fw-medium"><a href="chat.html">New User Registered</a></p>
+													<div class="text-muted fw-normal fs-12 header-notification-text text-truncate"><span class="text-primary">John Doe</span> has registered as a new user.</div>
+													<div class="fw-normal fs-10 text-muted op-8">5 mins ago</div>
+												</div>
+												<div>
+													<a href="javascript:void(0);" class="min-w-fit-content dropdown-item-close1">
+														<i class="ri-close-line"></i>
+													</a>
+												</div>
+											</div>
+										</div>
+									</li>
+									<li class="dropdown-item">
+										<div class="d-flex align-items-start">
+											<div class="pe-2 lh-1">
+												<span class="avatar avatar-md bg-primary avatar-rounded fs-20">
+													<i class="ri-money-dollar-circle-line lh-1 fs-16"></i>
+												</span>
+											</div>
+											<div class="flex-grow-1 d-flex align-items-start justify-content-between">
+												<div>
+													<p class="mb-0 fw-medium"><a href="chat.html">Payment Received</a></p>
+													<div class="text-muted fw-normal fs-12 header-notification-text text-truncate">You received a payment of $250 from Emily Davis.</div>
+													<div class="fw-normal fs-10 text-muted op-8">15 mins ago</div>
+												</div>
+												<div>
+													<a href="javascript:void(0);" class="min-w-fit-content dropdown-item-close1">
+														<i class="ri-close-line"></i>
+													</a>
+												</div>
+											</div>
+										</div>
+									</li>
+									<li class="dropdown-item">
+										<div class="d-flex align-items-start">
+											<div class="pe-2 lh-1">
+												<span class="avatar avatar-md bg-orange avatar-rounded">
+													<img src="/build/assets/images/faces/13.jpg" alt="user1">
+												</span>
+											</div>
+											<div class="flex-grow-1 d-flex align-items-start justify-content-between">
+												<div>
+													<p class="mb-0 fw-medium"><a href="chat.html">Task Completed</a></p>
+													<div class="text-muted fw-normal fs-12 header-notification-text text-truncate"><span class="text-secondary">"Design Homepage"</span> task was marked as complete.</div>
+													<div class="fw-normal fs-10 text-muted op-8">30 mins ago</div>
+												</div>
+												<div>
+													<a href="javascript:void(0);" class="min-w-fit-content dropdown-item-close1">
+														<i class="ri-close-line"></i>
+													</a>
+												</div>
+											</div>
+										</div>
+									</li>
+									<li class="dropdown-item">
+										<div class="d-flex align-items-start">
+											<div class="pe-2 lh-1">
+												<span class="avatar avatar-md bg-success avatar-rounded">
+													<img src="/build/assets/images/faces/11.jpg" alt="user1">
+												</span>
+											</div>
+											<div class="flex-grow-1 d-flex align-items-start justify-content-between">
+												<div>
+													<p class="mb-0 fw-medium"><a href="chat.html">Server Alert</a></p>
+													<div class="text-muted fw-normal fs-12 header-notification-text text-truncate">High CPU usage detected on Server 3.</div>
+													<div class="fw-normal fs-10 text-muted op-8">1 hr ago</div>
+												</div>
+												<div>
+													<a href="javascript:void(0);" class="min-w-fit-content dropdown-item-close1">
+														<i class="ri-close-line"></i>
+													</a>
+												</div>
+											</div>
+										</div>
+									</li>
+									<li class="dropdown-item">
+										<div class="d-flex align-items-start">
+											<div class="pe-2 lh-1">
+												<span class="avatar avatar-md bg-info avatar-rounded">
+													<i class="ri-message-2-line lh-1 fs-16"></i>
+												</span>
+											</div>
+											<div class="flex-grow-1 d-flex align-items-start justify-content-between">
+												<div>
+													<p class="mb-0 fw-medium"><a href="chat.html">New Message</a></p>
+													<div class="text-muted fw-normal fs-12 header-notification-text text-truncate">You have a new message from Sophia Johnson.</div>
+													<div class="fw-normal fs-10 text-muted op-8">2 hrs ago</div>
+												</div>
+												<div>
+													<a href="javascript:void(0);" class="min-w-fit-content dropdown-item-close1">
+														<i class="ri-close-line"></i>
+													</a>
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul>
+						
+                                <!-- View All Removed -->
+							</div>
+							<!-- End::main-header-dropdown -->
+						</li>
+						<!-- End::header-element -->
+
+						<!-- Start::header-element -->
+						<li class="header-element header-fullscreen full-screen-toggle">
+							<!-- Start::header-link -->
+							<a href="javascript:void(0);" class="header-link">
+								<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 full-screen-open header-link-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+								</svg>
+								<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 full-screen-close header-link-icon d-none" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25" />
+								</svg>
+							</a>
+							<!-- End::header-link -->
+						</li>
+						<!-- End::header-element -->
+
+						<!-- Start::header-element -->
+						<li class="header-element dropdown">
+							<!-- Start::header-link|dropdown-toggle -->
+							<a href="javascript:void(0);" class="header-link dropdown-toggle" id="mainHeaderProfile" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+								<div class="d-flex align-items-center">
+									<div>
+										<img src="/build/assets/images/faces/15.jpg" alt="img" class="avatar custom-header-avatar avatar-rounded" id="header-profile-img">
+									</div>
+								</div>
+							</a>
+							<!-- End::header-link|dropdown-toggle -->
+						<ul class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" aria-labelledby="mainHeaderProfile">
+    <li>
+        <div class="dropdown-item text-center border-bottom">
+            <span class="fw-medium" id="dropdown-user-name">
+                Loading...
+            </span>
+            <span class="d-block fs-12 text-muted" id="dropdown-user-role">
+                ...
+            </span>
+        </div>
+    </li>
+    
+    <li>
+        <a class="dropdown-item d-flex align-items-center" href="/profile">
+            <i class="ri-user-line lh-1 p-1 rounded-circle bg-primary-transparent text-primary me-2 fs-14"></i>Profile
+        </a>
+    </li>
+    
+    <li>
+        <a class="dropdown-item d-flex align-items-center" href="/settings">
+            <i class="ri-settings-5-line lh-1 p-1 rounded-circle bg-primary-transparent text-primary me-2 fs-14"></i>Settings
+        </a>
+    </li>
+
+    <li>
+        <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="logout()">
+            <i class="ri-door-lock-line lh-1 p-1 rounded-circle bg-primary-transparent text-primary me-2 fs-14"></i>Log Out
+        </a>
+    </li>
+</ul>
+						</li>  
+						<!-- End::header-element -->
+
+						<!-- Start::header-element -->
+						<li class="header-element">
+							<!-- Start::header-link|switcher-icon -->
+							<a href="javascript:void(0);" class="header-link switcher-icon" data-bs-toggle="offcanvas" data-bs-target="#switcher-canvas">
+								<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+									<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+								</svg>
+							</a>
+							<!-- End::header-link|switcher-icon -->
+						</li>
+						<!-- End::header-element -->
+
+					</ul>
+					<!-- End::header-content-right -->
+
+				</div>
+				<!-- End::main-header-container -->
+
+			</header>
+		
+        
+            <!-- End::main-header -->
+             
+             
+<script>
+    async function initDashboard() {
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/login'; return; }
+
+        try {
+            // 1. Fetch User Data from Server
+            const response = await fetch('/api/auth/me', {
+                method: 'GET',
+                headers: { 
+                    'Authorization': `Bearer ${token}`, 
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const user = data.user;
+                
+                // ------------------------------------------------------
+                // FIX: Update Header & Dropdown Info
+                // ------------------------------------------------------
+                
+                // 1. Main Welcome Message
+                const welcomeName = document.getElementById('welcome-name');
+                if (welcomeName) welcomeName.innerText = user.full_name;
+
+                // 2. Profile Dropdown Name (This fixes the "Loading...")
+                const dropName = document.getElementById('dropdown-user-name'); // Matches HTML ID
+                if (dropName) dropName.innerText = user.full_name;
+
+                // 3. Profile Dropdown Role (This fixes the "...")
+                const dropRole = document.getElementById('dropdown-user-role'); // Matches HTML ID
+                if (dropRole) dropRole.innerText = user.role.toUpperCase();
+
+                // 4. Update Profile Picture (if exists)
+                if (user.profile_picture_url) {
+                    const profileImg = document.getElementById('header-profile-img');
+                    if (profileImg) profileImg.src = user.profile_picture_url;
+                }
+
+                // ------------------------------------------------------
+                // Role-Based Display Logic (Safe - checks element exists)
+                // ------------------------------------------------------
+                if (user.role === 'employer') {
+                    // Update Subtitle (only if element exists)
+                    const subtitle = document.getElementById('welcome-subtitle');
+                    if (subtitle) subtitle.innerText = "Here's what's happening in your company.";
+                    
+                    // Show Main Dashboard (only if element exists)
+                    const dashboardEmployer = document.getElementById('dashboard-employer');
+                    if (dashboardEmployer) dashboardEmployer.style.setProperty('display', 'block', 'important');
+                    
+                    // Show "Post Job" Button
+                    const headerAction = document.getElementById('header-action-employer');
+                    if (headerAction) headerAction.style.setProperty('display', 'flex', 'important');
+
+                    // Show Sidebar Items for Employers
+                    document.querySelectorAll('.employer-only').forEach(el => {
+                        el.style.setProperty('display', 'block', 'important');
+                    });
+
+                    // Fetch Company Data for Logo
+                    try {
+                        const companyRes = await fetch('/api/company/me', {
+                            method: 'GET',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        if (companyRes.ok) {
+                            const companyData = await companyRes.json();
+                            if (companyData.company && companyData.company.logo_url) {
+                                const profileImg = document.getElementById('header-profile-img');
+                                if (profileImg) profileImg.src = companyData.company.logo_url;
+                            }
+                        }
+                    } catch (companyErr) {
+                        console.log("No company found for header logo");
+                    }
+
+                } else {
+                    // Seeker Logic
+                    const subtitle = document.getElementById('welcome-subtitle');
+                    if (subtitle) subtitle.innerText = "Here are the latest opportunities for you.";
+                    
+                    // Show Main Dashboard (only if element exists)
+                    const dashboardSeeker = document.getElementById('dashboard-seeker');
+                    if (dashboardSeeker) dashboardSeeker.style.setProperty('display', 'block', 'important');
+
+                    // Show Sidebar Items for Seekers
+                    document.querySelectorAll('.seeker-only').forEach(el => {
+                        el.style.setProperty('display', 'block', 'important');
+                    });
+                }
+
+            } else {
+                logout();
+            }
+        } catch (err) {
+            console.error("Auth Error:", err);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.clear(); // Ensure clean slate
+        window.location.href = '/login';
+    }
+
+    // Run immediately
+    initDashboard();
+    
+    // Fetch and display unread message count in header
+    async function fetchUnreadCount() {
+        const token = localStorage.getItem('token');
+        if(!token) return;
+        
+        try {
+            const res = await fetch('/api/chat/unread-count', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.status === 401) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+                return;
+            }
+            
+            if(res.ok) {
+                const data = await res.json();
+                const count = data.count || 0;
+                
+                // Update header badge
+                const badge = document.getElementById('header-unread-badge');
+                const dataBadge = document.getElementById('notification-data');
+                const pulse = document.getElementById('notification-pulse');
+                
+                if(badge) {
+                    // STRICT REQUIREMENT: NEVER SHOW BADGE COUNT
+                    // if(count > 0) {
+                    //    badge.textContent = count > 99 ? '99+' : count;
+                    //    badge.style.display = 'block';
+                    //} else {
+                        badge.style.display = 'none';
+                    //}
+                }
+                
+                if(dataBadge) {
+                    dataBadge.textContent = count + ' Unread';
+                }
+                
+                if(pulse) {
+                    pulse.style.display = count > 0 ? 'block' : 'none';
+                }
+            }
+        } catch(e) {
+            console.error('Failed to fetch unread count:', e);
+        }
+    }
+    
+    fetchUnreadCount();
+    // Refresh unread count every 30 seconds
+    setInterval(fetchUnreadCount, 30000);
+</script>
+
+<!-- ENHANCED NOTIFICATION LOGIC -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadNotifications();
+        
+        // Socket Real-time Listener & Global Connection
+        // ----------------------------------------------------
+        initGlobalSocket();
+        
+        async function initGlobalSocket() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // 1. Initialize Socket if not exists
+            if (typeof window.socket === 'undefined') {
+                // Ensure socket.io client is loaded (it should be via main layout)
+                if (typeof io !== 'undefined') {
+                    window.socket = io();
+                } else {
+                    console.warn("Socket.io client not loaded");
+                    return;
+                }
+            }
+
+            // 2. Extract User ID and Join Room
+            try {
+                const payload = parseJwt(token);
+                if (payload && payload.id) {
+                    // console.log("Joining socket room for user:", payload.id);
+                    window.socket.emit('join', payload.id);
+                }
+            } catch (e) {
+                console.error("Error parsing token for socket:", e);
+            }
+
+            // 3. Listen for Global Events (Notifications)
+             window.socket.on('receive_notification', (data) => {
+                const container = document.getElementById('header-notification-scroll');
+                const badge = document.getElementById('notification-data');
+                const pulse = document.getElementById('notification-pulse');
+
+                if (container) {
+                    if (container.innerText.includes('No notifications')) container.innerHTML = '';
+                    
+                    const html = createNotificationHTML({
+                        ...data,
+                        is_read: false, 
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    container.insertAdjacentHTML('afterbegin', html);
+                    
+                    if (pulse) pulse.style.display = 'block';
+                    // Optional: Update count locally
+                    if(badge && badge.textContent.includes('Unread')) {
+                         const curr = parseInt(badge.textContent) || 0;
+                         badge.textContent = `${curr + 1} Unread`;
+                    }
+                }
+            });
+            
+            // 4. Listen for User Status Updates (Global)
+            window.socket.on('user_status', ({ userId, status }) => {
+                // Update Chat Page UI if active
+                if(typeof updateChatStatusUI === 'function') {
+                    updateChatStatusUI(userId, status);
+                }
+            });
+        }
+
+        function parseJwt (token) {
+            try {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch(e) { return null; }
+        }
+
+        // if (typeof socket !== 'undefined') {
+            // socket.on('receive_notification', (data) => { ... });
+        // } - REPLACED BY initGlobalSocket
+    });
+
+    async function loadNotifications() {
+        // Clear static list first
+        const container = document.getElementById('header-notification-scroll');
+        if(container && container.innerText.includes('Loading')) {
+             // Let it be or set loading spinner
+        }
+
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        try {
+            const res = await fetch('/api/notifications', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.status === 401) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+                return;
+            }
+            const data = await res.json();
+            
+            if(data.success) {
+                renderNotifications(data.notifications, data.unreadCount);
+            }
+        } catch(e) {
+            console.error("Failed to load notifications", e);
+        }
+    }
+
+    function createNotificationHTML(n) {
+        let iconClass = 'ri-notification-3-line';
+        let bgClass = 'bg-primary';
+        
+        if (n.type === 'success') { iconClass = 'ri-checkbox-circle-line'; bgClass = 'bg-success'; }
+        else if (n.type === 'warning') { iconClass = 'ri-alert-line'; bgClass = 'bg-warning'; }
+        else if (n.type === 'error') { iconClass = 'ri-error-warning-line'; bgClass = 'bg-danger'; }
+        else if (n.type === 'invite') { iconClass = 'ri-group-line'; bgClass = 'bg-info'; } 
+        else if (n.type === 'message') { iconClass = 'ri-message-2-line'; bgClass = 'bg-secondary'; }
+        
+        let actionButtons = '';
+        if (n.type === 'invite') { 
+            actionButtons = `
+            <div class="mt-2 d-flex gap-2">
+                <button class="btn btn-sm btn-soft-success py-1 px-3 fs-12 w-50" onclick="handleInvite('${n.related_id}', 'accept', event)">Accept</button>
+                <button class="btn btn-sm btn-soft-danger py-1 px-3 fs-12 w-50" onclick="handleInvite('${n.related_id}', 'reject', event)">Reject</button>
+            </div>`;
+        }
+
+        // REDESIGNED ITEM: Theme-Aware Glassmorphism Style
+        // We use standard colors that adapt, OR explicit checks if needed. 
+        // Better to use classes that defined in CSS for light/dark
+        return `
+        <li class="dropdown-item border-bottom p-3 ${n.is_read ? '' : 'bg-transparent'}" style="cursor: default; border-bottom: 1px solid var(--glas-border) !important;">
+            <div class="d-flex align-items-start">
+                <div class="pe-3 lh-1">
+                    <span class="avatar avatar-md ${bgClass} avatar-rounded text-white shadow-sm">
+                        <i class="${iconClass} lh-1 fs-18"></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1 overflow-hidden">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-semibold glas-text-primary fs-14 text-truncate" style="max-width: 80%;">${n.title}</span>
+                        <span class="fs-11 glas-text-muted text-nowrap">${timeAgo(n.createdAt)}</span>
+                    </div>
+                    <div class="glas-text-secondary fs-13 mb-0 text-break" style="line-height: 1.4;">${n.message}</div>
+                    ${actionButtons}
+                </div>
+                <div class="ps-2">
+                     ${!n.is_read ? `
+                        <a href="javascript:void(0);" onclick="event.stopPropagation(); markNotificationRead('${n.id}')" class="text-primary" title="Mark as read">
+                            <i class="ri-checkbox-circle-fill fs-16"></i>
+                        </a>` : ''}
+                </div>
+            </div>
+        </li>`;
+
+    }
+
+    function renderNotifications(notifications, unreadCount) {
+        const container = document.getElementById('header-notification-scroll');
+        const badge = document.getElementById('notification-data');
+        const pulse = document.getElementById('notification-pulse');
+        
+        if(!container) return;
+        if(badge) badge.textContent = `${unreadCount} Unread`;
+        if(pulse) pulse.style.display = unreadCount > 0 ? 'block' : 'none';
+
+        if(notifications.length === 0) {
+            container.innerHTML = '<li class="dropdown-item text-center p-3 text-muted">No notifications</li>';
+            return;
+        }
+
+        let html = '';
+        notifications.forEach(n => {
+            html += createNotificationHTML(n);
+        });
+        container.innerHTML = html;
+    }
+    
+    async function markAllNotificationsRead() {
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        try {
+            const res = await fetch('/api/notifications/all/read', {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (res.ok) {
+                // Refresh to update UI
+                loadNotifications();
+                fetchUnreadCount(); 
+            }
+        } catch(e) {
+            console.error('Mark All Read Error', e);
+        }
+    }
+    
+    // Handle Accept/Reject Actions
+    async function handleInvite(inviteId, action, event) {
+        event.stopPropagation();
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        try {
+            const btn = event.target;
+            btn.innerHTML = '...';
+            btn.disabled = true;
+
+            const res = await fetch(`/api/chat/groups/invite/${inviteId}/${action}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (res.ok) {
+                const item = btn.closest('li');
+                item.innerHTML = `<div class="p-2 text-center text-muted">Invitation ${action}ed</div>`;
+                setTimeout(() => item.remove(), 2000);
+            } else {
+                alert('Action failed');
+            }
+        } catch(e) {
+            console.error('Invite Action Error', e);
+        }
+    }
+
+    async function markNotificationRead(id, link) {
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        try {
+            await fetch(`/api/notifications/${id}/read`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            loadNotifications(); 
+            
+            if(link && link !== 'null' && link !== 'undefined') {
+                window.location.href = link;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+    
+    function timeAgo(dateStr) {
+        const date = new Date(dateStr);
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " years ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hrs ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " mins ago";
+        return Math.floor(seconds) + " secs ago";
+    }
+</script>
+
+</script>
+
+<!-- GOOGLE TRANSLATE SCRIPT -->
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+          pageLanguage: 'en', 
+          includedLanguages: 'en,es,fr,ar,de,zh-CN,it,ru,pt,ja,ko,hi,tr,vi', 
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE, 
+          autoDisplay: false
+      }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</script>
+
+<script>
+    // ----------------------------------------------------------------
+    // 1. PWA SERVICE WORKER & INSTALL PROMPT
+    // ----------------------------------------------------------------
+    let deferredPrompt;
+    const installItem = document.getElementById('pwa-install-item');
+    const installBtn = document.getElementById('pwa-install-btn');
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed', err));
+        });
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if(installItem) installItem.classList.remove('d-none');
+        });
+
+        if(installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if(deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('User response to install prompt:', outcome);
+                    deferredPrompt = null;
+                    if(installItem) installItem.classList.add('d-none');
+                }
+            });
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // 2. SMOOTH TRANSLATION LOGIC (NO RELOAD)
+    // ----------------------------------------------------------------
+    function setLanguage(lang, flagUrl) {
+        // Map simplified codes to Google codes
+        // 'cn' -> 'zh-CN'
+        const googleLang = lang === 'cn' ? 'zh-CN' : lang;
+
+        // Save preferences
+        localStorage.setItem('user_language', lang);
+        localStorage.setItem('user_flag', flagUrl);
+
+        // Update UI
+        updateLanguageUI(flagUrl);
+
+        // TRIGGER GOOGLE TRANSLATE DROPDOWN
+        const googleDropdown = document.querySelector(".goog-te-combo");
+        if (googleDropdown) {
+            googleDropdown.value = googleLang;
+            googleDropdown.dispatchEvent(new Event("change"));
+            googleDropdown.dispatchEvent(new Event("input")); // Try extra event
+        } else {
+            console.warn("Google Translate widget not ready, falling back to reload");
+            document.cookie = "googtrans=/auto/" + googleLang + "; path=/";
+            window.location.reload(); // Correct fallback
+        }
+    }
+
+    function updateLanguageUI(flagUrl) {
+        const img = document.getElementById('header-lang-img');
+        if(img && flagUrl) img.src = flagUrl;
+    }
+
+    // Init Language
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedFlag = localStorage.getItem('user_flag') || '/build/assets/images/flags/us_flag.jpg';
+        updateLanguageUI(savedFlag);
+    });
+</script>

@@ -1,0 +1,708 @@
+<%- include('includes/header2', { title: 'Candidates' }) %>
+
+<div class="page">
+<style>
+    .employer-only, .seeker-only { display: none !important; }
+    
+    /* Candidates Hero */
+    .candidates-hero {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .candidates-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .candidates-hero h1 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .candidates-hero p {
+        color: rgba(255,255,255,0.8);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Candidates Table */
+    .candidates-table-card {
+        background: var(--custom-white);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        overflow: hidden;
+    }
+    
+    .candidates-table-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .candidates-table-title {
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .candidates-table-title i {
+        color: #11998e;
+    }
+    
+    .candidates-table {
+        margin: 0;
+        background: transparent;
+    }
+    
+    .candidates-table thead {
+        background: rgba(17, 153, 142, 0.1);
+    }
+    
+    .candidates-table thead th {
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #11998e;
+        background: transparent;
+    }
+    
+    .candidates-table tbody tr {
+        transition: all 0.2s ease;
+        background: transparent;
+    }
+    
+    .candidates-table tbody tr:hover {
+        background: rgba(17, 153, 142, 0.05);
+    }
+    
+    .candidates-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: rgba(255,255,255,0.05);
+        background: transparent;
+    }
+    
+    .candidate-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 2px solid rgba(17, 153, 142, 0.2);
+    }
+    
+    .candidate-name {
+        font-weight: 600;
+        margin-bottom: 0.15rem;
+    }
+    
+    .candidate-email {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .action-btn-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn-sm:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Modal Enhancement */
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .modal-header.gradient-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: #fff;
+        padding: 1.25rem 1.5rem;
+        border: none;
+    }
+    
+    .modal-header.gradient-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+</style>
+
+    <%- include(sidebar) %>
+
+    <div class="main-content app-content">
+        <div class="container-fluid">
+
+            <!-- Modern Hero Header -->
+            <div class="candidates-hero" style="margin-top: 1.5rem;">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h1><i class="ri-user-search-line me-2"></i>Candidates for <span id="job-title-header">...</span></h1>
+                        <p>Review and manage applications for this position</p>
+                    </div>
+                    <a href="/jobs/manage" class="btn btn-light">
+                        <i class="ri-arrow-left-line me-1"></i>Back to Jobs
+                    </a>
+                </div>
+            </div>
+
+            <!-- Candidates Table Card -->
+            <div class="candidates-table-card">
+                <div class="candidates-table-header">
+                    <div class="candidates-table-title">
+                        <i class="ri-team-line"></i>
+                        All Applicants
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge bg-primary-transparent" id="total-candidates">0 candidates</span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table candidates-table text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Candidate</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Cover Letter</th>
+                                <th>Resume</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="candidates-table-body">
+                            <!-- Skeleton Rows -->
+                            <% for(let i=0; i<5; i++) { %>
+                            <tr>
+                                <td><div class="d-flex align-items-center"><div class="skeleton-box skeleton-avatar me-2"></div><div><div class="skeleton-box skeleton-text" style="width: 120px;"></div><div class="skeleton-box skeleton-text" style="width: 150px;"></div></div></div></td>
+                                <td><div class="skeleton-box skeleton-text" style="width: 100px;"></div></td>
+                                <td><div class="skeleton-box skeleton-btn" style="width: 100px;"></div></td>
+                                <td><div class="skeleton-box skeleton-btn" style="width: 80px;"></div></td>
+                                <td><div class="skeleton-box skeleton-btn" style="width: 80px;"></div></td>
+                                <td><div class="skeleton-box skeleton-btn" style="width: 120px;"></div></td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cover Letter Modal -->
+            <div class="modal fade" id="coverLetterModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header gradient-header">
+                            <h6 class="modal-title"><i class="ri-file-text-line me-2"></i>Cover Letter</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <p id="modal-cover-letter-content" class="text-muted mb-0" style="white-space: pre-wrap;"></p>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const path = window.location.pathname;
+        
+        // Check if we are viewing specific job candidates: /jobs/:id/candidates
+        // Regex to match /jobs/UUID/candidates or similar
+        // Or simpler: check if it starts with /jobs/ and the 2nd part provides an ID.
+        
+        if (path.startsWith('/jobs/') && !path.includes('/feed') && !path.includes('/manage') && !path.includes('/create')) {
+            const parts = path.split('/');
+            // /jobs/123/candidates -> parts[2] = 123
+            const jobId = parts[2];
+            if(jobId && jobId !== 'employer') { // strict check
+                 loadCandidates(jobId);
+                 return;
+            }
+        }
+
+        // Default: Load ALL candidates (e.g. /dashboard/employer/candidates, /candidates)
+        document.getElementById('job-title-header').innerText = 'All Jobs';
+        loadAllCandidates();
+    });
+
+    async function loadAllCandidates() {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`/api/applications/candidates`, {
+                 headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                renderCandidates(data.candidates, true); // Pass true to show Job Title column
+            } else {
+                document.getElementById('candidates-table-body').innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error loading candidates</td></tr>`;
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadCandidates(jobId) {
+        const token = localStorage.getItem('token');
+        try {
+            // First get the job details for the title (optional optimization, or get from candidates response if structure allows)
+            // Let's rely on the API. For now, fetch candidates directly.
+            
+            const response = await fetch(`/api/applications/job/${jobId}/candidates`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // We might not get job title from this specific endpoint if we didn't include it in the controller properly?
+                // Checked controller: `getJobCandidates` includes `seeker`. It doesn't fetch Job details separately unless modified.
+                // We can fetch job details separately or just use what we have.
+                // Let's quick-fetch job title for the header.
+                const jobResp = await fetch(`/api/jobs/${jobId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(jobResp.ok) {
+                    const jobData = await jobResp.json();
+                    document.getElementById('job-title-header').innerText = jobData.job.title;
+                }
+
+                renderCandidates(data.candidates, false);
+            } else {
+                document.getElementById('candidates-table-body').innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading candidates</td></tr>`;
+            }
+        } catch (error) {
+            console.error(error);
+            document.getElementById('candidates-table-body').innerHTML = `<tr><td colspan="6" class="text-center text-danger">Network Error</td></tr>`;
+        }
+    }
+
+    function renderCandidates(candidates, showJobTitle = false) {
+        const thead = document.querySelector('thead tr');
+        if (showJobTitle && !thead.innerHTML.includes('Job Title')) {
+            thead.insertAdjacentHTML('afterbegin', '<th>Job Title</th>');
+        }
+
+        const tbody = document.getElementById('candidates-table-body');
+        if (!candidates || candidates.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="${showJobTitle ? 7 : 6}" class="text-center p-5">No applicants yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = candidates.map(app => {
+            const seeker = app.seeker || {};
+            const jobTitle = app.job ? app.job.title : 'Unknown Job';
+            
+            return `
+                <tr>
+                    ${showJobTitle ? `<td><div class="fw-medium">${jobTitle}</div></td>` : ''}
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="avatar avatar-sm me-2 avatar-rounded bg-primary-transparent">
+                                ${seeker.full_name ? seeker.full_name.charAt(0).toUpperCase() : 'U'}
+                            </span>
+                            <div>
+                                <div class="fw-medium">${seeker.full_name || 'Unknown User'}</div>
+                                <div class="fs-12 text-muted">${seeker.email || ''}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${new Date(app.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-white border shadow-sm d-flex align-items-center justify-content-between px-2" style="min-width: 130px;" onclick="openStatusModal('${app.id}', '${app.status}', '${seeker.full_name || 'Candidate'}', '${seeker.full_name ? seeker.full_name.charAt(0).toUpperCase() : 'U'}')">
+                             <span>
+                                ${app.status === 'shortlisted' ? '<i class="ri-check-double-line text-primary me-1"></i> Shortlisted' : 
+                                  app.status === 'hired' ? '<i class="ri-shake-hands-line text-success me-1"></i> Hired' :
+                                  app.status === 'rejected' ? '<i class="ri-close-circle-line text-danger me-1"></i> Rejected' :
+                                  '<i class="ri-time-line text-warning me-1"></i> Pending'}
+                             </span>
+                             <i class="ri-pencil-fill text-muted fs-11 ms-2"></i>
+                        </button>
+                    </td>
+                    <td>
+                        ${app.cover_letter && app.cover_letter.startsWith('/uploads') 
+                            ? `<a href="${app.cover_letter}" target="_blank" class="btn btn-sm btn-light text-primary">View File</a>`
+                            : `<button onclick="showCoverLetter(\`${app.cover_letter ? app.cover_letter.replace(/`/g, '\\`').replace(/"/g, '&quot;') : ''}\`)" class="btn btn-sm btn-light text-primary">View</button>`
+                        }
+                    </td>
+                    <td>
+                        ${app.resume_url ? `<a href="${app.resume_url}" target="_blank" class="btn btn-sm btn-primary"><i class="ri-download-line text-white"></i> Link</a>` : '<span class="text-muted">No Link</span>'}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button onclick="viewCandidate('${app.id}')" class="btn btn-sm btn-info-light">View Profile</button>
+                            <button onclick="messageCandidate('${seeker.id}', '${seeker.full_name || 'Candidate'}', '${seeker.profile_picture_url || ''}')" class="btn btn-sm btn-primary-light" title="Message"><i class="ri-chat-3-line"></i></button>
+                            <a href="mailto:${seeker.email}" class="btn btn-sm btn-icon btn-outline-primary"><i class="ri-mail-send-line"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function showCoverLetter(text) {
+        document.getElementById('modal-cover-letter-content').innerText = text || 'No cover letter provided.';
+        new bootstrap.Modal(document.getElementById('coverLetterModal')).show();
+    }
+
+    function renderCandidateModal(app) {
+        const seeker = app.seeker || {};
+        const contentDiv = document.getElementById('candidate-profile-content');
+        
+        const skillsSnippet = seeker.skills ? seeker.skills.split(',').map(s => `<span class="badge bg-primary-transparent me-1">${s.trim()}</span>`).join('') : '<span class="text-muted">No skills listed</span>';
+
+        contentDiv.innerHTML = `
+            <div class="d-flex align-items-start mb-4">
+                <span class="avatar avatar-xl avatar-rounded bg-light text-primary fs-3 me-3">
+                    ${seeker.full_name ? seeker.full_name.charAt(0).toUpperCase() : 'U'}
+                </span>
+                <div>
+                    <h5 class="fw-bold mb-1">${seeker.full_name || 'Unknown Candidate'}</h5>
+                    <p class="text-muted mb-1"><i class="ri-mail-line me-1"></i> <a href="mailto:${seeker.email}">${seeker.email}</a></p>
+                    ${seeker.phone_number ? `<p class="text-muted mb-0"><i class="ri-phone-line me-1"></i> ${seeker.phone_number}</p>` : ''}
+                </div>
+            </div>
+
+            <h6 class="fw-bold mb-2">Professional Summary</h6>
+            <p class="text-muted mb-4">${seeker.bio || 'No bio provided.'}</p>
+
+            <h6 class="fw-bold mb-2">Skills</h6>
+            <div class="mb-4">${skillsSnippet}</div>
+
+            <h6 class="fw-bold mb-2">Experience</h6>
+            <p class="text-muted mb-4">${seeker.experience || 'No experience details.'}</p>
+
+            <div class="row">
+                <div class="col-md-12">
+                     <h6 class="fw-bold mb-2">Cover Letter</h6>
+                     <div class="p-3 bg-light rounded glass-panel mb-3">
+                        ${app.cover_letter && app.cover_letter.startsWith('/uploads') 
+                            ? `<a href="${app.cover_letter}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="ri-file-text-line me-1"></i> View Cover Letter File</a>`
+                            : (app.cover_letter ? app.cover_letter.replace(/\n/g, '<br>') : 'No cover letter text.')
+                        }
+                     </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3 border-top pt-3">
+                ${app.resume_url ? 
+                    `<a href="${app.resume_url}" target="_blank" class="btn btn-outline-primary"><i class="ri-file-text-line me-1"></i> View Resume</a>` 
+                    : '<button disabled class="btn btn-light">No Resume</button>'
+                }
+                
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        ${app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('${app.id}', 'pending')">Pending</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('${app.id}', 'shortlisted')">Shortlisted</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="updateStatus('${app.id}', 'hired')">Hired</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="javascript:void(0);" onclick="updateStatus('${app.id}', 'rejected')">Reject</a></li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+
+    async function viewCandidate(appId) {
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        // Show loading state
+        const contentDiv = document.getElementById('candidate-profile-content');
+        contentDiv.innerHTML = '<div class="text-center p-5"><span class="spinner-border text-primary"></span> Loading...</div>';
+        const modal = new bootstrap.Modal(document.getElementById('candidateProfileModal'));
+        modal.show();
+
+        try {
+            const response = await fetch(`/api/applications/${appId}`, {
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json' // Force JSON response
+                }
+            });
+            
+            if (response.ok) {
+                 const data = await response.json();
+                 if(data.application) {
+                    renderCandidateModal(data.application);
+                 } else {
+                    contentDiv.innerHTML = '<p class="text-danger text-center">Invalid data received.</p>';
+                 }
+            } else {
+                contentDiv.innerHTML = '<p class="text-danger text-center">Failed to load profile (Error ' + response.status + ').</p>';
+            }
+        } catch (e) {
+            console.error(e);
+            contentDiv.innerHTML = '<p class="text-danger text-center">Network error.</p>';
+        }
+    }
+
+    async function updateStatus(appId, newStatus) {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`/api/applications/${appId}/status`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                Toastify({
+                    text: "Status updated successfully",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", 
+                    position: "right",
+                    backgroundColor: "#00b074",
+                }).showToast();
+            } else {
+                Toastify({
+                    text: "Failed to update status",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", 
+                    position: "right",
+                    backgroundColor: "#ff5b5c",
+                }).showToast();
+            }
+        } catch (e) {
+            console.error(e);
+            Toastify({
+                text: "Error updating status",
+                duration: 3000,
+                close: true,
+                gravity: "top", 
+                position: "right",
+                backgroundColor: "#ff5b5c",
+            }).showToast();
+        }
+    }
+
+    // Message Candidate - Store info and redirect to chat
+    function messageCandidate(userId, name, avatar) {
+        // Store the target user info in sessionStorage so chat.ejs can auto-open the conversation
+        sessionStorage.setItem('openChatWith', JSON.stringify({
+            userId: userId,
+            name: name,
+            avatar: avatar || 'https://laravelui.spruko.com/zeno/build/assets/images/faces/9.jpg'
+        }));
+        
+        // Redirect to chat page (use employer path since we're in candidates view)
+        window.location.href = '/dashboard/employer/chat';
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '/login';
+    }
+
+    // Role-based Sidebar Check (executed immediately)
+    (function checkRole() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const role = payload.role;
+                
+                // Remove 'display: none !important' by injecting style or changing class
+                // Since we used !important in CSS, we might need a strong override or just modify the stylesheet.
+                // Easiest is to add a style block that overrides it effectively, OR just rely on class removal if we didn't use !important in a way that blocks this.
+                // Wait, the CSS is: .employer-only { display: none !important; }
+                // So adding a class '.show-block' with display: block !important works.
+                
+                const style = document.createElement('style');
+                if (role === 'employer') {
+                    style.innerHTML = '.employer-only { display: block !important; }';
+                } else if (role === 'seeker') {
+                     style.innerHTML = '.seeker-only { display: block !important; }';
+                }
+                document.head.appendChild(style);
+                
+            } catch (e) { console.error('Token parse fail', e); }
+        }
+    })();
+</script>
+
+<!-- Candidate Profile Modal -->
+<div class="modal fade glass-modal" id="candidateProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Candidate Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="candidate-profile-content">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Management Modal (New Step Flow) -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage Application Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="mb-4">
+                    <span class="avatar avatar-lg avatar-rounded bg-light text-primary fs-3 mb-2" id="modal-status-avatar">U</span>
+                    <h5 class="fw-bold mb-0" id="modal-status-candidate-name">Candidate Name</h5>
+                    <p class="text-muted fs-13" id="modal-status-current">Current Status: Pending</p>
+                </div>
+
+                <!-- Visual Tracker -->
+                <div class="status-tracker d-flex justify-content-between mb-5 position-relative">
+                    <div class="tracker-line position-absolute start-0 end-0 top-50 translate-middle-y bg-light" style="height: 2px; z-index: 0;"></div>
+                    
+                    <div class="tracker-step position-relative z-1" id="step-pending">
+                        <div class="step-circle bg-white border border-2 border-primary text-primary d-flex align-items-center justify-content-center rounded-circle mx-auto" style="width: 32px; height: 32px;"><i class="ri-time-line"></i></div>
+                        <span class="fs-11 fw-medium mt-1 d-block">Pending</span>
+                    </div>
+
+                    <div class="tracker-step position-relative z-1" id="step-shortlisted">
+                        <div class="step-circle bg-white border border-2 border-muted text-muted d-flex align-items-center justify-content-center rounded-circle mx-auto" style="width: 32px; height: 32px;"><i class="ri-check-double-line"></i></div>
+                        <span class="fs-11 fw-medium mt-1 d-block">Shortlisted</span>
+                    </div>
+
+                    <div class="tracker-step position-relative z-1" id="step-hired">
+                        <div class="step-circle bg-white border border-2 border-muted text-muted d-flex align-items-center justify-content-center rounded-circle mx-auto" style="width: 32px; height: 32px;"><i class="ri-shake-hands-line"></i></div>
+                        <span class="fs-11 fw-medium mt-1 d-block">Hired</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-grid gap-2 mb-3">
+                    <p class="text-muted fs-13 mb-2">Move candidate to next stage:</p>
+                    <button class="btn btn-outline-primary" id="btn-set-shortlisted" onclick="confirmStatusChange('shortlisted')">
+                        <i class="ri-check-double-line me-2"></i> Shortlist Candidate
+                    </button>
+                    <button class="btn btn-outline-success" id="btn-set-hired" onclick="confirmStatusChange('hired')">
+                        <i class="ri-shake-hands-line me-2"></i> Hire Candidate
+                    </button>
+                </div>
+
+                 <div class="border-top pt-3 mt-4">
+                    <button class="btn btn-sm btn-link text-danger text-decoration-none" onclick="confirmStatusChange('rejected')">
+                        <i class="ri-close-circle-line me-1"></i> Reject Application
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentAppId = null;
+    let currentStatus = null;
+
+    function openStatusModal(appId, status, candidateName, initial) {
+        currentAppId = appId;
+        currentStatus = status;
+
+        document.getElementById('modal-status-candidate-name').innerText = candidateName;
+        document.getElementById('modal-status-avatar').innerText = initial;
+        document.getElementById('modal-status-current').innerText = 'Current Status: ' + status.charAt(0).toUpperCase() + status.slice(1);
+
+        // Reset Steps
+        ['pending', 'shortlisted', 'hired'].forEach(step => {
+            const el = document.getElementById('step-' + step);
+            const circle = el.querySelector('.step-circle');
+            
+            // Default State
+            circle.className = 'step-circle bg-white border border-2 border-muted text-muted d-flex align-items-center justify-content-center rounded-circle mx-auto';
+            if(step === 'hired') circle.classList.replace('text-muted', 'text-muted'); // fix reset logic if needed
+
+            // Active Loop
+            if (getStatusLevel(status) >= getStatusLevel(step)) {
+                circle.classList.remove('border-muted', 'text-muted');
+                circle.classList.add('border-primary', 'bg-primary', 'text-white');
+                if(status === 'rejected') {
+                     // Special case for rejected? Maybe grey out everything or show red?
+                     // For now, let's just keep 'Pending' active if they were pending, but rejected stops the flow.
+                     // A simple flow: if rejected, maybe no steps are green except pending?
+                }
+            }
+        });
+
+        // Hide buttons based on status
+        document.getElementById('btn-set-shortlisted').style.display = (status === 'pending') ? 'block' : 'none';
+        document.getElementById('btn-set-hired').style.display = (status === 'shortlisted') ? 'block' : 'none';
+        
+        // Show modal
+        new bootstrap.Modal(document.getElementById('statusModal')).show();
+    }
+
+    function getStatusLevel(status) {
+        if (status === 'pending') return 1;
+        if (status === 'shortlisted') return 2;
+        if (status === 'hired') return 3;
+        return 0; // rejected
+    }
+
+    function confirmStatusChange(newStatus) {
+        if(!currentAppId) return;
+
+        let confirmMsg = `Are you sure you want to mark this candidate as ${newStatus.toUpperCase()}?`;
+        if (newStatus === 'rejected') confirmMsg = "Are you sure you want to REJECT this candidate? This will send a notification email.";
+        if (newStatus === 'hired') confirmMsg = "Are you sure? This will mark the candidate as HIRED and send an offer email.";
+
+        if(confirm(confirmMsg)) {
+            // Close modal
+            const modalEl = document.getElementById('statusModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+            
+            updateStatus(currentAppId, newStatus);
+        }
+    }
+</script>
+
+<%- include('includes/footer2') %>

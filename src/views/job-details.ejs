@@ -1,0 +1,704 @@
+<%- include('includes/header2', { title: 'Job Details - Job Ecosystem' }) %>
+
+<style>
+    .employer-only, .seeker-only { display: none !important; }
+</style>
+
+<div class="page">
+    
+    <!-- SIDEBAR (Same structure as other pages) -->
+    <%- include('includes/sidebar') %>
+
+    <!-- MAIN CONTENT -->
+ <div class="main-content app-content">
+                <div class="container-fluid">
+
+                    	
+                    <!-- Page Header -->
+                    <div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
+                        <div>
+
+                            <h1 class="page-title fw-medium fs-18 mb-0" id="page-job-title">Job Details</h1>
+                        </div>
+                        <div class="btn-list">
+                            <a href="/jobs/manage" class="btn btn-light btn-wave">
+                                <i class="ri-arrow-left-line me-1"></i> Back to Manage Jobs
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Page Header Close -->
+
+                    <!-- Start::row-1 -->
+                    <div class="row">
+                        <div class="col-xxl-9">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card custom-card overflow-hidden job-info-banner">
+                                    </div>
+                                    <div class="card border border-dashed custom-card job-info-data mb-2">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-wrap align-items-top justify-content-between gap-2">
+                                                <div>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        <div>
+                                                            <span class="avatar avatar-lg border p-1">
+                                                                <img id="job-icon" src="/build/assets/images/media/jobs/1.png" alt="">
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <h5 class="fw-medium mb-0 d-flex align-items-center"><span id="job-title-text">Loading...</span></h5>
+                                                            <a href="javascript:void(0);" class="fs-12 text-muted"><i class="bi bi-building"></i> <span id="job-company-name">Loading...</span></a>
+                                                            <div class="d-flex mt-3">
+                                                                <div>
+                                                                    <p class="mb-1"><i class="bi bi-geo-alt me-1"></i><span id="job-location">--</span></p>
+                                                                    <p><i class="bi bi-briefcase me-1"></i><span id="job-experience">--</span></p>
+                                                                </div>
+                                                                <div class="ms-4">
+                                                                    <p class="mb-1"><i class="bi bi-coin me-1"></i><span class="fw-medium" id="job-salary">--</span></p>
+                                                                    <p><i class="bi bi-mortarboard me-1"></i><span id="job-qualification">--</span></p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="popular-tags">
+                                                                <span class="badge rounded-pill bg-light text-default"><i class="bi bi-clock me-1"></i><span id="job-type-badge">--</span></span>
+                                                                <span class="badge rounded-pill bg-light text-default"><i class="bi bi-briefcase me-1"></i><span id="job-vacancies-badge">1</span> Opening(s)</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-end ms-auto">
+                                                    <!-- Employer elements - Edit/Delete for job owner -->
+                                                    <!-- Employer elements - Edit/Delete for job owner -->
+                                                    <div id="employer-actions" style="display: none;">
+                                                        <p class="mb-3 mt-2"><span class="badge bg-success-transparent">This is your job posting</span></p>
+                                                        <div class="d-flex gap-2 flex-wrap mt-3 justify-content-end">
+                                                            <a href="#" id="edit-job-btn" class="btn mb-0 btn-info"><i class="ri-edit-line me-1"></i> Edit Job</a>
+                                                            <a href="javascript:void(0);" onclick="deleteJob()" class="btn mb-0 btn-danger-light"><i class="ri-delete-bin-line me-1"></i> Delete</a>
+                                                        </div>
+                                                        <p class="mb-0 mt-3 text-muted fs-12" id="applications-count"><i class="ri-group-line me-1"></i> 0 Applications received</p>
+                                                    </div>
+                                                    
+                                                    <!-- Seeker elements - Apply Button -->
+                                                    <div id="seeker-actions" style="display: none;">
+                                                        <div class="d-flex gap-2 flex-wrap mt-3 justify-content-end">
+                                                            <button class="btn btn-primary btn-wave" onclick="openApplicationModal()">
+                                                                <i class="ri-send-plane-fill me-1"></i> Apply Now
+                                                            </button>
+                                                            <button class="btn btn-light btn-wave" id="save-job-btn">
+                                                                <i class="ri-heart-line me-1"></i> Save
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <!-- TODO: Add seeker-actions (Apply, Save, Share) here when implementing job seeker features -->
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <h6 class="fw-medium">Job Description</h6>
+                                    <div id="job-description-content" class="op-9 mb-4">
+                                        <p>Loading job description...</p>
+                                    </div>
+                                    
+                                    <h6 class="fw-medium">Required Skills</h6>
+                                    <div id="job-skills-container" class="popular-tags mb-3">
+                                        <!-- Skills will be populated dynamically -->
+                                    </div>
+                                    
+                                    <h6 class="fw-medium">Category</h6>
+                                    <p id="job-category-text" class="text-muted">--</p>
+                                </div>  
+                            </div>
+                            <!-- TODO: Add Sign Up CTA here when implementing job seeker features -->  
+                        </div>
+                        <div class="col-xxl-3">
+                            <div class="card custom-card">
+                                <div class="card-header">
+                                    <div class="card-title">Job Highlights</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-2 fs-14 d-flex align-items-center">
+                                        <span class="avatar avatar-sm border lh-1 avatar-rounded me-2 bg-info-transparent">
+                                            <i class="ri-map-pin-line"></i>
+                                        </span>
+                                        <span class="text-muted">Work Location</span>
+                                        <span class="ms-auto fw-medium" id="highlight-location">--</span>
+                                    </div>
+                                    <div class="mb-2 d-flex align-items-center">
+                                        <span class="avatar avatar-sm border lh-1 avatar-rounded me-2 bg-danger-transparent">
+                                            <i class="ri-time-line"></i>
+                                        </span>
+                                        <span class="text-muted">Job Type</span>
+                                        <span class="ms-auto fw-medium" id="highlight-job-type">--</span>
+                                    </div>
+                                    <div class="mb-2 d-flex align-items-center">
+                                        <span class="avatar avatar-sm border lh-1 avatar-rounded me-2 bg-success-transparent">
+                                            <i class="ri-cash-line"></i>
+                                        </span>
+                                        <span class="text-muted">Salary Range</span>
+                                        <span class="ms-auto fw-medium" id="highlight-salary">--</span>
+                                    </div>
+                                    <div class="mb-0 d-flex align-items-center">
+                                        <span class="avatar avatar-sm border lh-1 avatar-rounded me-2 bg-info-transparent">
+                                            <i class="ri-checkbox-circle-line"></i>
+                                        </span>
+                                        <span class="text-muted">Status</span>
+                                        <span class="ms-auto fw-medium" id="highlight-status">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- TODO: Add Related Jobs section here when implementing job seeker features -->
+                            <!-- TODO: Add Subscribe to Job Alerts here when implementing job seeker features -->
+                        </div>
+                    </div>
+                    <!-- End::row-1 -->
+
+                    
+                </div>
+            </div>
+
+            <!-- Application Modal (Glassmorphism) -->
+            <style>
+                .glass-modal {
+                    background: rgba(255, 255, 255, 0.25) !important;
+                    backdrop-filter: blur(16px) !important;
+                    -webkit-backdrop-filter: blur(16px) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+                    color: #fff !important;
+                }
+                .glass-modal .modal-header, .glass-modal .modal-footer {
+                    border-color: rgba(255, 255, 255, 0.2) !important;
+                }
+                .glass-modal .modal-title, .glass-modal h6, .glass-modal label {
+                    color: #333; /* Dark text for readability on light glass */
+                    text-shadow: 0 0 2px rgba(255,255,255,0.5);
+                }
+                .glass-panel {
+                    background: rgba(255, 255, 255, 0.4);
+                    border-radius: 12px;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                }
+                .glass-input {
+                    background: rgba(255, 255, 255, 0.6) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+                    color: #000 !important;
+                    backdrop-filter: blur(4px);
+                }
+                .glass-input:focus {
+                    background: rgba(255, 255, 255, 0.9) !important;
+                    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.2) !important;
+                }
+            </style>
+            <div class="modal fade" id="applicationModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content border-0 shadow-lg glass-modal">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold" style="font-size: 1.25rem;">Apply to <span id="modal-job-title" class="text-primary">Job</span></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pt-2">
+                            <div class="d-flex align-items-center mb-4 p-3 glass-panel">
+                                <div class="avatar avatar-md me-3 bg-white border">
+                                    <i class="ri-user-smile-line fs-20 text-muted"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-semibold fs-15 text-dark">Applying as <span id="modal-user-name">Candidate</span></p>
+                                    <p class="mb-0 text-muted fs-12">Make sure your profile is up to date.</p>
+                                </div>
+                            </div>
+
+                            <form id="applicationForm" enctype="multipart/form-data">
+                                <h6 class="fw-bold mb-3 fs-15">Contact Info</h6>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fs-13 text-muted">Email Address</label>
+                                        <!-- Removed readonly per request -->
+                                        <input type="email" class="form-control glass-input" id="modal-email" value="Loading...">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fs-13 text-muted">Phone (Optional)</label>
+                                        <input type="tel" class="form-control glass-input" placeholder="+1 234 567 890">
+                                    </div>
+                                </div>
+
+                                <h6 class="fw-bold mb-3 fs-15 mt-4">Resume & Cover Letter</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="resume-file" class="form-label fs-13 text-muted">Upload Resume (PDF/Doc)</label>
+                                        <input type="file" class="form-control glass-input" id="resume-file" accept=".pdf,.doc,.docx" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cover-letter-file" class="form-label fs-13 text-muted">Upload Cover Letter (Optional)</label>
+                                        <input type="file" class="form-control glass-input" id="cover-letter-file" accept=".pdf,.doc,.docx">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                     <label class="form-label fs-13 text-muted">Or type Cover Letter</label>
+                                     <textarea class="form-control glass-input" id="cover-letter-text" rows="3" placeholder="Why are you a good fit?"></textarea>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer border-top-0">
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary rounded-pill px-4" onclick="submitApplication()">
+                                Submit Application
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>
+
+<script>
+    let currentJob = null;
+    let currentUserId = null;
+    let isOwner = false;
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
+        // Get current user ID from token
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            currentUserId = payload.id;
+        } catch (e) {
+            console.log('Could not parse token');
+        }
+
+        // Get job ID from URL
+        const pathParts = window.location.pathname.split('/');
+        const jobId = pathParts[2]; // /jobs/:id
+        
+        if (jobId && jobId !== 'feed' && jobId !== 'manage' && jobId !== 'create') {
+            await loadJobDetails(jobId);
+        }
+    });
+
+    async function loadJobDetails(jobId) {
+        if (!jobId) {
+             const pathParts = window.location.pathname.split('/');
+             jobId = pathParts[pathParts.length - 1]; 
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(`/api/jobs/${jobId}`, {
+                headers: headers
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Job not found');
+            }
+
+            const data = await response.json();
+            currentJob = data.job; // Store for global use
+            populateJobDetails(data); // Pass full data object (includes hasApplied, isSaved)
+        } catch (error) {
+            console.error("Error loading job:", error);
+            // alert('Job not found'); 
+            // window.location.href = '/jobs/feed';
+        }
+    }
+
+    function populateJobDetails(data) {
+        // Handle both full response {job, hasApplied...} and direct job object
+        const job = data.job ? data.job : data; 
+        
+        console.log("🔍 FRONTEND DEBUG: Full Data Received:", data);
+        console.log("🔍 FRONTEND DEBUG: isSaved flag:", data.isSaved);
+
+        if (!job) return;
+
+        // Debug - log the job data
+        console.log('Job data received:', job);
+
+        // Helper function to format salary
+        function formatSalary(salary) {
+            if (!salary) return 'Competitive';
+            const symbols = { 'USD': '$', 'EUR': '€', 'GBP': '£', 'NGN': '₦' };
+            const symbol = symbols[job.currency] || '₦';
+            
+            // If salary is just numbers, format it with commas
+            if (/^\d+$/.test(salary.replace(/,/g, ''))) {
+                return symbol + parseInt(salary.replace(/,/g, '')).toLocaleString();
+            }
+            
+            return `${symbol} ${salary}`; 
+        }
+
+        // Helper function to format job type
+        function formatJobType(type) {
+            if (!type) return 'Full-time';
+            return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function getJobIcon(job) {
+            const title = (job.title || '').toLowerCase();
+            const category = (job.category || '').toLowerCase();
+            let skills = '';
+            if (Array.isArray(job.skills)) {
+                // job.skills is already parsed by populateJobDetails before calling this? No, it passes raw job object.
+                // But in populateJobDetails we try parsed skills?
+                // Let's rely on checking the format again to be safe.
+                skills = job.skills.map(s => String(s).toLowerCase()).join(' ');
+            } else if (typeof job.skills === 'string') {
+                 // Try parsing just in case it's a JSON string
+                 try {
+                    const parsed = JSON.parse(job.skills);
+                    if (Array.isArray(parsed)) skills = parsed.map(s => String(s).toLowerCase()).join(' ');
+                    else skills = job.skills.toLowerCase();
+                 } catch(e) {
+                    skills = job.skills.toLowerCase();
+                 }
+            }
+    
+            // Map keywords to icon numbers
+            if (title.includes('react') || skills.includes('react')) return '/build/assets/images/media/jobs/1.png';
+            if (title.includes('html') || title.includes('css') || skills.includes('html')) return '/build/assets/images/media/jobs/2.png';
+            if (title.includes('vue') || skills.includes('vue')) return '/build/assets/images/media/jobs/3.png';
+            if (title.includes('wordpress') || title.includes('php')) return '/build/assets/images/media/jobs/4.png';
+            if (title.includes('python') || skills.includes('python')) return '/build/assets/images/media/jobs/1.png';
+            if (title.includes('java') || skills.includes('java')) return '/build/assets/images/media/jobs/2.png';
+            if (title.includes('node') || skills.includes('node')) return '/build/assets/images/media/jobs/3.png';
+            if (title.includes('angular') || skills.includes('angular')) return '/build/assets/images/media/jobs/4.png';
+            if (category.includes('design')) return '/build/assets/images/media/jobs/1.png';
+            if (category.includes('marketing')) return '/build/assets/images/media/jobs/2.png';
+            
+            // Default
+            const iconNum = (parseInt(job.id) || 1) % 4 + 1;
+            return `/build/assets/images/media/jobs/${iconNum}.png`;
+        }
+
+        // Page title
+        const pageTitleEl = document.getElementById('page-job-title');
+        if (pageTitleEl) pageTitleEl.innerText = job.title || 'Job Details';
+        document.title = `${job.title || 'Job Details'} - Job Ecosystem`;
+
+        // Edit button link
+        const editBtn = document.getElementById('edit-job-btn');
+        if (editBtn) editBtn.href = `/jobs/${job.id}/edit`;
+
+        // Job Header Section
+        const jobIcon = document.getElementById('job-icon');
+        if (jobIcon) jobIcon.src = getJobIcon(job);
+
+        const jobTitle = document.getElementById('job-title-text');
+        if (jobTitle) jobTitle.innerText = job.title || 'Untitled Job';
+
+        const companyName = document.getElementById('job-company-name');
+        if (companyName) companyName.innerText = job.company?.name || 'Company';
+
+        const jobLocation = document.getElementById('job-location');
+        if (jobLocation) jobLocation.innerText = job.location || job.company?.location || 'Remote';
+
+        const jobExp = document.getElementById('job-experience');
+        if (jobExp) jobExp.innerText = job.experience || 'Any Experience';
+
+        const jobSalary = document.getElementById('job-salary');
+        if (jobSalary) jobSalary.innerText = formatSalary(job.salary_range);
+
+        const jobQual = document.getElementById('job-qualification');
+        if (jobQual) jobQual.innerText = job.qualification || 'Any Qualification';
+
+        const jobType = document.getElementById('job-type-badge');
+        if (jobType) jobType.innerText = formatJobType(job.type);
+
+        const jobVacancies = document.getElementById('job-vacancies-badge');
+        if (jobVacancies) jobVacancies.innerText = job.vacancies || '1';
+
+        // Job Description
+        const descContainer = document.getElementById('job-description-content');
+        if (descContainer) {
+            descContainer.innerHTML = job.description 
+                ? `<p>${job.description.replace(/\n/g, '</p><p>')}</p>`
+                : '<p>No description provided.</p>';
+        }
+
+        // Skills
+        const skillsContainer = document.getElementById('job-skills-container');
+        if (skillsContainer) {
+            let skills = [];
+            if (job.skills) {
+                try {
+                    skills = Array.isArray(job.skills) ? job.skills : JSON.parse(job.skills);
+                } catch (e) {
+                    console.log('Could not parse skills:', job.skills);
+                }
+            }
+            if (skills.length > 0) {
+                skillsContainer.innerHTML = skills.map(skill => 
+                    `<span class="badge rounded-pill bg-primary-transparent me-1 mb-1">${skill}</span>`
+                ).join('');
+            } else {
+                skillsContainer.innerHTML = '<span class="text-muted">No skills specified</span>';
+            }
+        }
+
+        // Category
+        const categoryText = document.getElementById('job-category-text');
+        if (categoryText) categoryText.innerText = job.category || 'Not specified';
+
+        // Sidebar Highlights
+        const highlightLoc = document.getElementById('highlight-location');
+        if (highlightLoc) highlightLoc.innerText = job.location_type ? formatJobType(job.location_type) : (job.location || 'Remote');
+
+        const highlightType = document.getElementById('highlight-job-type');
+        if (highlightType) highlightType.innerText = formatJobType(job.type);
+
+        const highlightSalary = document.getElementById('highlight-salary');
+        if (highlightSalary) highlightSalary.innerText = formatSalary(job.salary_range);
+
+        const highlightStatus = document.getElementById('highlight-status');
+        if (highlightStatus) {
+            const status = job.status || 'active';
+            highlightStatus.innerText = status.charAt(0).toUpperCase() + status.slice(1);
+            highlightStatus.className = 'ms-auto fw-medium badge ' + 
+                (status === 'active' ? 'bg-success-transparent' : 
+                 status === 'paused' ? 'bg-warning-transparent' : 'bg-secondary-transparent');
+        }
+
+        // --- ACCESS CONTROL LOGIC ---
+        // employer_id should be in the job object. We need to compare specific UUIDs.
+        if (currentUserId && job.employer_id && currentUserId === job.employer_id) {
+            // User OWNS this job
+            const empActions = document.getElementById('employer-actions');
+            if (empActions) empActions.style.display = 'block';
+        } else {
+            // User is a Viewer (Seeker or other Employer)
+            const seekerActions = document.getElementById('seeker-actions');
+            if (seekerActions) seekerActions.style.display = 'block';
+
+            // Check if Applied
+            const applyBtn = seekerActions.querySelector('.btn-primary');
+            if (data.hasApplied) {
+                if (applyBtn) {
+                    applyBtn.classList.remove('btn-primary');
+                    applyBtn.classList.add('btn-success');
+                    applyBtn.innerHTML = '<i class="ri-check-line me-1"></i> Applied';
+                    applyBtn.disabled = true;
+                    applyBtn.removeAttribute('data-bs-toggle'); // Remove modal trigger
+                }
+            }
+
+            // Check if Saved
+            // Always bind the click handler first if button exists
+            const saveBtn = document.getElementById('save-job-btn');
+            if (saveBtn) {
+                // Remove existing to prevent duplicates if re-populated (simple way is to just assign onclick)
+                saveBtn.onclick = () => toggleSave(saveBtn);
+
+                if (data.isSaved) {
+                    saveBtn.innerHTML = '<i class="ri-heart-fill text-danger me-1"></i> Saved';
+                    saveBtn.classList.add('border-danger');
+                } else {
+                    // Reset state if not saved
+                    saveBtn.innerHTML = '<i class="ri-heart-line me-1"></i> Save';
+                    saveBtn.classList.remove('border-danger');
+                }
+            }
+        }
+    }
+
+    async function deleteJob() {
+        if (!currentJob) return;
+        if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) return;
+
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`/api/jobs/${currentJob.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                alert('Job deleted successfully!');
+                window.location.href = '/jobs/manage';
+            } else {
+                const data = await response.json();
+                alert('Error: ' + (data.error || 'Could not delete job'));
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('Network error. Please try again.');
+        }
+    }
+
+    async function toggleSave(btn) {
+        if (!currentJob) return;
+        const token = localStorage.getItem('token');
+        if (!token) {
+             window.location.href = '/login';
+             return;
+        }
+
+        // Optimistic UI update
+        // Actually let's check inner HTML icon
+        const icon = btn.querySelector('i');
+        const isSaved = icon.classList.contains('ri-heart-fill');
+
+        try {
+            const response = await fetch(`/api/jobs/${currentJob.id}/save`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                if (data.isSaved) {
+                    btn.innerHTML = '<i class="ri-heart-fill text-danger me-1"></i> Saved';
+                    btn.classList.add('border-danger');
+                } else {
+                    btn.innerHTML = '<i class="ri-heart-line me-1"></i> Save';
+                    btn.classList.remove('border-danger');
+                }
+                // Optional: Show toast
+            } else {
+                alert('Action failed');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '/login';
+    }
+
+    // --- APPLICATION LOGIC ---
+
+    function openApplicationModal() {
+        if (!currentJob) return;
+        document.getElementById('modal-job-title').innerText = currentJob.title;
+        
+        // Pre-fill user details if possible (from token payload or separate fetch if we did one)
+        const token = localStorage.getItem('token');
+        if(token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                document.getElementById('modal-user-name').innerText = payload.name || 'Candidate';
+                document.getElementById('modal-email').value = payload.email || '';
+            } catch(e) {}
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('applicationModal'));
+        modal.show();
+    }
+
+    async function submitApplication() {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const email = document.getElementById('modal-email').value;
+        const resumeFile = document.getElementById('resume-file').files[0];
+        const clFile = document.getElementById('cover-letter-file').files[0];
+        const clText = document.getElementById('cover-letter-text').value;
+
+        // Validation
+        if (!resumeFile && !document.getElementById('resume-url')?.value) {
+            Toastify({
+                text: "Please provide a resume.",
+                duration: 3000,
+                close: true,
+                gravity: "top", 
+                position: "right",
+                backgroundColor: "#ff5b5c",
+            }).showToast();
+            return;
+        }
+
+        const btn = document.querySelector('#applicationModal .btn-primary');
+        const originalText = '<i class="ri-send-plane-fill me-1"></i> Submit Application';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('cover_letter', clText);
+        if (resumeFile) formData.append('resume', resumeFile);
+        if (clFile) formData.append('cover_letter_file', clFile);
+
+        try {
+            const response = await fetch(`/api/applications/apply/${currentJob.id}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Close Modal
+                const modalEl = document.getElementById('applicationModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+
+                Toastify({
+                    text: "Application submitted successfully!",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", 
+                    position: "right",
+                    backgroundColor: "#00b074", 
+                }).showToast();
+                
+                // Update "Apply Now" button to "Applied"
+                const seekerActions = document.getElementById('seeker-actions');
+                const applyBtn = seekerActions.querySelector('.btn-primary');
+                if (applyBtn) {
+                    applyBtn.classList.remove('btn-primary');
+                    applyBtn.classList.add('btn-success');
+                    applyBtn.innerHTML = '<i class="ri-check-line me-1"></i> Applied';
+                    applyBtn.disabled = true;
+                    applyBtn.removeAttribute('data-bs-toggle');
+                    applyBtn.removeAttribute('onclick');
+                }
+
+            } else {
+                Toastify({
+                    text: data.error || "Failed to submit application",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", 
+                    position: "right",
+                    backgroundColor: "#ff5b5c",
+                }).showToast();
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        } catch (e) {
+            console.error(e);
+            Toastify({
+                text: "Network error occurred.",
+                duration: 3000,
+                close: true,
+                gravity: "top", 
+                position: "right",
+                backgroundColor: "#ff5b5c",
+            }).showToast();
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+
+</script>
+
+<%- include('includes/footer2') %>

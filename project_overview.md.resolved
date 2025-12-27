@@ -1,0 +1,251 @@
+# Job Ecosystem Backend - Project Overview
+
+## What Is This Project?
+
+A **full-stack job recruitment platform** that connects **Employers** (companies posting jobs) with **Job Seekers** (candidates applying for jobs). It also supports **Employees** (team members within a company) and includes a real-time **Chat System**.
+
+---
+
+## Technology Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Runtime** | Node.js |
+| **Framework** | Express.js v5 |
+| **Database** | PostgreSQL |
+| **ORM** | Sequelize 6 |
+| **Templating** | EJS (Server-Side Rendering) |
+| **Real-time** | Socket.io |
+| **Auth** | JWT + Passport.js (Google, Facebook OAuth) |
+| **File Upload** | Multer |
+| **Email** | Nodemailer |
+| **Security** | Helmet, bcryptjs |
+
+---
+
+## Project Structure
+
+```
+job-ecosystem-backend/
+├── src/
+│   ├── server.js          # Main entry point, Express app, Socket.io setup
+│   ├── config/            # Database & Passport configuration
+│   ├── controllers/       # Business logic (8 controllers)
+│   ├── middleware/        # Auth middleware, file uploads
+│   ├── models/            # Sequelize models (12 models)
+│   ├── routes/            # API route definitions (8 route files)
+│   ├── sockets/           # Real-time Socket.io event handlers
+│   ├── services/          # Email and utility services
+│   ├── views/             # EJS templates (24 pages + partials)
+│   └── public/            # Static assets (CSS, JS, images)
+├── public/                # Uploaded files (resumes, images)
+├── package.json           # Dependencies
+└── .env                   # Environment variables
+```
+
+---
+
+## Core Data Models
+
+### 1. User
+The central entity representing all users in the system.
+
+| Field | Purpose |
+|-------|---------|
+| `role` | `job_seeker`, `employer`, `employee`, `admin` |
+| `permissions` | JSON array of granular permissions |
+| `account_status` | `active`, `suspended`, `terminated`, `hibernating` |
+| `company_id` | Links employees to their company |
+| `profile_picture_url`, `resume_url` | Profile assets |
+| `google_id`, `facebook_id` | OAuth provider IDs |
+
+### 2. Company
+Represents a business entity that posts jobs.
+
+| Field | Purpose |
+|-------|---------|
+| `owner_id` | The employer user who owns this company |
+| [name](file:///c:/job-ecosystem-backend/src/routes/chatRoutes.js#38-41), `description`, `website` | Company info |
+| `logo_url`, `industry`, `location` | Branding & metadata |
+
+### 3. Job
+A job posting created by an employer.
+
+| Field | Purpose |
+|-------|---------|
+| `title`, `description` | Job details |
+| `type` | `full_time`, `part_time`, `contract`, `freelance`, `internship` |
+| `location_type` | `remote`, `on_site`, `hybrid` |
+| `salary_range`, `currency` | Compensation |
+| `skills`, `experience`, `qualification` | Requirements |
+| `status` | `active`, `closed`, `draft` |
+
+### 4. Application
+Links a Job Seeker to a Job they applied for.
+
+| Field | Purpose |
+|-------|---------|
+| `job_id`, `seeker_id` | Foreign keys |
+| `cover_letter`, `resume_url` | Application materials |
+| `status` | `pending`, `reviewed`, `shortlisted`, `rejected`, `hired` |
+
+### 5. ChatMessage
+Messages exchanged between users, in groups, or channels.
+
+| Field | Purpose |
+|-------|---------|
+| `sender_id`, `receiver_id` | Private messages |
+| `group_id`, `channel_id` | Group/Channel messages |
+| `reactions` | JSONB emoji reactions |
+| `is_pinned`, `is_starred`, `is_edited`, `is_deleted` | Message flags |
+| `attachment_url`, `attachment_type` | Media attachments |
+
+### 6. Other Models
+- **ChatGroup / ChatGroupMember**: Group chat functionality
+- **Channel / ChannelMember**: Company-wide announcement channels
+- **TeamMember**: Links employees to companies with roles
+- **Notification**: In-app notification system
+- **SavedJob**: Bookmarked jobs for seekers
+
+---
+
+## Key Features by Role
+
+### Job Seeker
+- Browse job feed (`/dashboard/seeker/jobs`)
+- Apply to jobs with cover letter & resume
+- Track applications (`/dashboard/seeker/applications`)
+- Save/bookmark jobs
+- Real-time chat with employers
+- Profile management
+
+### Employer
+- Create/manage company profile
+- Post, edit, close jobs (`/dashboard/employer/jobs`)
+- View candidates & manage applications
+- Invite team members (employees)
+- Real-time chat with candidates
+- Group & channel messaging for teams
+
+### Employee
+- Access employer dashboard features (based on permissions)
+- Chat with team members
+- Participate in company channels
+
+---
+
+## API Routes Overview
+
+| Route Prefix | Controller | Purpose |
+|--------------|------------|---------|
+| `/api/auth` | `authController` | Signup, login, OAuth, password reset |
+| `/api/company` | `companyController` | Company CRUD, team management |
+| `/api/jobs` | `jobController` | Job CRUD, search, filtering |
+| `/api/applications` | `applicationController` | Apply, track, manage applications |
+| `/api/chat` | `chatController` | Messages, contacts, recent chats |
+| `/api/chat/groups` | `chatGroupController` | Group CRUD, member management |
+| `/api/team` | `teamController` | Invite members, manage roles |
+| `/api/notifications` | `notificationController` | Fetch & mark notifications |
+
+---
+
+## Real-Time Features (Socket.io)
+
+The [socketManager.js](file:///c:/job-ecosystem-backend/src/sockets/socketManager.js) handles:
+
+1. **Private Messaging**: `private_message` event
+2. **Group Messaging**: `group_message` event  
+3. **Channel Messaging**: `channel_message` event
+4. **Typing Indicators**: `typing` / `stop_typing` events
+5. **User Presence**: `user_status` (online/offline)
+6. **Notifications**: `receive_notification` event
+
+---
+
+## Authentication Flow
+
+1. **Standard Auth**: Email + Password → JWT Token
+2. **OAuth**: Google/Facebook → Passport.js → JWT Token
+3. **Token Storage**: Client stores in `localStorage`
+4. **Protected Routes**: [protect](file:///c:/job-ecosystem-backend/src/controllers/authController.js#236-280) middleware verifies JWT
+5. **Session**: Express-session + Passport for OAuth flow
+
+---
+
+## View Pages (EJS)
+
+| Page | Purpose |
+|------|---------|
+| [welcome.ejs](file:///c:/job-ecosystem-backend/src/views/welcome.ejs) | Landing page |
+| [login.ejs](file:///c:/job-ecosystem-backend/src/views/login.ejs), [signup.ejs](file:///c:/job-ecosystem-backend/src/views/signup.ejs) | Authentication |
+| [dashboard.ejs](file:///c:/job-ecosystem-backend/src/views/dashboard.ejs) | Main dashboard (role-based sidebar) |
+| [chat.ejs](file:///c:/job-ecosystem-backend/src/views/chat.ejs) | Real-time messaging interface |
+| [job-feed.ejs](file:///c:/job-ecosystem-backend/src/views/job-feed.ejs), [job-details.ejs](file:///c:/job-ecosystem-backend/src/views/job-details.ejs) | Job browsing |
+| [post-job.ejs](file:///c:/job-ecosystem-backend/src/views/post-job.ejs), [edit-job.ejs](file:///c:/job-ecosystem-backend/src/views/edit-job.ejs), [manage-jobs.ejs](file:///c:/job-ecosystem-backend/src/views/manage-jobs.ejs) | Job management |
+| [candidates.ejs](file:///c:/job-ecosystem-backend/src/views/candidates.ejs), [candidate-details.ejs](file:///c:/job-ecosystem-backend/src/views/candidate-details.ejs) | Applicant review |
+| [my-applications.ejs](file:///c:/job-ecosystem-backend/src/views/my-applications.ejs), [saved-jobs.ejs](file:///c:/job-ecosystem-backend/src/views/saved-jobs.ejs) | Seeker tracking |
+| [create-company.ejs](file:///c:/job-ecosystem-backend/src/views/create-company.ejs) | Company profile setup |
+| [manage-team.ejs](file:///c:/job-ecosystem-backend/src/views/manage-team.ejs), [manage-groups.ejs](file:///c:/job-ecosystem-backend/src/views/manage-groups.ejs), [manage-channels.ejs](file:///c:/job-ecosystem-backend/src/views/manage-channels.ejs) | Team collaboration |
+| [profile.ejs](file:///c:/job-ecosystem-backend/src/views/profile.ejs) | User profile editing |
+
+---
+
+## Running the Project
+
+```bash
+# Install dependencies
+npm install
+
+# Development mode (with hot reload)
+npm run dev
+
+# Production mode
+npm start
+```
+
+**Environment Variables** ([.env](file:///c:/job-ecosystem-backend/.env)):
+```
+PORT=5000
+DATABASE_URL=postgres://user:pass@host:5432/dbname
+JWT_SECRET=your_secret_key
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+FACEBOOK_APP_ID=...
+FACEBOOK_APP_SECRET=...
+EMAIL_HOST=smtp.example.com
+EMAIL_USER=...
+EMAIL_PASS=...
+```
+
+---
+
+## Database Relationships Summary
+
+```mermaid
+erDiagram
+    User ||--o{ Application : "applies"
+    User ||--o{ Job : "posts (as employer)"
+    User ||--o{ Company : "owns"
+    User }o--o{ ChatGroup : "member of"
+    User }o--o{ Channel : "member of"
+    Company ||--o{ Job : "has"
+    Company ||--o{ Channel : "has"
+    Company ||--o{ TeamMember : "employs"
+    Job ||--o{ Application : "receives"
+    ChatGroup ||--o{ ChatMessage : "contains"
+    Channel ||--o{ ChatMessage : "contains"
+    User ||--o{ ChatMessage : "sends"
+    User ||--o{ Notification : "receives"
+```
+
+---
+
+## Summary
+
+This is a **production-ready job platform** with:
+- ✅ Role-based access (Seeker, Employer, Employee, Admin)
+- ✅ Complete job lifecycle (post → apply → review → hire)
+- ✅ Real-time messaging with Socket.io
+- ✅ Team collaboration (Groups, Channels, Notifications)
+- ✅ OAuth social login
+- ✅ Responsive EJS-based UI

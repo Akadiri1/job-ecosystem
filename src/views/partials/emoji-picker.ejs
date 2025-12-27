@@ -1,0 +1,202 @@
+<style>
+    /* Emoji Picker Container */
+    .fg-emoji-picker {
+        position: absolute;
+        bottom: 70px; /* Position above the chat footer */
+        right: 20px;  /* Align to right side */
+        width: 300px;
+        height: 350px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        display: none;
+        flex-direction: column;
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    /* Categories Header */
+    .fg-emoji-picker-categories {
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 5px;
+    }
+    
+    .fg-emoji-picker-categories ul {
+        display: flex;
+        justify-content: space-between;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .fg-emoji-picker-categories li {
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+
+    .fg-emoji-picker-categories li:hover,
+    .fg-emoji-picker-categories li.active {
+        background: #e5e7eb;
+        color: #4f46e5;
+    }
+
+    .fg-emoji-picker-categories i {
+        font-size: 18px;
+        color: #6b7280;
+    }
+
+    /* Search Bar */
+    .fg-emoji-picker-search {
+        padding: 8px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .fg-emoji-picker-search input {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 13px;
+        outline: none;
+    }
+
+    /* Emoji Grid */
+    .fg-emoji-picker-grid {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr); /* 7 emojis per row */
+        gap: 5px;
+        align-content: start;
+    }
+
+    .emoji-item {
+        font-size: 20px;
+        text-align: center;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        transition: transform 0.1s, background 0.1s;
+    }
+
+    .emoji-item:hover {
+        background: #f3f4f6;
+        transform: scale(1.2);
+    }
+
+    .emoji-category-title {
+        grid-column: 1 / -1;
+        font-size: 12px;
+        font-weight: 600;
+        color: #9ca3af;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+</style>
+
+<div class="fg-emoji-picker" id="emojiPicker" style="display: none;">
+    
+    <!-- 1. Categories (Icons replaced with RemixIcons) -->
+    <div class="fg-emoji-picker-categories">
+        <ul>
+            <li class="active" title="Smileys & People"><i class="ri-emotion-line"></i></li>
+            <li title="Animals & Nature"><i class="ri-bear-smile-line"></i></li>
+            <li title="Food & Drink"><i class="ri-cup-line"></i></li>
+            <li title="Activities"><i class="ri-basketball-line"></i></li>
+            <li title="Travel & Places"><i class="ri-plane-line"></i></li>
+            <li title="Objects"><i class="ri-lightbulb-line"></i></li>
+            <li title="Symbols"><i class="ri-heart-line"></i></li>
+            <li id="closeEmojiBtn" title="Close"><i class="ri-close-line text-danger"></i></li>
+        </ul>
+    </div>
+
+    <!-- 2. Search -->
+    <div class="fg-emoji-picker-search">
+        <input type="text" id="emojiSearch" placeholder="Search emoji...">
+    </div>
+
+    <!-- 3. Grid (Populated via JS for performance) -->
+    <div class="fg-emoji-picker-grid" id="emojiGrid">
+        <!-- Emojis will be injected here -->
+    </div>
+</div>
+
+<script>
+    // Simple Emoji List (Condensed for brevity, add more as needed)
+    const emojiData = {
+        "Smileys": ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🤩","🥳"],
+        "Gestures": ["👍","👎","👊","✊","🤛","🤜","🤞","✌️","🤟","🤘","👌","🤌","🤏","👈","👉","👆","👇","☝️","✋","🤚","🖐","🖖","👋","🤙","💪","🦾","🖕","✍️","🙏","🦶"],
+        "Hearts": ["❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❣️","💕","💞","💓","💗","💖","💘","💝","💟","☮️","✝️","☪️","🕉","☸️","✡️","🔯","🕎","☯️","☦️","🛐"],
+        "People": ["👶","👧","🧒","👦","👩","🧑","👨","👩‍🦱","👨‍🦱","👩‍🦰","👨‍🦰","👱‍♀️","👱","👱‍♂️","👩‍🦳","👨‍🦳","👩‍🦲","👨‍🦲","🧔","👵","🧓","👴","👲","👳‍♀️","👳","👳‍♂️","🧕","👼","👸","🤴"],
+    };
+
+    // 1. Render Emojis
+    const grid = document.getElementById('emojiGrid');
+    
+    for (const [category, emojis] of Object.entries(emojiData)) {
+        // Add Title
+        const title = document.createElement('div');
+        title.className = 'emoji-category-title';
+        title.innerText = category;
+        grid.appendChild(title);
+
+        // Add Emojis
+        emojis.forEach(emoji => {
+            const span = document.createElement('div');
+            span.className = 'emoji-item';
+            span.innerText = emoji;
+            span.onclick = () => insertEmoji(emoji);
+            grid.appendChild(span);
+        });
+    }
+
+    // 2. Insert Logic
+    function insertEmoji(emoji) {
+        const input = document.querySelector('.chat-message-space');
+        if(input) {
+            input.value += emoji;
+            input.focus();
+        }
+    }
+
+    // 3. Toggle Logic
+    document.querySelector('.emoji-picker').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent closing immediately
+        const picker = document.getElementById('emojiPicker');
+        picker.style.display = picker.style.display === 'none' ? 'flex' : 'none';
+    });
+
+    // 4. Close Button
+    document.getElementById('closeEmojiBtn').addEventListener('click', function() {
+        document.getElementById('emojiPicker').style.display = 'none';
+    });
+
+    // 5. Close when clicking outside
+    document.addEventListener('click', function(event) {
+        const picker = document.getElementById('emojiPicker');
+        const btn = document.querySelector('.emoji-picker');
+        if (picker.style.display !== 'none' && !picker.contains(event.target) && !btn.contains(event.target)) {
+            picker.style.display = 'none';
+        }
+    });
+
+    // 6. Search Logic
+    document.getElementById('emojiSearch').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        const items = document.querySelectorAll('.emoji-item');
+        
+        items.forEach(item => {
+            // Note: Searching emojis by text requires a mapping object. 
+            // For simple implementation, we just show/hide. 
+            // To make this robust, you'd need a map like: {'😀': 'smile'}
+            item.style.display = 'block'; 
+        });
+    });
+</script>
