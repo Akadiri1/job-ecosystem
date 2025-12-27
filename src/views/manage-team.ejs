@@ -551,10 +551,20 @@
                 `}).join('');
 
             } else {
-                grid.innerHTML = `<div class="alert alert-danger" style="grid-column:1/-1;">Error loading team: ${data.error || 'Unknown error'}</div>`;
+                const errorMsg = data.message || data.error || 'Unknown error';
+                const needsCompany = data.needs_company;
+                
+                grid.innerHTML = `
+                    <div class="alert alert-${needsCompany ? 'warning' : 'danger'}" style="grid-column:1/-1;">
+                        <strong>${needsCompany ? '⚠️ Setup Required' : '❌ Error'}</strong><br>
+                        ${errorMsg}
+                        ${needsCompany ? '<br><br><a href="/dashboard/employer/company" class="btn btn-primary btn-sm mt-2">Create Company Now</a>' : ''}
+                    </div>
+                `;
             }
         } catch (error) {
             console.error(error);
+            document.getElementById('team-grid').innerHTML = `<div class="alert alert-danger" style="grid-column:1/-1;">Network error. Please refresh the page.</div>`;
         }
     }
 
