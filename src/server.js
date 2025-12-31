@@ -229,6 +229,7 @@ app.use('/api/team', require('./routes/teamRoutes'));
 app.use('/api/tasks', taskRoutes);
 app.use('/api/ai', require('./routes/aiRoutes')); // [AI] AI Assistant Routes
 app.use('/api/billing', require('./routes/paymentRoutes')); // [BILLING] Payment Routes
+app.use('/api/admin', require('./routes/adminRoutes')); // [ADMIN] Super Admin Routes
 
 // ============================================================
 // DASHBOARD & FEATURE ROUTES (Role-Based Namespacing)
@@ -262,6 +263,7 @@ app.get('/dashboard', (req, res) => {
                         let target = '/dashboard/seeker';
                         if (role === 'employer') target = '/dashboard/employer';
                         else if (role === 'employee') target = '/dashboard/employee';
+                        else if (role === 'admin') target = '/dashboard/admin';
                         window.location.replace(target);
                     } catch(e) {
                          window.location.replace('/login');
@@ -282,6 +284,7 @@ app.get('/dashboard', (req, res) => {
 app.get('/dashboard/employer', (req, res) => res.render('dashboard', { sidebar: 'includes/sidebar-employer' }));
 app.get('/dashboard/employee', (req, res) => res.render('dashboard', { sidebar: 'includes/sidebar-employee' }));
 app.get('/dashboard/seeker', (req, res) => res.render('dashboard', { sidebar: 'includes/sidebar-seeker' }));
+app.get('/dashboard/admin', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
 
 // 2. EMPLOYER ROUTES (/dashboard/employer/...)
 app.get('/dashboard/employer/jobs/create', (req, res) => res.render('post-job', { sidebar: 'includes/sidebar-employer' }));
@@ -314,6 +317,15 @@ app.get('/dashboard/seeker/saved-jobs', (req, res) => res.render('saved-jobs', {
 app.get('/dashboard/seeker/chat', (req, res) => res.render('chat', { sidebar: 'includes/sidebar-seeker' }));
 app.get('/dashboard/seeker/profile', (req, res) => res.render('profile', { sidebar: 'includes/sidebar-seeker' }));
 app.get('/dashboard/seeker/ai-coach', (req, res) => res.render('ai-seeker', { sidebar: 'includes/sidebar-seeker' }));
+
+// 5. ADMIN ROUTES (/dashboard/admin/...)
+app.get('/dashboard/admin/users', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/companies', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/jobs', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/subscriptions', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/payments', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/ai-insights', (req, res) => res.render('ai-insights', { sidebar: 'includes/sidebar-admin' })); // Reuse AI dashboard
+app.get('/dashboard/admin/settings', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
 
 
 // ============================================================

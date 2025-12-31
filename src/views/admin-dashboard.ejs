@@ -1,0 +1,397 @@
+<%- include('includes/header2') %>
+
+<style>
+/* ============================================
+   SUPER ADMIN DASHBOARD STYLES
+   ============================================ */
+
+.admin-hero {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+
+.admin-hero h1 {
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(220, 53, 69, 0.15);
+}
+
+.stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .stat-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.stat-card.users .stat-icon { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.stat-card.companies .stat-icon { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.stat-card.jobs .stat-icon { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+.stat-card.revenue .stat-icon { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.stat-card.subscriptions .stat-icon { background: rgba(118, 75, 162, 0.15); color: #764ba2; }
+.stat-card.applications .stat-icon { background: rgba(23, 162, 184, 0.15); color: #17a2b8; }
+
+/* User Role Badges */
+.user-row .role-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.role-badge.admin { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.role-badge.employer { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.role-badge.employee { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.role-badge.job_seeker { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+
+/* Quick Actions */
+.quick-action {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(102, 126, 234, 0.05);
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateX(4px);
+}
+
+.quick-action .action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+}
+</style>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+
+        <!-- Admin Hero -->
+        <div class="admin-hero">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="ri-shield-star-line me-2"></i>Super Admin Dashboard</h1>
+                    <p class="mb-0 opacity-75">Platform overview and management</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-light text-dark fs-6" id="last-updated">Refreshing...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row 1 -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-2 col-6">
+                <div class="stat-card users">
+                    <div class="stat-icon"><i class="ri-user-line"></i></div>
+                    <div class="stat-value" id="stat-users">-</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card companies">
+                    <div class="stat-icon"><i class="ri-building-line"></i></div>
+                    <div class="stat-value" id="stat-companies">-</div>
+                    <div class="stat-label">Companies</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card jobs">
+                    <div class="stat-icon"><i class="ri-briefcase-line"></i></div>
+                    <div class="stat-value" id="stat-jobs">-</div>
+                    <div class="stat-label">Active Jobs</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card applications">
+                    <div class="stat-icon"><i class="ri-file-list-3-line"></i></div>
+                    <div class="stat-value" id="stat-applications">-</div>
+                    <div class="stat-label">Applications</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card subscriptions">
+                    <div class="stat-icon"><i class="ri-vip-crown-line"></i></div>
+                    <div class="stat-value" id="stat-subscriptions">-</div>
+                    <div class="stat-label">Paid Plans</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card revenue">
+                    <div class="stat-icon"><i class="ri-money-dollar-circle-line"></i></div>
+                    <div class="stat-value" id="stat-revenue">$0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column - User Breakdown -->
+            <div class="col-lg-4">
+                <div class="card custom-card mb-4">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="ri-pie-chart-line me-2"></i>User Breakdown</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Employers</span>
+                            <span class="fw-bold" id="user-employers">0</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-primary" id="bar-employers" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Job Seekers</span>
+                            <span class="fw-bold" id="user-seekers">0</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-warning" id="bar-seekers" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Employees</span>
+                            <span class="fw-bold" id="user-employees">0</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" id="bar-employees" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="ri-flashlight-line me-2"></i>Quick Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        <a href="/dashboard/admin/users" class="quick-action text-decoration-none text-reset">
+                            <div class="action-icon bg-primary-transparent text-primary"><i class="ri-user-add-line"></i></div>
+                            <div>
+                                <div class="fw-medium">Manage Users</div>
+                                <small class="text-muted">View, edit, suspend accounts</small>
+                            </div>
+                        </a>
+                        <a href="/dashboard/admin/jobs" class="quick-action text-decoration-none text-reset">
+                            <div class="action-icon bg-warning-transparent text-warning"><i class="ri-briefcase-line"></i></div>
+                            <div>
+                                <div class="fw-medium">Moderate Jobs</div>
+                                <small class="text-muted">Review and manage postings</small>
+                            </div>
+                        </a>
+                        <a href="/dashboard/admin/subscriptions" class="quick-action text-decoration-none text-reset">
+                            <div class="action-icon bg-success-transparent text-success"><i class="ri-vip-crown-line"></i></div>
+                            <div>
+                                <div class="fw-medium">Subscriptions</div>
+                                <small class="text-muted">Manage billing and plans</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column - Recent Users -->
+            <div class="col-lg-5">
+                <div class="card custom-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0"><i class="ri-user-star-line me-2"></i>Recent Users</h6>
+                        <a href="/dashboard/admin/users" class="btn btn-sm btn-primary-light">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Role</th>
+                                        <th>Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table">
+                                    <tr><td colspan="3" class="text-center py-3 text-muted">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Activity -->
+            <div class="col-lg-3">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="ri-bar-chart-line me-2"></i>This Week</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-4 fw-bold text-primary" id="weekly-signups">0</div>
+                        <p class="text-muted mb-0">New Signups</p>
+                    </div>
+                </div>
+
+                <div class="card custom-card mt-4">
+                    <div class="card-header bg-danger-transparent">
+                        <h6 class="card-title mb-0 text-danger"><i class="ri-alert-line me-2"></i>System Status</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-success me-2">●</span>
+                            <span>Database: Connected</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-success me-2">●</span>
+                            <span>Server: Running</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success me-2">●</span>
+                            <span>AI Cron: Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadStats();
+    loadRecentUsers();
+});
+
+async function loadStats() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/admin/stats', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const s = data.stats;
+            
+            // Main stats
+            document.getElementById('stat-users').textContent = s.users.total;
+            document.getElementById('stat-companies').textContent = s.companies;
+            document.getElementById('stat-jobs').textContent = s.jobs.active;
+            document.getElementById('stat-applications').textContent = s.applications;
+            document.getElementById('stat-subscriptions').textContent = s.subscriptions.paid;
+            document.getElementById('stat-revenue').textContent = '$' + s.revenue.toFixed(2);
+            
+            // User breakdown
+            document.getElementById('user-employers').textContent = s.users.employers;
+            document.getElementById('user-seekers').textContent = s.users.seekers;
+            document.getElementById('user-employees').textContent = s.users.employees;
+            
+            const total = s.users.total || 1;
+            document.getElementById('bar-employers').style.width = (s.users.employers / total * 100) + '%';
+            document.getElementById('bar-seekers').style.width = (s.users.seekers / total * 100) + '%';
+            document.getElementById('bar-employees').style.width = (s.users.employees / total * 100) + '%';
+            
+            // Weekly signups
+            document.getElementById('weekly-signups').textContent = s.recentSignups;
+            
+            // Timestamp
+            document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+        }
+    } catch (e) {
+        console.error('Stats error:', e);
+    }
+}
+
+async function loadRecentUsers() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/admin/users?limit=5', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success && data.users.length > 0) {
+            const tbody = document.getElementById('users-table');
+            tbody.innerHTML = data.users.map(user => {
+                const date = new Date(user.createdAt).toLocaleDateString();
+                return `
+                    <tr class="user-row">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="${user.profile_picture_url || '/build/assets/images/faces/1.jpg'}" 
+                                     class="avatar avatar-sm rounded-circle me-2" alt="">
+                                <div>
+                                    <div class="fw-medium">${user.full_name}</div>
+                                    <small class="text-muted">${user.email}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="role-badge ${user.role}">${user.role.replace('_', ' ')}</span></td>
+                        <td><small>${date}</small></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('Users error:', e);
+    }
+}
+</script>
