@@ -34,6 +34,9 @@ const Notification = require('./models/Notification')(sequelize); // [NEW]
 const Task = require('./models/Task')(sequelize);
 const TaskComment = require('./models/TaskComment')(sequelize);
 const TaskCommentLike = require('./models/TaskCommentLike')(sequelize);
+// [AI] AI Assistant Models
+const Attendance = require('./models/Attendance')(sequelize);
+const AIInsight = require('./models/AIInsight')(sequelize);
 
 // Routes Imports
 const authRoutes = require('./routes/authRoutes');
@@ -129,6 +132,19 @@ TaskComment.hasMany(TaskCommentLike, { foreignKey: 'task_comment_id', as: 'likes
 TaskCommentLike.belongsTo(TaskComment, { foreignKey: 'task_comment_id', as: 'comment' });
 TaskCommentLike.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
+// --- AI ASSISTANT RELATIONSHIPS ---
+// Attendance
+Company.hasMany(Attendance, { foreignKey: 'company_id', as: 'attendances' });
+Attendance.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
+User.hasMany(Attendance, { foreignKey: 'user_id', as: 'attendances' });
+Attendance.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// AI Insights
+Company.hasMany(AIInsight, { foreignKey: 'company_id', as: 'ai_insights' });
+AIInsight.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
+User.hasMany(AIInsight, { foreignKey: 'user_id', as: 'ai_insights' });
+AIInsight.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 const app = express();
 
 // --- MIDDLEWARE ---
@@ -157,8 +173,8 @@ app.use((req, res, next) => {
         User, Company, Job, Application, SavedJob,
         ChatGroup, ChatGroupMember, ChatMessage, Notification,
         TeamMember, Channel, ChannelMember,
-        TeamMember, Channel, ChannelMember,
-        Task, TaskComment, TaskCommentLike
+        Task, TaskComment, TaskCommentLike,
+        Attendance, AIInsight
     };
     next();
 });
@@ -207,6 +223,7 @@ app.use('/api/chat/groups', chatGroupRoutes);
 app.use('/api/notifications', notificationRoutes); // [NEW]
 app.use('/api/team', require('./routes/teamRoutes'));
 app.use('/api/tasks', taskRoutes);
+app.use('/api/ai', require('./routes/aiRoutes')); // [AI] AI Assistant Routes
 
 // ============================================================
 // DASHBOARD & FEATURE ROUTES (Role-Based Namespacing)
@@ -359,7 +376,6 @@ sequelize.authenticate()
     })
     .then(() => {
         console.log('✅ Database Synced & Tables Ready');
-        console.log('✅ Database Synced & Tables Ready');
         
         // [NEW] Setup Socket.io
         const server = http.createServer(app);
@@ -370,6 +386,12 @@ sequelize.authenticate()
         require('./sockets/socketManager')(io, { 
             User, Company, Job, Application, SavedJob, 
             ChatGroup, ChatGroupMember, ChatMessage, Notification 
+        });
+
+        // [AI] Initialize Cron Jobs for AI Assistant
+        const cronJobs = require('./services/cronJobs');
+        cronJobs.initCronJobs({ 
+            User, Company, Task, TeamMember, Attendance, AIInsight, Notification 
         });
 
         // Change app.listen to server.listen
