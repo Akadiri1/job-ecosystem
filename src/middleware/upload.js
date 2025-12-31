@@ -6,9 +6,9 @@ const fs = require('fs');
 // Set storage engine
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        // Point to 'public/uploads/profiles' at the project root
-        // __dirname is 'src/middleware', so we go up two levels
-        const dir = path.join(__dirname, '../../public/uploads/profiles');
+        // Point to 'src/public/uploads/profiles' 
+        // __dirname is 'src/middleware', so we go up one level to src, then into public/uploads
+        const dir = path.join(__dirname, '../public/uploads/profiles');
         
         if (!fs.existsSync(dir)){
             fs.mkdirSync(dir, { recursive: true });

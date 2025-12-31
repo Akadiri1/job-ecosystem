@@ -1,4 +1,4 @@
-const CACHE_NAME = 'job-ecosystem-v2';
+const CACHE_NAME = 'job-ecosystem-v3';
 
 // Core assets to cache for offline support
 const ASSETS_TO_CACHE = [

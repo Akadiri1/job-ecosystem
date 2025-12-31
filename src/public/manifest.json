@@ -2,7 +2,9 @@
   "name": "Job Ecosystem",
   "short_name": "JobEco",
   "description": "Find jobs, manage teams, and chat in real-time",
+  "id": "/",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#7b1fa2",
@@ -22,5 +24,6 @@
     }
   ],
   "categories": ["business", "productivity"],
-  "lang": "en"
+  "lang": "en",
+  "prefer_related_applications": false
 }

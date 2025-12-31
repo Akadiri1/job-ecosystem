@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+ const { Op } = require('sequelize');
 const { sendTeamInvitation } = require('../services/emailService');
 
 exports.searchUsers = async (req, res) => {

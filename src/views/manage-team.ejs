@@ -603,29 +603,31 @@
             btn.disabled = false;
 
             if (response.ok) {
-                if(data.debug_link) {
+                // Only show the debug link modal if email failed to send
+                if(data.debug_link && !data.email_sent) {
                     const modalBody = document.querySelector('#inviteMemberModal .modal-body');
                     const modalFooter = document.querySelector('#inviteMemberModal .modal-footer');
                     
                     modalBody.innerHTML = `
                         <div class="text-center py-4">
-                            <div style="width:80px;height:80px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
-                                <i class="ri-check-line text-white" style="font-size:2.5rem;"></i>
+                            <div style="width:80px;height:80px;background:linear-gradient(135deg,#ff9f43,#ff6b6b);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
+                                <i class="ri-mail-close-line text-white" style="font-size:2.5rem;"></i>
                             </div>
-                            <h5 class="fw-bold mb-2">Invitation Sent! 🎉</h5>
-                            <p class="text-muted mb-4">${data.email_sent ? 'An email has been sent to the invitee.' : 'Copy the link below to share with the invitee.'}</p>
+                            <h5 class="fw-bold mb-2">Email Could Not Be Sent ⚠️</h5>
+                            <p class="text-muted mb-4">The invitation email failed to send. Please share this link manually with the invitee:</p>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" value="${data.debug_link}" id="generatedLink" readonly>
                                 <button class="btn btn-primary" type="button" onclick="copyLink()">
                                     <i class="ri-file-copy-line"></i>
                                 </button>
                             </div>
-                            <small class="text-muted">💡 Tip: Use an Incognito window to test the invite</small>
+                            <small class="text-muted">💡 Tip: Check your email configuration in .env file</small>
                         </div>
                     `;
                     modalFooter.innerHTML = `<button type="button" class="btn btn-primary w-100" onclick="window.location.reload()">Done</button>`;
                 } else {
-                    Toastify({ text: "Invitation Sent Successfully!", backgroundColor: "#00b074", duration: 5000 }).showToast();
+                    // Email sent successfully - just show success toast
+                    Toastify({ text: "Invitation sent to " + email + "! 📧", backgroundColor: "#00b074", duration: 5000 }).showToast();
                     bootstrap.Modal.getInstance(document.getElementById('inviteMemberModal')).hide();
                     fetchTeam();
                 }
