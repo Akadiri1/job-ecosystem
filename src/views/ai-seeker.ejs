@@ -1,0 +1,556 @@
+<%- include('includes/header2') %>
+
+<style>
+/* ============================================
+   JOB SEEKER AI COACH DASHBOARD STYLES
+   ============================================ */
+
+.ai-hero-seeker {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-hero-seeker::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+
+.ai-hero-seeker h1 {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.ai-hero-seeker p {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+}
+
+.stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 1rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .stat-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.stat-card.primary .stat-icon { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.stat-card.success .stat-icon { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.stat-card.warning .stat-icon { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+.stat-card.danger .stat-icon { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.stat-card.info .stat-icon { background: rgba(23, 162, 184, 0.15); color: #17a2b8; }
+
+/* Profile Strength */
+.profile-strength {
+    background: var(--custom-white);
+    border-radius: 20px;
+    padding: 1.5rem;
+}
+
+.strength-bar {
+    height: 12px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.strength-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease;
+}
+
+.strength-fill.low { background: linear-gradient(90deg, #dc3545, #ff6b6b); }
+.strength-fill.medium { background: linear-gradient(90deg, #ff9f43, #ffc107); }
+.strength-fill.high { background: linear-gradient(90deg, #00b074, #00c853); }
+
+.improvement-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: rgba(102, 126, 234, 0.05);
+    margin-bottom: 0.5rem;
+}
+
+.improvement-item i {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(102, 126, 234, 0.15);
+    color: #667eea;
+    margin-right: 0.75rem;
+}
+
+/* Job Card */
+.job-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    padding: 1.25rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+.job-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.job-card .company-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-right: 1rem;
+}
+
+.job-card .job-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.job-card .job-company {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.job-card .job-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.job-card .match-badge {
+    background: linear-gradient(135deg, #00b074, #00c853);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Application Timeline */
+.app-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.app-timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(102, 126, 234, 0.2);
+}
+
+.app-timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.app-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #667eea;
+    border: 2px solid var(--custom-white);
+}
+
+.app-timeline-item.pending::before { background: #ff9f43; }
+.app-timeline-item.reviewed::before { background: #17a2b8; }
+.app-timeline-item.accepted::before { background: #00b074; }
+.app-timeline-item.rejected::before { background: #dc3545; }
+
+/* AI Tip Card */
+.ai-tip-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-radius: 16px;
+    padding: 1.25rem;
+    border-left: 4px solid #667eea;
+}
+
+.ai-tip-card .tip-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+}
+</style>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+
+        <!-- Hero Banner -->
+        <div class="ai-hero-seeker">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="ri-sparkling-line me-2"></i>AI Career Coach</h1>
+                    <p>Your personal job search assistant</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/dashboard/seeker/jobs/feed" class="btn btn-light">
+                        <i class="ri-search-line me-1"></i> Find Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card primary">
+                    <div class="stat-icon"><i class="ri-file-list-3-line"></i></div>
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Applications</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card warning">
+                    <div class="stat-icon"><i class="ri-time-line"></i></div>
+                    <div class="stat-value" id="stat-pending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card info">
+                    <div class="stat-icon"><i class="ri-eye-line"></i></div>
+                    <div class="stat-value" id="stat-reviewed">0</div>
+                    <div class="stat-label">Reviewed</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="ri-check-double-line"></i></div>
+                    <div class="stat-value" id="stat-accepted">0</div>
+                    <div class="stat-label">Accepted</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-lg-4">
+                <!-- Profile Strength -->
+                <div class="profile-strength mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="ri-user-star-line me-2"></i>Profile Strength</h6>
+                        <span class="badge bg-primary-transparent" id="strength-badge">0%</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-fill low" id="strength-fill" style="width: 0%"></div>
+                    </div>
+                    <div id="improvements-container">
+                        <!-- Improvements will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- AI Tips -->
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="ri-lightbulb-flash-line me-2 text-warning"></i>AI Tips</h6>
+                    </div>
+                    <div class="card-body" id="tips-container">
+                        <!-- Tips will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column - Job Recommendations -->
+            <div class="col-lg-5">
+                <div class="card custom-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0"><i class="ri-briefcase-line me-2"></i>Recommended Jobs</h6>
+                        <a href="/dashboard/seeker/jobs/feed" class="btn btn-sm btn-primary-light">See All</a>
+                    </div>
+                    <div class="card-body" id="jobs-container">
+                        <div class="text-center py-3 text-muted">Loading recommendations...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Recent Applications -->
+            <div class="col-lg-3">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="ri-history-line me-2"></i>Recent Activity</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="app-timeline" id="timeline-container">
+                            <div class="text-center py-3 text-muted">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadApplicationStats();
+    loadProfileStrength();
+    loadRecommendedJobs();
+    loadRecentActivity();
+    loadAITips();
+});
+
+async function loadApplicationStats() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/applications/my', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const apps = data.applications || [];
+            document.getElementById('stat-total').textContent = apps.length;
+            document.getElementById('stat-pending').textContent = apps.filter(a => a.status === 'pending').length;
+            document.getElementById('stat-reviewed').textContent = apps.filter(a => a.status === 'reviewed').length;
+            document.getElementById('stat-accepted').textContent = apps.filter(a => a.status === 'accepted').length;
+        }
+    } catch (e) {
+        console.error('Stats load error:', e);
+    }
+}
+
+async function loadProfileStrength() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/auth/profile', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success || data.user) {
+            const user = data.user || data;
+            
+            // Calculate profile strength
+            let score = 0;
+            const improvements = [];
+            
+            if (user.full_name) score += 15;
+            else improvements.push({ icon: 'ri-user-line', text: 'Add your full name' });
+            
+            if (user.email) score += 10;
+            
+            if (user.phone_number) score += 15;
+            else improvements.push({ icon: 'ri-phone-line', text: 'Add phone number' });
+            
+            if (user.profile_picture_url) score += 15;
+            else improvements.push({ icon: 'ri-camera-line', text: 'Upload a profile photo' });
+            
+            if (user.resume_url) score += 20;
+            else improvements.push({ icon: 'ri-file-text-line', text: 'Upload your resume' });
+            
+            if (user.bio && user.bio.length > 20) score += 15;
+            else improvements.push({ icon: 'ri-edit-line', text: 'Write a compelling bio' });
+            
+            if (user.skills && user.skills.length > 0) score += 10;
+            else improvements.push({ icon: 'ri-tools-line', text: 'Add your skills' });
+            
+            // Update UI
+            document.getElementById('strength-badge').textContent = score + '%';
+            const fill = document.getElementById('strength-fill');
+            fill.style.width = score + '%';
+            fill.className = 'strength-fill ' + (score < 40 ? 'low' : score < 70 ? 'medium' : 'high');
+            
+            // Render improvements
+            const container = document.getElementById('improvements-container');
+            if (improvements.length > 0) {
+                container.innerHTML = improvements.slice(0, 3).map(imp => `
+                    <div class="improvement-item">
+                        <i class="${imp.icon}"></i>
+                        <span>${imp.text}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-success mb-0"><i class="ri-check-line me-1"></i>Your profile is complete!</p>';
+            }
+        }
+    } catch (e) {
+        console.error('Profile strength error:', e);
+    }
+}
+
+async function loadRecommendedJobs() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/jobs?limit=5', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderJobs(data.jobs || data.data || []);
+        }
+    } catch (e) {
+        console.error('Jobs load error:', e);
+        document.getElementById('jobs-container').innerHTML = '<p class="text-muted text-center">Could not load jobs</p>';
+    }
+}
+
+function renderJobs(jobs) {
+    const container = document.getElementById('jobs-container');
+    
+    if (jobs.length === 0) {
+        container.innerHTML = '<div class="text-center py-3"><i class="ri-briefcase-line fs-1 text-muted"></i><p class="text-muted mt-2">No jobs available</p></div>';
+        return;
+    }
+    
+    container.innerHTML = jobs.slice(0, 5).map(job => {
+        const initial = (job.company?.name || 'C')[0].toUpperCase();
+        const match = Math.floor(Math.random() * 30) + 70; // Placeholder match score
+        
+        return `
+            <div class="job-card">
+                <div class="d-flex align-items-start">
+                    <div class="company-logo">${initial}</div>
+                    <div class="flex-fill">
+                        <div class="d-flex justify-content-between">
+                            <div class="job-title">${job.title}</div>
+                            <span class="match-badge">${match}% Match</span>
+                        </div>
+                        <div class="job-company">${job.company?.name || 'Company'}</div>
+                        <div class="job-meta">
+                            <span><i class="ri-map-pin-line me-1"></i>${job.location || 'Remote'}</span>
+                            <span><i class="ri-money-dollar-circle-line me-1"></i>${job.salary_range || 'Competitive'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadRecentActivity() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/applications/my', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderTimeline(data.applications || []);
+        }
+    } catch (e) {
+        console.error('Activity load error:', e);
+    }
+}
+
+function renderTimeline(apps) {
+    const container = document.getElementById('timeline-container');
+    
+    if (apps.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">No activity yet</p>';
+        return;
+    }
+    
+    container.innerHTML = apps.slice(0, 5).map(app => {
+        const date = new Date(app.createdAt || app.created_at).toLocaleDateString();
+        return `
+            <div class="app-timeline-item ${app.status}">
+                <div class="fw-medium">${app.job?.title || 'Job Application'}</div>
+                <small class="text-muted">${app.status} • ${date}</small>
+            </div>
+        `;
+    }).join('');
+}
+
+function loadAITips() {
+    const tips = [
+        { icon: 'ri-file-edit-line', text: 'Tailor your resume to each job application for better results.' },
+        { icon: 'ri-search-eye-line', text: 'Use specific keywords from job descriptions in your applications.' },
+        { icon: 'ri-linkedin-box-line', text: 'Keep your LinkedIn profile updated and matching your resume.' },
+        { icon: 'ri-mail-send-line', text: 'Follow up on applications after 1-2 weeks if you haven\'t heard back.' },
+        { icon: 'ri-user-voice-line', text: 'Practice common interview questions before your interviews.' }
+    ];
+    
+    const container = document.getElementById('tips-container');
+    const randomTips = tips.sort(() => 0.5 - Math.random()).slice(0, 3);
+    
+    container.innerHTML = randomTips.map(tip => `
+        <div class="ai-tip-card mb-3">
+            <div class="d-flex align-items-center">
+                <div class="tip-icon"><i class="${tip.icon}"></i></div>
+                <p class="mb-0">${tip.text}</p>
+            </div>
+        </div>
+    `).join('');
+}
+</script>

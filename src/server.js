@@ -37,6 +37,9 @@ const TaskCommentLike = require('./models/TaskCommentLike')(sequelize);
 // [AI] AI Assistant Models
 const Attendance = require('./models/Attendance')(sequelize);
 const AIInsight = require('./models/AIInsight')(sequelize);
+// [BILLING] Payment Models
+const Subscription = require('./models/Subscription')(sequelize);
+const Payment = require('./models/Payment')(sequelize);
 
 // Routes Imports
 const authRoutes = require('./routes/authRoutes');
@@ -174,7 +177,8 @@ app.use((req, res, next) => {
         ChatGroup, ChatGroupMember, ChatMessage, Notification,
         TeamMember, Channel, ChannelMember,
         Task, TaskComment, TaskCommentLike,
-        Attendance, AIInsight
+        Attendance, AIInsight,
+        Subscription, Payment
     };
     next();
 });
@@ -224,6 +228,7 @@ app.use('/api/notifications', notificationRoutes); // [NEW]
 app.use('/api/team', require('./routes/teamRoutes'));
 app.use('/api/tasks', taskRoutes);
 app.use('/api/ai', require('./routes/aiRoutes')); // [AI] AI Assistant Routes
+app.use('/api/billing', require('./routes/paymentRoutes')); // [BILLING] Payment Routes
 
 // ============================================================
 // DASHBOARD & FEATURE ROUTES (Role-Based Namespacing)
@@ -300,6 +305,7 @@ app.get('/dashboard/employee/tasks', (req, res) => res.render('tasks', { sidebar
 app.get('/dashboard/employee/tasks/:id', (req, res) => res.render('task-detail', { sidebar: 'includes/sidebar-employee' }));
 app.get('/dashboard/employee/docs', (req, res) => res.render('company-docs', { sidebar: 'includes/sidebar-employee' }));
 app.get('/dashboard/employee/profile', (req, res) => res.render('profile', { sidebar: 'includes/sidebar-employee' }));
+app.get('/dashboard/employee/ai-assistant', (req, res) => res.render('ai-employee', { sidebar: 'includes/sidebar-employee' }));
 
 // 4. SEEKER ROUTES (/dashboard/seeker/...)
 app.get('/dashboard/seeker/jobs/feed', (req, res) => res.render('job-feed', { sidebar: 'includes/sidebar-seeker' }));
@@ -307,6 +313,7 @@ app.get('/dashboard/seeker/applications', (req, res) => res.render('my-applicati
 app.get('/dashboard/seeker/saved-jobs', (req, res) => res.render('saved-jobs', { sidebar: 'includes/sidebar-seeker' }));
 app.get('/dashboard/seeker/chat', (req, res) => res.render('chat', { sidebar: 'includes/sidebar-seeker' }));
 app.get('/dashboard/seeker/profile', (req, res) => res.render('profile', { sidebar: 'includes/sidebar-seeker' }));
+app.get('/dashboard/seeker/ai-coach', (req, res) => res.render('ai-seeker', { sidebar: 'includes/sidebar-seeker' }));
 
 
 // ============================================================

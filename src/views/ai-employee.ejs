@@ -1,0 +1,589 @@
+<%- include('includes/header2') %>
+
+<style>
+/* ============================================
+   EMPLOYEE AI ASSISTANT DASHBOARD STYLES
+   ============================================ */
+
+.ai-hero-employee {
+    background: linear-gradient(135deg, #00b074 0%, #00c853 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-hero-employee::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+
+.ai-hero-employee h1 {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.ai-hero-employee p {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 176, 116, 0.15);
+}
+
+.stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card .stat-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.stat-card.primary .stat-icon { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.stat-card.success .stat-icon { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.stat-card.warning .stat-icon { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+.stat-card.danger .stat-icon { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+
+/* Clock Widget */
+.clock-widget {
+    background: var(--custom-white);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.clock-btn {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.clock-btn.clock-in {
+    background: linear-gradient(135deg, #00b074, #00c853);
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 176, 116, 0.4);
+}
+
+.clock-btn.clock-out {
+    background: linear-gradient(135deg, #ff9f43, #ff6b6b);
+    color: white;
+    box-shadow: 0 10px 30px rgba(255, 159, 67, 0.4);
+}
+
+.clock-btn:hover {
+    transform: scale(1.05);
+}
+
+.clock-btn i {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.time-display {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--default-text-color);
+    margin-bottom: 0.25rem;
+}
+
+/* Task List */
+.task-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(102, 126, 234, 0.05);
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.task-item:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.task-item .priority-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.task-item .priority-dot.urgent { background: #dc3545; }
+.task-item .priority-dot.high { background: #ff9f43; }
+.task-item .priority-dot.medium { background: #17a2b8; }
+.task-item .priority-dot.low { background: #6c757d; }
+
+.task-item .task-info { flex: 1; }
+.task-item .task-title { font-weight: 600; margin-bottom: 0.1rem; }
+.task-item .task-due { font-size: 0.8rem; color: var(--text-muted); }
+
+/* Performance Ring */
+.performance-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 1rem;
+}
+
+.performance-ring svg {
+    transform: rotate(-90deg);
+}
+
+.performance-ring .ring-bg {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
+    stroke-width: 12;
+}
+
+.performance-ring .ring-progress {
+    fill: none;
+    stroke: url(#gradient);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 1s ease;
+}
+
+.performance-ring .ring-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.performance-ring .ring-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--default-text-color);
+}
+
+.performance-ring .ring-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Weekly Stats */
+.weekly-stat {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.weekly-stat .stat-num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.weekly-stat .stat-txt {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+</style>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+
+        <!-- Hero Banner -->
+        <div class="ai-hero-employee">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="ri-robot-line me-2"></i>AI Work Assistant</h1>
+                    <p>Your personal productivity companion</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-light text-dark fs-6" id="greeting">Good morning!</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left - Clock & Stats -->
+            <div class="col-lg-4">
+                <!-- Clock Widget -->
+                <div class="clock-widget mb-4">
+                    <div class="time-display" id="current-time">--:--</div>
+                    <p class="text-muted mb-3" id="current-date">Loading...</p>
+                    
+                    <button class="clock-btn clock-in" id="clock-btn" onclick="toggleClock()">
+                        <i class="ri-login-box-line"></i>
+                        <span>Clock In</span>
+                    </button>
+                    
+                    <div id="attendance-status" class="text-muted">
+                        Checking status...
+                    </div>
+                </div>
+
+                <!-- Weekly Summary -->
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="ri-calendar-line me-2"></i>This Week</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="weekly-stat">
+                                    <div class="stat-num" id="week-hours">0</div>
+                                    <div class="stat-txt">Hours Worked</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="weekly-stat">
+                                    <div class="stat-num" id="week-tasks">0</div>
+                                    <div class="stat-txt">Tasks Done</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="weekly-stat">
+                                    <div class="stat-num" id="week-days">0</div>
+                                    <div class="stat-txt">Days Present</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="weekly-stat">
+                                    <div class="stat-num" id="week-streak">0</div>
+                                    <div class="stat-txt">Day Streak</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle - Tasks -->
+            <div class="col-lg-5">
+                <!-- Task Stats -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="stat-card warning">
+                            <div class="stat-icon"><i class="ri-time-line"></i></div>
+                            <div class="stat-value" id="stat-due-today">0</div>
+                            <div class="stat-label">Due Today</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card danger">
+                            <div class="stat-icon"><i class="ri-alarm-warning-line"></i></div>
+                            <div class="stat-value" id="stat-overdue">0</div>
+                            <div class="stat-label">Overdue</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Tasks -->
+                <div class="card custom-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="card-title mb-0"><i class="ri-task-line me-2"></i>My Tasks</h6>
+                        <a href="/dashboard/employee/tasks" class="btn btn-sm btn-primary-light">View All</a>
+                    </div>
+                    <div class="card-body" id="tasks-container">
+                        <div class="text-center py-3 text-muted">Loading tasks...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right - Performance -->
+            <div class="col-lg-3">
+                <!-- Performance Score -->
+                <div class="card custom-card mb-4">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="ri-line-chart-line me-2"></i>My Performance</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="performance-ring">
+                            <svg width="160" height="160">
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#00b074"/>
+                                        <stop offset="100%" style="stop-color:#00c853"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle class="ring-bg" cx="80" cy="80" r="70"/>
+                                <circle class="ring-progress" id="performance-ring" cx="80" cy="80" r="70"/>
+                            </svg>
+                            <div class="ring-text">
+                                <div class="ring-value" id="performance-value">0%</div>
+                                <div class="ring-label">Completion</div>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-0" id="performance-text">Keep up the great work!</p>
+                    </div>
+                </div>
+
+                <!-- AI Tips -->
+                <div class="card custom-card">
+                    <div class="card-header bg-success-transparent">
+                        <h6 class="card-title mb-0 text-success"><i class="ri-lightbulb-flash-line me-2"></i>AI Tip</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0" id="ai-tip">Loading tip...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+let isClockedIn = false;
+let currentAttendance = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateClock();
+    setInterval(updateClock, 1000);
+    updateGreeting();
+    
+    loadMyAttendance();
+    loadMyTasks();
+    loadMyPerformance();
+});
+
+function updateClock() {
+    const now = new Date();
+    document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = 'Good morning!';
+    if (hour >= 12 && hour < 17) greeting = 'Good afternoon!';
+    else if (hour >= 17) greeting = 'Good evening!';
+    document.getElementById('greeting').textContent = greeting;
+}
+
+async function loadMyAttendance() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/ai/attendance/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            currentAttendance = data.attendance;
+            isClockedIn = data.isClockedIn;
+            updateClockButton();
+        }
+    } catch (e) {
+        console.error('Attendance load error:', e);
+    }
+}
+
+function updateClockButton() {
+    const btn = document.getElementById('clock-btn');
+    const status = document.getElementById('attendance-status');
+    
+    if (isClockedIn) {
+        btn.className = 'clock-btn clock-out';
+        btn.innerHTML = '<i class="ri-logout-box-line"></i><span>Clock Out</span>';
+        
+        if (currentAttendance?.clock_in) {
+            const clockInTime = new Date(currentAttendance.clock_in).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            status.innerHTML = `<i class="ri-time-line me-1 text-success"></i> Clocked in at ${clockInTime}`;
+        }
+    } else {
+        btn.className = 'clock-btn clock-in';
+        btn.innerHTML = '<i class="ri-login-box-line"></i><span>Clock In</span>';
+        
+        if (currentAttendance?.clock_out) {
+            status.innerHTML = `<i class="ri-check-line me-1 text-success"></i> Completed ${currentAttendance.total_hours}h today`;
+        } else {
+            status.innerHTML = '<i class="ri-information-line me-1"></i> Not clocked in yet';
+        }
+    }
+}
+
+async function toggleClock() {
+    const token = localStorage.getItem('token');
+    const endpoint = isClockedIn ? '/api/ai/attendance/clock-out' : '/api/ai/attendance/clock-in';
+    
+    try {
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            Toastify({ text: data.message, backgroundColor: '#00b074' }).showToast();
+            currentAttendance = data.attendance;
+            isClockedIn = !isClockedIn;
+            updateClockButton();
+        } else {
+            Toastify({ text: data.message, backgroundColor: '#ff5b5c' }).showToast();
+        }
+    } catch (e) {
+        console.error('Clock toggle error:', e);
+    }
+}
+
+async function loadMyTasks() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/tasks/my', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderTasks(data.tasks || data.data || []);
+        }
+    } catch (e) {
+        console.error('Tasks load error:', e);
+        document.getElementById('tasks-container').innerHTML = '<p class="text-muted text-center">Could not load tasks</p>';
+    }
+}
+
+function renderTasks(tasks) {
+    const container = document.getElementById('tasks-container');
+    
+    // Filter to active tasks only
+    const activeTasks = tasks.filter(t => t.status !== 'completed').slice(0, 5);
+    
+    // Count stats
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    
+    const dueToday = tasks.filter(t => {
+        const due = new Date(t.due_date);
+        return due >= today && due < tomorrow && t.status !== 'completed';
+    }).length;
+    
+    const overdue = tasks.filter(t => {
+        return new Date(t.due_date) < today && t.status !== 'completed';
+    }).length;
+    
+    document.getElementById('stat-due-today').textContent = dueToday;
+    document.getElementById('stat-overdue').textContent = overdue;
+    
+    if (activeTasks.length === 0) {
+        container.innerHTML = '<div class="text-center py-3"><i class="ri-check-double-line fs-1 text-success"></i><p class="text-muted mt-2">All caught up!</p></div>';
+        return;
+    }
+    
+    container.innerHTML = activeTasks.map(task => {
+        const dueDate = task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date';
+        return `
+            <div class="task-item">
+                <div class="priority-dot ${task.priority}"></div>
+                <div class="task-info">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-due"><i class="ri-calendar-line me-1"></i>${dueDate}</div>
+                </div>
+                <span class="badge bg-${getStatusColor(task.status)}-transparent">${task.status}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function getStatusColor(status) {
+    const colors = { 'todo': 'secondary', 'in_progress': 'primary', 'review': 'warning', 'completed': 'success' };
+    return colors[status] || 'secondary';
+}
+
+async function loadMyPerformance() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/tasks/my', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const tasks = data.tasks || data.data || [];
+            const total = tasks.length;
+            const completed = tasks.filter(t => t.status === 'completed').length;
+            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            // Animate ring
+            const ring = document.getElementById('performance-ring');
+            const circumference = 2 * Math.PI * 70; // 440
+            const offset = circumference - (rate / 100) * circumference;
+            ring.style.strokeDashoffset = offset;
+            
+            document.getElementById('performance-value').textContent = rate + '%';
+            
+            // Performance text
+            let text = 'Keep up the great work!';
+            if (rate < 50) text = 'You can do better! Focus on completing tasks.';
+            else if (rate >= 90) text = 'Outstanding performance! 🌟';
+            document.getElementById('performance-text').textContent = text;
+            
+            // Week stats (placeholder - would need backend support)
+            document.getElementById('week-tasks').textContent = completed;
+        }
+    } catch (e) {
+        console.error('Performance load error:', e);
+    }
+    
+    // AI Tip
+    const tips = [
+        'Start your day by reviewing your highest priority tasks.',
+        'Take short breaks every 90 minutes to stay productive.',
+        'Complete one small task first to build momentum.',
+        'Group similar tasks together for efficiency.',
+        'Set specific times for checking messages to avoid distractions.'
+    ];
+    document.getElementById('ai-tip').textContent = tips[Math.floor(Math.random() * tips.length)];
+}
+</script>

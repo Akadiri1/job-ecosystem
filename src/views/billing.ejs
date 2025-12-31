@@ -1,0 +1,472 @@
+<%- include('includes/header2') %>
+
+<style>
+/* ============================================
+   BILLING PAGE STYLES
+   ============================================ */
+
+.billing-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.billing-hero h1 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Plan Cards */
+.plan-card {
+    background: var(--custom-white);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+}
+
+.plan-card.popular {
+    border-color: #667eea;
+    position: relative;
+}
+
+.plan-card.popular::before {
+    content: 'Most Popular';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.plan-card.current {
+    border-color: #00b074;
+}
+
+.plan-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--default-text-color);
+}
+
+.plan-price {
+    margin-bottom: 1.5rem;
+}
+
+.plan-price .amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.plan-price .period {
+    color: var(--text-muted);
+}
+
+.plan-features {
+    text-align: left;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+}
+
+.plan-features li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.plan-features li i {
+    color: #00b074;
+    font-size: 1.1rem;
+}
+
+.plan-features li.disabled {
+    color: var(--text-muted);
+}
+
+.plan-features li.disabled i {
+    color: var(--text-muted);
+}
+
+.plan-btn {
+    width: 100%;
+    padding: 0.875rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.plan-btn.primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+}
+
+.plan-btn.primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Payment History */
+.payment-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(102, 126, 234, 0.05);
+    margin-bottom: 0.75rem;
+}
+
+.payment-item .payment-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+}
+
+.payment-item .payment-icon.success { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.payment-item .payment-icon.failed { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+
+.payment-item .payment-info { flex: 1; }
+.payment-item .payment-amount { font-weight: 700; font-size: 1.1rem; }
+
+/* Current Plan Banner */
+.current-plan-banner {
+    background: linear-gradient(135deg, rgba(0, 176, 116, 0.1), rgba(0, 200, 83, 0.1));
+    border: 1px solid rgba(0, 176, 116, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.current-plan-banner .plan-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #00b074, #00c853);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+</style>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+
+        <!-- Hero -->
+        <div class="billing-hero">
+            <h1><i class="ri-bank-card-line me-2"></i>Billing & Subscription</h1>
+            <p>Manage your plan, view invoices, and update payment methods</p>
+        </div>
+
+        <!-- Current Plan Banner -->
+        <div class="current-plan-banner" id="current-plan-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="plan-badge" id="current-plan-badge">Free Plan</span>
+                    <p class="mb-0" id="current-plan-info">You're on the free plan. Upgrade to unlock more features!</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-outline-success" onclick="openPortal()" id="manage-btn" style="display:none;">
+                        <i class="ri-settings-line me-1"></i> Manage Subscription
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Plans -->
+        <h5 class="mb-4"><i class="ri-price-tag-3-line me-2"></i>Choose Your Plan</h5>
+        <div class="row g-4 mb-5">
+            <!-- Free -->
+            <div class="col-lg-3 col-md-6">
+                <div class="plan-card" id="plan-free">
+                    <div class="plan-name">Free</div>
+                    <div class="plan-price">
+                        <span class="amount">$0</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="plan-features list-unstyled">
+                        <li><i class="ri-check-line"></i> 3 Job Posts</li>
+                        <li><i class="ri-check-line"></i> 5 Team Members</li>
+                        <li><i class="ri-check-line"></i> Basic Chat</li>
+                        <li><i class="ri-check-line"></i> Task Management</li>
+                        <li class="disabled"><i class="ri-close-line"></i> AI Insights</li>
+                        <li class="disabled"><i class="ri-close-line"></i> Priority Support</li>
+                    </ul>
+                    <button class="btn plan-btn btn-outline-secondary" disabled>Current Plan</button>
+                </div>
+            </div>
+
+            <!-- Starter -->
+            <div class="col-lg-3 col-md-6">
+                <div class="plan-card" id="plan-starter">
+                    <div class="plan-name">Starter</div>
+                    <div class="plan-price">
+                        <span class="amount">$29</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="plan-features list-unstyled">
+                        <li><i class="ri-check-line"></i> 10 Job Posts</li>
+                        <li><i class="ri-check-line"></i> 20 Team Members</li>
+                        <li><i class="ri-check-line"></i> Group Channels</li>
+                        <li><i class="ri-check-line"></i> Task Management</li>
+                        <li><i class="ri-check-line"></i> AI Insights</li>
+                        <li class="disabled"><i class="ri-close-line"></i> Priority Support</li>
+                    </ul>
+                    <button class="btn plan-btn primary" onclick="subscribe('starter')">Upgrade</button>
+                </div>
+            </div>
+
+            <!-- Pro -->
+            <div class="col-lg-3 col-md-6">
+                <div class="plan-card popular" id="plan-pro">
+                    <div class="plan-name">Pro</div>
+                    <div class="plan-price">
+                        <span class="amount">$79</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="plan-features list-unstyled">
+                        <li><i class="ri-check-line"></i> Unlimited Job Posts</li>
+                        <li><i class="ri-check-line"></i> 50 Team Members</li>
+                        <li><i class="ri-check-line"></i> Advanced Analytics</li>
+                        <li><i class="ri-check-line"></i> Task Management</li>
+                        <li><i class="ri-check-line"></i> AI Insights Pro</li>
+                        <li><i class="ri-check-line"></i> Priority Support</li>
+                    </ul>
+                    <button class="btn plan-btn primary" onclick="subscribe('pro')">Upgrade</button>
+                </div>
+            </div>
+
+            <!-- Enterprise -->
+            <div class="col-lg-3 col-md-6">
+                <div class="plan-card" id="plan-enterprise">
+                    <div class="plan-name">Enterprise</div>
+                    <div class="plan-price">
+                        <span class="amount">$199</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="plan-features list-unstyled">
+                        <li><i class="ri-check-line"></i> Unlimited Everything</li>
+                        <li><i class="ri-check-line"></i> Unlimited Team</li>
+                        <li><i class="ri-check-line"></i> Custom Integrations</li>
+                        <li><i class="ri-check-line"></i> Dedicated Manager</li>
+                        <li><i class="ri-check-line"></i> AI Insights Pro+</li>
+                        <li><i class="ri-check-line"></i> 24/7 Support</li>
+                    </ul>
+                    <button class="btn plan-btn primary" onclick="subscribe('enterprise')">Upgrade</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="card custom-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0"><i class="ri-history-line me-2"></i>Payment History</h6>
+            </div>
+            <div class="card-body" id="payments-container">
+                <div class="text-center py-4 text-muted">
+                    <i class="ri-receipt-line fs-1"></i>
+                    <p class="mt-2">No payments yet</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+let currentPlan = 'free';
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadSubscription();
+    loadPayments();
+    
+    // Check for success/cancelled params
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success')) {
+        Toastify({ text: '🎉 Subscription activated successfully!', backgroundColor: '#00b074', duration: 5000 }).showToast();
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+    if (params.get('cancelled')) {
+        Toastify({ text: 'Checkout cancelled', backgroundColor: '#ff9f43' }).showToast();
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+});
+
+async function loadSubscription() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/billing/subscription', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success && data.subscription) {
+            currentPlan = data.plan;
+            updatePlanUI(data.plan, data.subscription);
+        }
+    } catch (e) {
+        console.error('Load subscription error:', e);
+    }
+}
+
+function updatePlanUI(plan, subscription) {
+    // Update badge
+    const badge = document.getElementById('current-plan-badge');
+    const info = document.getElementById('current-plan-info');
+    const manageBtn = document.getElementById('manage-btn');
+    
+    badge.textContent = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+    
+    if (plan !== 'free') {
+        info.textContent = subscription.cancel_at_period_end 
+            ? 'Your subscription will end at the end of this billing period.'
+            : 'Enjoy your premium features!';
+        manageBtn.style.display = 'inline-block';
+    }
+    
+    // Highlight current plan
+    document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('current'));
+    const currentCard = document.getElementById('plan-' + plan);
+    if (currentCard) {
+        currentCard.classList.add('current');
+        const btn = currentCard.querySelector('.plan-btn');
+        btn.textContent = 'Current Plan';
+        btn.disabled = true;
+        btn.className = 'btn plan-btn btn-outline-success';
+    }
+    
+    // Update other plan buttons
+    const plans = ['starter', 'pro', 'enterprise'];
+    const planOrder = { free: 0, starter: 1, pro: 2, enterprise: 3 };
+    
+    plans.forEach(p => {
+        if (p !== plan) {
+            const card = document.getElementById('plan-' + p);
+            const btn = card?.querySelector('.plan-btn');
+            if (btn) {
+                if (planOrder[p] > planOrder[plan]) {
+                    btn.textContent = 'Upgrade';
+                    btn.disabled = false;
+                } else {
+                    btn.textContent = 'Downgrade';
+                    btn.disabled = false;
+                }
+            }
+        }
+    });
+}
+
+async function subscribe(plan) {
+    const token = localStorage.getItem('token');
+    
+    Toastify({ text: 'Redirecting to checkout...', backgroundColor: '#667eea' }).showToast();
+    
+    try {
+        const res = await fetch('/api/billing/create-checkout', {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ plan })
+        });
+        const data = await res.json();
+        
+        if (data.success && data.url) {
+            window.location.href = data.url;
+        } else {
+            Toastify({ text: data.message || 'Error creating checkout', backgroundColor: '#dc3545' }).showToast();
+        }
+    } catch (e) {
+        console.error('Subscribe error:', e);
+        Toastify({ text: 'Error: ' + e.message, backgroundColor: '#dc3545' }).showToast();
+    }
+}
+
+async function openPortal() {
+    const token = localStorage.getItem('token');
+    
+    try {
+        const res = await fetch('/api/billing/create-portal', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success && data.url) {
+            window.location.href = data.url;
+        } else {
+            Toastify({ text: data.message || 'Error opening portal', backgroundColor: '#dc3545' }).showToast();
+        }
+    } catch (e) {
+        console.error('Portal error:', e);
+    }
+}
+
+async function loadPayments() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/billing/payments', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success && data.payments.length > 0) {
+            renderPayments(data.payments);
+        }
+    } catch (e) {
+        console.error('Load payments error:', e);
+    }
+}
+
+function renderPayments(payments) {
+    const container = document.getElementById('payments-container');
+    
+    container.innerHTML = payments.map(payment => {
+        const date = new Date(payment.createdAt).toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'short', day: 'numeric' 
+        });
+        const statusClass = payment.status === 'succeeded' ? 'success' : 'failed';
+        const icon = payment.status === 'succeeded' ? 'ri-check-line' : 'ri-close-line';
+        
+        return `
+            <div class="payment-item">
+                <div class="payment-icon ${statusClass}"><i class="${icon}"></i></div>
+                <div class="payment-info">
+                    <div class="fw-medium">${payment.description || 'Subscription Payment'}</div>
+                    <small class="text-muted">${date} • ${payment.status}</small>
+                </div>
+                <div class="payment-amount">$${parseFloat(payment.amount).toFixed(2)}</div>
+                ${payment.receipt_url ? `<a href="${payment.receipt_url}" target="_blank" class="btn btn-sm btn-light ms-2"><i class="ri-download-line"></i></a>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+</script>
