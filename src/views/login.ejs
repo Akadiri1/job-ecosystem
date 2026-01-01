@@ -182,6 +182,7 @@
                     let redirectPath = '/dashboard';
                     if (role === 'employer') redirectPath = '/dashboard/employer';
                     else if (role === 'employee') redirectPath = '/dashboard/employee';
+                    else if (role === 'admin') redirectPath = '/dashboard/admin';
                     else redirectPath = '/dashboard/seeker';
 
                     window.location.href = redirectPath; 
