@@ -196,7 +196,19 @@
         } catch (err) {
             console.error(err);
             messageBox.style.color = "#ff5252";
-            messageBox.innerText = "❌ Server Error. Please try again.";
+            // Check if it was a JSON parse error by seeing if we can get the text
+            try {
+               // If response is defined in this scope (it might not be if fetch failed), we could try reading it.
+               // But fetch error is network.
+               // The JSON parse error happens inside the try block.
+               if (err.name === 'SyntaxError') {
+                   messageBox.innerHTML = `❌ Server returned non-JSON response. <br/> Check console or ask admin.`;
+               } else {
+                   messageBox.innerText = "❌ Connection Error. Please try again.";
+               }
+            } catch (e) {
+                messageBox.innerText = "❌ Server Error. Please try again.";
+            }
         }
     });
 </script>

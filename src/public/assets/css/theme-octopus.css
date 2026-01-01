@@ -1,0 +1,306 @@
+/* Octopus V Theme - Dark Brown & Orange */
+:root {
+    --octopus-bg-dark: #1a1614;
+    --octopus-card-bg: #2a2624;
+    --octopus-primary: #ff6600;
+    --octopus-primary-hover: #e65c00;
+    --octopus-text-main: #ffffff;
+    --octopus-text-muted: #a0a0a0;
+    --octopus-border: rgba(255, 255, 255, 0.08);
+    --octopus-success: #00b074;
+    --octopus-danger: #dc3545;
+    
+    /* Core Bootstrap/Template overrides */
+    --primary-color: var(--octopus-primary);
+    --primary-rgb: 255, 102, 0;
+    
+    /* Backgrounds */
+    --custom-white: var(--octopus-card-bg); /* Redefine "white" as dark card bg */
+    --body-bg: var(--octopus-bg-dark);
+    --light: var(--octopus-card-bg);
+}
+
+body {
+    background-color: var(--octopus-bg-dark) !important;
+    color: var(--octopus-text-main) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* =========================================
+   SIDEBAR
+   ========================================= */
+.app-sidebar {
+    background-color: var(--octopus-card-bg) !important;
+    border-right: 1px solid var(--octopus-border) !important;
+}
+
+.app-sidebar .main-sidebar-header {
+    background-color: var(--octopus-card-bg) !important;
+    border-bottom: 1px solid var(--octopus-border) !important;
+}
+
+/* Menu Items */
+.side-menu__item {
+    color: var(--octopus-text-muted) !important;
+}
+
+.side-menu__item:hover {
+    color: var(--octopus-text-main) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.side-menu__item.active {
+    background: linear-gradient(90deg, rgba(255, 102, 0, 0.15), transparent) !important;
+    color: var(--octopus-primary) !important;
+    border-left: 3px solid var(--octopus-primary);
+}
+
+.side-menu__item.active .side-menu__icon {
+    color: var(--octopus-primary) !important;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+.app-header {
+    background-color: var(--octopus-card-bg) !important;
+    border-bottom: 1px solid var(--octopus-border) !important;
+}
+
+.app-header .header-content-right .header-element .header-link {
+    color: var(--octopus-text-muted) !important;
+}
+
+.app-header .header-content-right .header-element .header-link:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+/* =========================================
+   CARDS & CONTAINERS
+   ========================================= */
+.card, .custom-card, .stat-card-modern, .welcome-header {
+    background-color: var(--octopus-card-bg) !important;
+    border: 1px solid var(--octopus-border) !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    color: var(--octopus-text-main) !important;
+}
+
+/* Remove default gradients from welcome header */
+.welcome-header {
+    background-image: none !important;
+}
+
+.card-header, .card-footer {
+    background-color: transparent !important;
+    border-color: var(--octopus-border) !important;
+}
+
+.card-title {
+    color: var(--octopus-text-main) !important;
+}
+
+/* =========================================
+   TYPOGRAPHY
+   ========================================= */
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--octopus-text-main) !important;
+}
+
+.text-muted {
+    color: var(--octopus-text-muted) !important;
+}
+
+/* =========================================
+   FORMS & INPUTS
+   ========================================= */
+.form-control, .form-select {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid var(--octopus-border) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.form-control:focus {
+    border-color: var(--octopus-primary) !important;
+    box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.2) !important;
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+.btn-primary, .btn-primary-gradient {
+    background: var(--octopus-primary) !important;
+    background-image: none !important;
+    border-color: var(--octopus-primary) !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover {
+    background: var(--octopus-primary-hover) !important;
+    border-color: var(--octopus-primary-hover) !important;
+}
+
+.btn-light {
+    background: rgba(255,255,255,0.1) !important;
+    border: none !important;
+    color: var(--octopus-text-main) !important;
+}
+
+.btn-light:hover {
+    background: rgba(255,255,255,0.2) !important;
+}
+
+/* =========================================
+   TABLES
+   ========================================= */
+.table, .modern-table {
+    color: var(--octopus-text-muted) !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-color: var(--octopus-text-muted) !important;
+}
+
+.table thead th {
+    background-color: rgba(0,0,0,0.2) !important;
+    color: var(--octopus-text-main) !important;
+    border-bottom: 1px solid var(--octopus-border) !important;
+}
+
+.table td, .table th {
+    border-color: var(--octopus-border) !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(255,255,255,0.03) !important;
+}
+
+/* =========================================
+   LOADER OVERRIDE
+   ========================================= */
+[data-theme-mode="dark"] #loader {
+    background-color: var(--octopus-bg-dark) !important;
+}
+.spinner {
+    border-left-color: var(--octopus-primary) !important;
+}
+
+/* =========================================
+   DROPDOWNS
+   ========================================= */
+.dropdown-menu {
+    background-color: var(--octopus-card-bg) !important;
+    border: 1px solid var(--octopus-border) !important;
+}
+.dropdown-item {
+    color: var(--octopus-text-muted) !important;
+}
+.dropdown-item:hover {
+    background-color: rgba(255,255,255,0.05) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+/* =========================================
+   ADMIN DASHBOARD OVERRIDES
+   ========================================= */
+
+/* Admin Hero */
+.admin-hero {
+    background: var(--octopus-card-bg) !important;
+    border: 1px solid var(--octopus-border) !important;
+    color: var(--octopus-text-main) !important;
+    background-image: none !important;
+}
+.admin-hero::before {
+    background: rgba(255, 102, 0, 0.05) !important; /* Orange glow instead of white */
+}
+
+/* Stat Cards (Specific to Admin) */
+.stat-card {
+    background: var(--octopus-card-bg) !important;
+    border: 1px solid var(--octopus-border) !important;
+    color: var(--octopus-text-main) !important;
+}
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
+    border-color: var(--octopus-primary) !important;
+}
+
+.stat-icon {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--octopus-primary) !important;
+}
+
+/* Specific Stat Card Colors - Force them to respect theme or use muted versions */
+.stat-card.users .stat-icon,
+.stat-card.companies .stat-icon,
+.stat-card.jobs .stat-icon,
+.stat-card.revenue .stat-icon,
+.stat-card.subscriptions .stat-icon,
+.stat-card.applications .stat-icon {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--octopus-primary) !important; /* Unify accent color */
+}
+
+/* Quick Actions */
+.quick-action {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: var(--octopus-text-main) !important;
+    border: 1px solid transparent;
+}
+.quick-action:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: var(--octopus-border) !important;
+}
+.quick-action .action-icon {
+    background: rgba(255, 102, 0, 0.1) !important;
+    color: var(--octopus-primary) !important;
+}
+
+/* Role Badges */
+.role-badge {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--octopus-text-muted) !important;
+}
+.role-badge.admin { color: var(--octopus-danger) !important; }
+.role-badge.employer { color: var(--octopus-primary) !important; }
+.role-badge.employee { color: var(--octopus-success) !important; }
+
+/* Progress Bars */
+.progress {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+.progress-bar {
+    background-color: var(--octopus-primary) !important;
+}
+.bg-success, .bg-warning, .bg-info {
+    filter: brightness(0.8); /* Tone down bright bootstrap colors */
+}
+
+/* =========================================
+   AUTH PAGES (Login/Signup)
+   ========================================= */
+.btn-login, .btn-register {
+    background: var(--octopus-primary) !important;
+    background: linear-gradient(45deg, #ff6600, #ff9f43) !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3) !important;
+}
+
+.login-bg {
+    background: var(--octopus-bg-dark) !important;
+    background: radial-gradient(circle at center, #2a2624 0%, #1a1614 100%) !important;
+}
+
+.role-option input:checked + .role-box {
+    background: linear-gradient(135deg, #ff6600 0%, #cc5200 100%) !important;
+    border-color: var(--octopus-primary) !important;
+}
+
+.role-option:hover .role-box {
+    border-color: var(--octopus-primary) !important;
+}

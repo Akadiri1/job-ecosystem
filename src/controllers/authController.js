@@ -42,17 +42,38 @@ exports.signup = async (req, res) => {
 // 2. LOGIN CONTROLLER
 // ==========================================
 exports.login = async (req, res) => {
+    console.log("🚀 [DEBUG] Login Request Received for:", req.body.email);
+    
+    if (!req.db_models) {
+        console.error("❌ [DEBUG] req.db_models IS UNDEFINED!");
+        return res.status(500).json({ error: "Server Error: Database models not injected." });
+    }
+
     const { User } = req.db_models;
-    if (!User) return res.status(500).json({ error: "Server Error: User model missing." });
+    if (!User) {
+        console.error("❌ [DEBUG] User model is missing from req.db_models");
+        return res.status(500).json({ error: "Server Error: User model missing." });
+    }
 
     try {
         const { email, password } = req.body;
 
         const user = await User.findOne({ where: { email } });
-        if (!user) return res.status(400).json({ error: 'Invalid email or password' });
+        if (!user) {
+            console.warn(`⚠️ [DEBUG] User not found: ${email}`);
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
+
+        if (!user.password_hash) {
+             console.warn("⚠️ [DEBUG] User has no password hash");
+             return res.status(400).json({ error: 'Invalid email or password (Try social login)' });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password_hash);
-        if (!isMatch) return res.status(400).json({ error: 'Invalid email or password' });
+        if (!isMatch) {
+            console.warn("⚠️ [DEBUG] Password mismatch");
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
 
         if (user.account_status === 'suspended') {
             return res.status(403).json({ error: "Your account is deactivated. Please contact your administrator." });
@@ -61,6 +82,7 @@ exports.login = async (req, res) => {
         const secretKey = process.env.JWT_SECRET || 'temporary_dev_secret_key';
         const token = jwt.sign({ id: user.id, role: user.role }, secretKey, { expiresIn: '30d' });
 
+        console.log("✅ [DEBUG] Login Successful");
         res.json({
             message: 'Login successful!',
             token: token,
