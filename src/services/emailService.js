@@ -4,22 +4,41 @@ const nodemailer = require('nodemailer');
 const sendEmail = async (to, subject, html) => {
     try {
         // Robust Transporter Configuration
+        // Robust Transporter Configuration
+        const port = parseInt(process.env.EMAIL_PORT || '587');
+        const secure = port === 465; // true for 465, false for 587
+
+        console.log(`📧 Attempting to send email...`);
+        console.log(`   Host: ${process.env.EMAIL_HOST || 'smtp.gmail.com'}`);
+        console.log(`   Port: ${port}`);
+        console.log(`   Secure: ${secure}`);
+        console.log(`   User: ${process.env.EMAIL_USER ? 'Set (Hidden)' : 'NOT SET'}`);
+
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.EMAIL_PORT || '465'),
-            secure: true, // Use SSL/TLS
+            port: port,
+            secure: secure, // Use SSL/TLS
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
             },
             tls: {
-                rejectUnauthorized: false, // Helps in dev environments with self-signed certs or antivirus issues
+                rejectUnauthorized: false, 
                 ciphers: 'SSLv3'
             },
-            connectionTimeout: 10000, // 10 seconds
+            connectionTimeout: 10000, 
             greetingTimeout: 10000,
             socketTimeout: 20000
         });
+
+        // Verify connection before sending
+        try {
+            await transporter.verify();
+            console.log('✅ SMTP Connection Established Successfully');
+        } catch (verifyError) {
+            console.error('❌ SMTP Connection Failed:', verifyError);
+            throw verifyError; // Re-throw to catch block
+        }
 
         const mailOptions = {
             from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
