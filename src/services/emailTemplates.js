@@ -44,7 +44,7 @@ exports.getShortlistTemplate = (candidateName, jobTitle, companyName) => {
         <p>Our team was impressed with your profile and we would like to move forward. You can expect to hear from us shortly regarding the next steps, which may include an interview invitation or a technical assessment.</p>
         <p>Please keep an eye on your inbox!</p>
         <div style="text-align: center; margin-top: 30px;">
-            <a href="${process.env.APP_URL || 'http://localhost:5000'}/my-applications" class="btn">View Application Status</a>
+            <a href="${process.env.APP_URL || 'https://job-ecosystem.onrender.com'}/my-applications" class="btn">View Application Status</a>
         </div>
     `;
     return getBaseTemplate(content, companyName);
@@ -60,7 +60,7 @@ exports.getHiredTemplate = (candidateName, jobTitle, companyName) => {
         <p>Your skills and experience are a perfect match for our team. We are excited about the possibility of you joining us and making an impact.</p>
         <p><strong>Next Steps:</strong> Your account has been upgraded. You now have access to our private company workspace.</p>
         <div style="text-align: center; margin-top: 30px;">
-            <a href="${process.env.APP_URL || 'http://localhost:5000'}/dashboard" class="btn" style="background-color: #2e7d32;">Go to Workspace</a>
+            <a href="${process.env.APP_URL || 'https://job-ecosystem.onrender.com'}/dashboard" class="btn" style="background-color: #2e7d32;">Go to Workspace</a>
         </div>
     `;
     return getBaseTemplate(content, companyName);

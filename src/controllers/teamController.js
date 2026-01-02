@@ -88,7 +88,7 @@ exports.inviteMember = async (req, res) => {
         }, { where: { id: targetUserId } });
 
         // Generate Login URL
-        const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+        const baseUrl = process.env.BASE_URL || 'https://job-ecosystem.onrender.com';
         const loginUrl = `${baseUrl}/login`;
         
         // Debug Link (for development)
