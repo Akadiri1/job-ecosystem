@@ -234,6 +234,27 @@ exports.getMe = async (req, res) => {
     
     try {
         const user = req.user;
+        let stats = {};
+
+        // [NEW] Fetch Employee Stats
+        if (user.role === 'employee' && user.company_id) {
+             const { Task, TeamMember } = req.db_models;
+             
+             // Get Team Count
+             const teamCount = await TeamMember.count({ where: { company_id: user.company_id } });
+             
+             // Get Tasks
+             const assignedTasks = await Task.count({ where: { assigned_to: user.id, status: ['todo', 'in_progress'] } });
+             const completedTasks = await Task.count({ where: { assigned_to: user.id, status: 'completed' } });
+             const pendingReviews = await Task.count({ where: { assigned_to: user.id, status: 'review' } });
+
+             stats = {
+                teamCount,
+                assignedTasks,
+                completedTasks,
+                pendingReviews
+             };
+        }
 
         res.json({
             success: true,
@@ -247,12 +268,22 @@ exports.getMe = async (req, res) => {
                 profile_picture_url: user.profile_picture_url,
                 website_url: user.website_url,
                 // We will add Company details here later
-            }
+            },
+            stats // [NEW] Return stats
         });
     } catch (error) {
         console.error("❌ GetMe Error:", error);
         res.status(500).json({ error: "Server Error" });
     }
+};
+
+// Add no-cache middleware for auth routes to prevent 304 caching
+exports.noCache = (req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+    next();
 };
 
 // ==========================================
@@ -357,5 +388,47 @@ exports.updateDetails = async (req, res) => {
     } catch (error) {
         console.error("Update Error:", error);
         res.status(500).json({ error: "Server Error updating profile" });
+    }
+};
+
+// ==========================================
+// 7. CHANGE PASSWORD
+// ==========================================
+exports.changePassword = async (req, res) => {
+    try {
+        const { User } = req.db_models;
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: "Current password and new password are required." });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ error: "New password must be at least 6 characters." });
+        }
+
+        const user = await User.findByPk(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        // Verify current password
+        const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+        if (!isMatch) {
+            return res.status(400).json({ error: "Current password is incorrect." });
+        }
+
+        // Hash new password - FIXED: Do NOT hash here, let User model hook handle it to avoid double hashing
+        // const salt = await bcrypt.genSalt(10);
+        // user.password_hash = await bcrypt.hash(newPassword, salt);
+        
+        user.password_hash = newPassword; // Model hook will hash this
+        await user.save();
+
+        res.json({ success: true, message: "Password changed successfully!" });
+
+    } catch (error) {
+        console.error("Change Password Error:", error);
+        res.status(500).json({ error: "Server Error changing password" });
     }
 };

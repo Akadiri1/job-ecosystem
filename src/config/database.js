@@ -17,6 +17,12 @@ if (process.env.DATABASE_URL) {
                 require: true,
                 rejectUnauthorized: false // Required for Neon.tech
             }
+        },
+        pool: {
+            max: 10,
+            min: 0,
+            acquire: 60000, // Increased to 60s
+            idle: 10000
         }
     });
     console.log('📡 Using DATABASE_URL for connection');
@@ -30,6 +36,12 @@ if (process.env.DATABASE_URL) {
             host: process.env.DB_HOST,
             dialect: 'postgres',
             logging: false,
+            pool: {
+                max: 10,
+                min: 0,
+                acquire: 60000, // Increased to 60s
+                idle: 10000
+            }
         }
     );
     console.log('🏠 Using local DB config');

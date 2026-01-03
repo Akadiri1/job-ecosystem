@@ -680,6 +680,8 @@
 
         const token = localStorage.getItem('token');
         try {
+            console.log('[Suspend Debug] Sending request:', { id, action });
+            
             const response = await fetch(`/api/team/members/${id}/status`, {
                 method: 'PATCH',
                 headers: { 
@@ -689,15 +691,25 @@
                 body: JSON.stringify({ status: action })
             });
             
+            const data = await response.json();
+            console.log('[Suspend Debug] Response:', { ok: response.ok, status: response.status, data });
+            
             if (response.ok) {
                 Toastify({ 
                     text: `Member ${action === 'suspend' ? 'Suspended' : 'Activated'}`, 
                     backgroundColor: action === 'suspend' ? "#ff9f43" : "#00b074" 
                 }).showToast();
                 fetchTeam();
+            } else {
+                // Show error message
+                Toastify({ 
+                    text: data.error || data.message || 'Failed to update status', 
+                    backgroundColor: "#ff5b5c" 
+                }).showToast();
             }
         } catch (e) {
-            console.error(e);
+            console.error('[Suspend Debug] Error:', e);
+            Toastify({ text: 'Network error', backgroundColor: "#ff5b5c" }).showToast();
         }
     }
     

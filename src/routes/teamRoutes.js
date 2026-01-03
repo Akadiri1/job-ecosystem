@@ -19,6 +19,9 @@ router.post('/invite', restrictTo('employer', 'admin'), teamController.inviteMem
 // Allowing employees to view team too? For chat, yes.
 router.get('/members', restrictTo('employer', 'admin', 'employee'), teamController.getTeamMembers);
 
+// Get current user's membership (for permission checks)
+router.get('/my-membership', restrictTo('employer', 'admin', 'employee'), teamController.getMyMembership);
+
 // Update Permissions
 router.put('/members/:memberId', restrictTo('employer', 'admin'), teamController.updatePermissions);
 

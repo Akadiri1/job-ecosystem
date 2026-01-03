@@ -97,7 +97,7 @@
                                         Total Tasks
                                     </div>
                                     <div class="d-flex">
-                                        <button class="btn btn-sm btn-primary btn-wave waves-light waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#create-task"><i class="ri-add-line fw-medium align-middle me-1"></i> Create Task</button>
+                                        <button class="btn btn-sm btn-primary btn-wave waves-light waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#create-task" id="btnCreateTaskHeader" style="display:none;"><i class="ri-add-line fw-medium align-middle me-1"></i> Create Task</button>
                                         <!-- Start::add task modal -->
                                         <div class="modal fade" id="create-task" tabindex="-1" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
@@ -253,12 +253,22 @@ let currentPage = 1;
 const itemsPerPage = 5;
 const token = localStorage.getItem('token');
 
+// Permission flags (set after fetching user data)
+let userRole = null;
+let userPermissions = [];
+let canCreateTasks = false;
+let canEditTasks = false;
+let canDeleteTasks = false;
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (!token) { window.location.href = '/login'; return; }
     
     // Show skeletons immediately
     renderSkeletonStats();
     renderSkeletonTable();
+    
+    // Fetch user permissions FIRST
+    await fetchUserPermissions();
     
     await loadTeamMembers();
     await loadTasks();
@@ -281,6 +291,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         checkAll.addEventListener('change', (e) => toggleAll(e.target.checked));
     }
 });
+
+// Fetch user role and permissions from /api/auth/me
+async function fetchUserPermissions() {
+    try {
+        const res = await fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) {
+            const data = await res.json();
+            userRole = data.user?.role;
+            
+            // For employers: they have all permissions
+            if (userRole === 'employer') {
+                canCreateTasks = true;
+                canEditTasks = true;
+                canDeleteTasks = true;
+            } else if (userRole === 'employee') {
+                // Fetch TeamMember permissions
+                const teamRes = await fetch('/api/team/my-membership', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (teamRes.ok) {
+                    const teamData = await teamRes.json();
+                    userPermissions = teamData.membership?.permissions || [];
+                    canCreateTasks = userPermissions.includes('create_tasks');
+                    canEditTasks = userPermissions.includes('edit_tasks');
+                    canDeleteTasks = userPermissions.includes('delete_tasks');
+                }
+            }
+            
+            // Show/hide Create Task button
+            const createBtn = document.getElementById('btnCreateTaskHeader');
+            if (createBtn && canCreateTasks) {
+                createBtn.style.display = 'inline-block';
+            }
+        }
+    } catch(e) { console.error('Permission fetch error:', e); }
+}
 
 function resetModal() {
     currentTaskId = null;
@@ -452,8 +496,8 @@ function renderTasksTable() {
                         `<button class="btn btn-success btn-sm" onclick="acceptTask('${task.id}')" title="Accept Task"><i class="ri-check-line"></i> Accept</button>` 
                         : ''}
                     <button class="btn btn-info-light btn-icon btn-sm" onclick="viewTask('${task.id}')" title="View Details"><i class="ri-eye-line"></i></button>
-                    <button class="btn btn-primary-light btn-icon btn-sm" onclick="editTask('${task.id}')" title="Edit"><i class="ri-edit-line"></i></button>
-                    <button class="btn btn-danger-light btn-icon btn-sm" onclick="deleteTask('${task.id}')" title="Delete"><i class="ri-delete-bin-5-line"></i></button>
+                    ${canEditTasks ? `<button class="btn btn-primary-light btn-icon btn-sm" onclick="editTask('${task.id}')" title="Edit"><i class="ri-edit-line"></i></button>` : ''}
+                    ${canDeleteTasks ? `<button class="btn btn-danger-light btn-icon btn-sm" onclick="deleteTask('${task.id}')" title="Delete"><i class="ri-delete-bin-5-line"></i></button>` : ''}
                 </div>
             </td>
             <td>

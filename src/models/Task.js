@@ -96,6 +96,16 @@ module.exports = (sequelize) => {
         position: {
             type: DataTypes.INTEGER,
             defaultValue: 0
+        },
+        // [NEW] File attachments array: [{url, filename, size}]
+        attachments: {
+            type: DataTypes.JSONB,
+            defaultValue: []
+        },
+        // [NEW] Multiple assignees (for multi-person assignment)
+        assignees: {
+            type: DataTypes.JSONB,
+            defaultValue: []
         }
     }, {
         tableName: 'tasks',

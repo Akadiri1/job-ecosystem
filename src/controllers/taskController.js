@@ -39,6 +39,7 @@
  */
 
 const { sendTaskAssignment } = require('../services/emailService');
+const { createNotification } = require('./notificationController');
 
 /**
  * Creates a new task
@@ -51,12 +52,35 @@ const { sendTaskAssignment } = require('../services/emailService');
  */
 exports.createTask = async (req, res) => {
     try {
-        const { Task, User, Company } = req.db_models;
-        const { title, description, priority, due_date, assigned_to } = req.body;
+        const { Task, User, Company, TeamMember } = req.db_models; // Added TeamMember
+        const { title, description, priority, due_date, assigned_to, attachments, assignees } = req.body;
 
-        const company = await Company.findOne({ where: { owner_id: req.user.id } });
+        let company;
+        
+        // 1. Resolve Company
+        if (req.user.role === 'employer') {
+            company = await Company.findOne({ where: { owner_id: req.user.id } });
+        } else if (req.user.role === 'employee') {
+            if (req.user.company_id) {
+                company = await Company.findByPk(req.user.company_id);
+            }
+        }
+
         if (!company) {
-            return res.status(400).json({ error: 'No company found. Create a company first.' });
+            return res.status(400).json({ error: 'No company found associated with your account.' });
+        }
+
+        // 2. Permission Check (For Employees)
+        if (req.user.role === 'employee') {
+            const member = await TeamMember.findOne({ 
+                where: { user_id: req.user.id, company_id: company.id } 
+            });
+            
+            // Check if member exists AND has permission
+            // Note: Permissions is JSON/Array
+            if (!member || !member.permissions || !member.permissions.includes('create_tasks')) {
+                 return res.status(403).json({ error: "You do not have permission to create tasks." });
+            }
         }
 
         const maxPos = await Task.max('position', { where: { company_id: company.id, status: 'todo' } }) || 0;
@@ -71,10 +95,11 @@ exports.createTask = async (req, res) => {
             created_by: req.user.id,
             status: 'todo',
             position: maxPos + 1,
-            is_accepted: false // Default
+            is_accepted: false,
+            attachments: attachments || [],
+            assignees: assignees || []
         });
 
-        // Send Email if assigned
         if (assigned_to) {
             const assignee = await User.findByPk(assigned_to);
             if (assignee) {
@@ -86,6 +111,16 @@ exports.createTask = async (req, res) => {
                     taskUrl,
                     assignerName: req.user.full_name
                 });
+                
+                // [NEW] Push Notification
+                await createNotification(req.db_models, {
+                     user_id: assigned_to,
+                     title: 'New Task Assigned',
+                     message: `You have been assigned: ${title}`,
+                     type: 'info',
+                     link: `/dashboard/employer/tasks/${task.id}`,
+                     related_id: task.id
+                 });
             }
         }
 
@@ -194,9 +229,16 @@ exports.getTasks = async (req, res) => {
 exports.getMyTasks = async (req, res) => {
     try {
         const { Task, User, TaskComment } = req.db_models;
+        const { Op } = require('sequelize');
 
+        // Find tasks where user is primary assignee OR in assignees array
         const tasks = await Task.findAll({
-            where: { assigned_to: req.user.id },
+            where: {
+                [Op.or]: [
+                    { assigned_to: req.user.id },
+                    { assignees: { [Op.contains]: [req.user.id] } }
+                ]
+            },
             include: [
                 { model: User, as: 'assignee', attributes: ['id', 'full_name', 'email', 'profile_picture_url'] },
                 { model: User, as: 'creator', attributes: ['id', 'full_name', 'email', 'profile_picture_url'] }
@@ -257,13 +299,31 @@ exports.getTask = async (req, res) => {
 // Update task details
 exports.updateTask = async (req, res) => {
     try {
-        const { Task, User } = req.db_models;
+        const { Task, User, Company, TeamMember } = req.db_models;
         const { id } = req.params;
         const { title, description, priority, due_date, assigned_to } = req.body;
 
         const task = await Task.findByPk(id);
         if (!task) {
             return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Permission Check
+        const company = await Company.findByPk(task.company_id);
+        const isOwner = company && company.owner_id === req.user.id;
+        const isCreator = task.created_by === req.user.id;
+        
+        let hasPermission = isOwner || isCreator;
+        
+        if (!hasPermission && req.user.role === 'employee') {
+            const member = await TeamMember.findOne({ 
+                where: { user_id: req.user.id, company_id: task.company_id } 
+            });
+            hasPermission = member && member.permissions && member.permissions.includes('edit_tasks');
+        }
+        
+        if (!hasPermission) {
+            return res.status(403).json({ error: 'You do not have permission to edit this task.' });
         }
 
         // Update fields
@@ -320,12 +380,30 @@ exports.updateTaskStatus = async (req, res) => {
 // Delete task
 exports.deleteTask = async (req, res) => {
     try {
-        const { Task, TaskComment } = req.db_models;
+        const { Task, TaskComment, Company, TeamMember } = req.db_models;
         const { id } = req.params;
 
         const task = await Task.findByPk(id);
         if (!task) {
             return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Permission Check
+        const company = await Company.findByPk(task.company_id);
+        const isOwner = company && company.owner_id === req.user.id;
+        const isCreator = task.created_by === req.user.id;
+        
+        let hasPermission = isOwner || isCreator;
+        
+        if (!hasPermission && req.user.role === 'employee') {
+            const member = await TeamMember.findOne({ 
+                where: { user_id: req.user.id, company_id: task.company_id } 
+            });
+            hasPermission = member && member.permissions && member.permissions.includes('delete_tasks');
+        }
+        
+        if (!hasPermission) {
+            return res.status(403).json({ error: 'You do not have permission to delete this task.' });
         }
 
         // Delete all comments first

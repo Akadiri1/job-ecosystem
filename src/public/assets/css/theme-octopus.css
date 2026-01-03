@@ -1,306 +1,300 @@
-/* Octopus V Theme - Dark Brown & Orange */
-:root {
-    --octopus-bg-dark: #1a1614;
-    --octopus-card-bg: #2a2624;
-    --octopus-primary: #ff6600;
-    --octopus-primary-hover: #e65c00;
-    --octopus-text-main: #ffffff;
-    --octopus-text-muted: #a0a0a0;
-    --octopus-border: rgba(255, 255, 255, 0.08);
+/* Octopus V Theme - Light & Dark Mode Support */
+
+/* =========================================
+   LIGHT MODE (Default) - Clean Blue/White Theme
+   ========================================= */
+
+:root, html, [data-theme-mode="light"] {
+    /* Backgrounds: Pure White everywhere */
+    --octopus-bg-light: #ffffff;
+    --octopus-card-bg-light: #ffffff;
+    
+    --octopus-primary: #667eea;
+    --octopus-primary-hover: #5a6fd6;
+    --octopus-text-main-light: #333333;
+    --octopus-text-muted-light: #6c757d;
+    
+    /* Borders: Slightly darker to define structure since bg is white */
+    --octopus-border-light: #e5e7eb; /* Gray-200 */
+    
     --octopus-success: #00b074;
     --octopus-danger: #dc3545;
     
-    /* Core Bootstrap/Template overrides */
+    /* Core overrides for light mode */
     --primary-color: var(--octopus-primary);
-    --primary-rgb: 255, 102, 0;
+    --primary-rgb: 102, 126, 234;
+    --custom-white: var(--octopus-card-bg-light);
+    --body-bg: var(--octopus-bg-light);
     
-    /* Backgrounds */
-    --custom-white: var(--octopus-card-bg); /* Redefine "white" as dark card bg */
-    --body-bg: var(--octopus-bg-dark);
-    --light: var(--octopus-card-bg);
+    /* GENERIC ALIASES (Essential for auto-switching) */
+    --octopus-bg: var(--octopus-bg-light);
+    --octopus-card-bg: var(--octopus-card-bg-light);
+    --octopus-text-main: var(--octopus-text-main-light);
+    --octopus-text-muted: var(--octopus-text-muted-light);
+    --octopus-border: var(--octopus-border-light);
 }
 
+/* Explicit Light Mode Selectors to beat specificity */
+[data-theme-mode="light"] body,
+[data-theme-mode="light"] .main-content,
+[data-theme-mode="light"] .app-content,
+[data-theme-mode="light"] .page {
+    background-color: var(--octopus-bg-light) !important;
+    color: var(--octopus-text-main-light) !important;
+}
+
+/* Light mode sidebar & header */
+[data-theme-mode="light"] .app-sidebar,
+[data-theme-mode="light"] .main-sidebar,
+[data-theme-mode="light"] .main-menu {
+    background-color: var(--octopus-card-bg-light) !important;
+    border-right: 1px solid var(--octopus-border-light) !important;
+}
+
+[data-theme-mode="light"] .app-header,
+[data-theme-mode="light"] .main-sidebar-header {
+    background-color: var(--octopus-card-bg-light) !important;
+    border-bottom: 1px solid var(--octopus-border-light) !important;
+}
+
+/* Light mode cards */
+[data-theme-mode="light"] .card, 
+[data-theme-mode="light"] .custom-card, 
+[data-theme-mode="light"] .stat-card-modern,
+[data-theme-mode="light"] .dropdown-menu {
+    background-color: var(--octopus-card-bg-light) !important;
+    border: 1px solid var(--octopus-border-light) !important;
+    color: var(--octopus-text-main-light) !important;
+}
+
+/* Fallback for body if no attribute (Default) */
 body {
-    background-color: var(--octopus-bg-dark) !important;
-    color: var(--octopus-text-main) !important;
+    background-color: var(--octopus-bg-light);
+    color: var(--octopus-text-main-light);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* =========================================
-   SIDEBAR
+   DARK MODE - Modern Dark Blue/Slate Theme
    ========================================= */
-.app-sidebar {
+/* =========================================
+   DARK MODE - Modern Deep Charcoal/Zinc Theme
+   ========================================= */
+[data-theme-mode="dark"] {
+    /* Backgrounds: Neutral Zinc/Charcoal (Premium Dark) */
+    --octopus-bg-dark: #18181b;      /* Zinc 900 */
+    --octopus-card-bg: #27272a;      /* Zinc 800 */
+    
+    /* Primary Color: Keep the Blue for modern feel, or switch to Primary if requested */
+    --octopus-primary: #3b82f6;      /* Blue 500 */
+    --octopus-primary-hover: #2563eb; /* Blue 600 */
+    
+    /* Text */
+    --octopus-text-main: #f4f4f5;    /* Zinc 100 */
+    --octopus-text-muted: #a1a1aa;   /* Zinc 400 */
+    
+    /* Borders */
+    --octopus-border: rgba(255, 255, 255, 0.08);
+    
+    /* Core Overrides */
+    --primary-color: var(--octopus-primary);
+    --primary-rgb: 59, 130, 246;
+    --custom-white: var(--octopus-card-bg);
+    --body-bg: var(--octopus-bg-dark);
+}
+
+[data-theme-mode="dark"] body {
+    background-color: var(--octopus-bg-dark) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+/* Dark mode sidebar */
+[data-theme-mode="dark"] .app-sidebar {
     background-color: var(--octopus-card-bg) !important;
     border-right: 1px solid var(--octopus-border) !important;
 }
 
-.app-sidebar .main-sidebar-header {
+[data-theme-mode="dark"] .app-sidebar .main-sidebar-header {
     background-color: var(--octopus-card-bg) !important;
     border-bottom: 1px solid var(--octopus-border) !important;
 }
 
-/* Menu Items */
-.side-menu__item {
+/* Dark mode menu items */
+[data-theme-mode="dark"] .side-menu__item {
     color: var(--octopus-text-muted) !important;
 }
 
-.side-menu__item:hover {
+[data-theme-mode="dark"] .side-menu__item:hover {
     color: var(--octopus-text-main) !important;
-    background: rgba(255, 255, 255, 0.03) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
 }
 
-.side-menu__item.active {
-    background: linear-gradient(90deg, rgba(255, 102, 0, 0.15), transparent) !important;
+[data-theme-mode="dark"] .side-menu__item.active {
+    background: rgba(59, 130, 246, 0.15) !important;
     color: var(--octopus-primary) !important;
     border-left: 3px solid var(--octopus-primary);
 }
 
-.side-menu__item.active .side-menu__icon {
-    color: var(--octopus-primary) !important;
-}
-
-/* =========================================
-   HEADER
-   ========================================= */
-.app-header {
+/* Dark mode header */
+[data-theme-mode="dark"] .app-header {
     background-color: var(--octopus-card-bg) !important;
-    border-bottom: 1px solid var(--octopus-border) !important;
+    border-bottom: 1px solid var(--octopus-border) !important; /* Fixed syntax error */
 }
 
-.app-header .header-content-right .header-element .header-link {
+[data-theme-mode="dark"] .app-header .header-content-right .header-element .header-link {
     color: var(--octopus-text-muted) !important;
 }
 
-.app-header .header-content-right .header-element .header-link:hover {
+[data-theme-mode="dark"] .app-header .header-content-right .header-element .header-link:hover {
     background: rgba(255, 255, 255, 0.05) !important;
     color: var(--octopus-text-main) !important;
 }
 
-/* =========================================
-   CARDS & CONTAINERS
-   ========================================= */
-.card, .custom-card, .stat-card-modern, .welcome-header {
+/* Dark mode cards */
+[data-theme-mode="dark"] .card, 
+[data-theme-mode="dark"] .custom-card, 
+[data-theme-mode="dark"] .stat-card-modern, 
+[data-theme-mode="dark"] .welcome-header {
     background-color: var(--octopus-card-bg) !important;
     border: 1px solid var(--octopus-border) !important;
     box-shadow: none !important;
-    border-radius: 12px !important;
     color: var(--octopus-text-main) !important;
 }
 
-/* Remove default gradients from welcome header */
-.welcome-header {
+[data-theme-mode="dark"] .welcome-header {
     background-image: none !important;
 }
 
-.card-header, .card-footer {
+[data-theme-mode="dark"] .card-header, 
+[data-theme-mode="dark"] .card-footer {
     background-color: transparent !important;
     border-color: var(--octopus-border) !important;
 }
 
-.card-title {
+[data-theme-mode="dark"] .card-title {
     color: var(--octopus-text-main) !important;
 }
 
-/* =========================================
-   TYPOGRAPHY
-   ========================================= */
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+/* Dark mode typography */
+[data-theme-mode="dark"] h1, 
+[data-theme-mode="dark"] h2, 
+[data-theme-mode="dark"] h3, 
+[data-theme-mode="dark"] h4, 
+[data-theme-mode="dark"] h5, 
+[data-theme-mode="dark"] h6 {
     color: var(--octopus-text-main) !important;
 }
 
-.text-muted {
+[data-theme-mode="dark"] .text-muted {
     color: var(--octopus-text-muted) !important;
 }
 
-/* =========================================
-   FORMS & INPUTS
-   ========================================= */
-.form-control, .form-select {
+/* Dark mode forms */
+[data-theme-mode="dark"] .form-control, 
+[data-theme-mode="dark"] .form-select {
     background-color: rgba(255, 255, 255, 0.03) !important;
     border: 1px solid var(--octopus-border) !important;
     color: var(--octopus-text-main) !important;
 }
 
-.form-control::placeholder {
+[data-theme-mode="dark"] .form-control::placeholder {
     color: rgba(255, 255, 255, 0.3) !important;
 }
 
-.form-control:focus {
+[data-theme-mode="dark"] .form-control:focus {
     border-color: var(--octopus-primary) !important;
     box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.2) !important;
 }
 
-/* =========================================
-   BUTTONS
-   ========================================= */
-.btn-primary, .btn-primary-gradient {
+/* Dark mode buttons */
+[data-theme-mode="dark"] .btn-primary, 
+[data-theme-mode="dark"] .btn-primary-gradient {
     background: var(--octopus-primary) !important;
     background-image: none !important;
     border-color: var(--octopus-primary) !important;
-    color: #fff !important;
 }
 
-.btn-primary:hover {
+[data-theme-mode="dark"] .btn-primary:hover {
     background: var(--octopus-primary-hover) !important;
     border-color: var(--octopus-primary-hover) !important;
 }
 
-.btn-light {
+[data-theme-mode="dark"] .btn-light {
     background: rgba(255,255,255,0.1) !important;
     border: none !important;
     color: var(--octopus-text-main) !important;
 }
 
-.btn-light:hover {
+[data-theme-mode="dark"] .btn-light:hover {
     background: rgba(255,255,255,0.2) !important;
 }
 
-/* =========================================
-   TABLES
-   ========================================= */
-.table, .modern-table {
+/* Dark mode tables */
+[data-theme-mode="dark"] .table, 
+[data-theme-mode="dark"] .modern-table {
     color: var(--octopus-text-muted) !important;
     --bs-table-bg: transparent !important;
-    --bs-table-color: var(--octopus-text-muted) !important;
 }
 
-.table thead th {
+[data-theme-mode="dark"] .table thead th {
     background-color: rgba(0,0,0,0.2) !important;
     color: var(--octopus-text-main) !important;
     border-bottom: 1px solid var(--octopus-border) !important;
 }
 
-.table td, .table th {
+[data-theme-mode="dark"] .table td, 
+[data-theme-mode="dark"] .table th {
     border-color: var(--octopus-border) !important;
 }
 
-.table-hover tbody tr:hover {
+[data-theme-mode="dark"] .table-hover tbody tr:hover {
     background-color: rgba(255,255,255,0.03) !important;
 }
 
-/* =========================================
-   LOADER OVERRIDE
-   ========================================= */
+/* Dark mode loader */
 [data-theme-mode="dark"] #loader {
     background-color: var(--octopus-bg-dark) !important;
 }
-.spinner {
+
+[data-theme-mode="dark"] .spinner {
     border-left-color: var(--octopus-primary) !important;
 }
 
-/* =========================================
-   DROPDOWNS
-   ========================================= */
-.dropdown-menu {
+/* Dark mode dropdowns */
+[data-theme-mode="dark"] .dropdown-menu {
     background-color: var(--octopus-card-bg) !important;
     border: 1px solid var(--octopus-border) !important;
 }
-.dropdown-item {
+
+[data-theme-mode="dark"] .dropdown-item {
     color: var(--octopus-text-muted) !important;
 }
-.dropdown-item:hover {
+
+[data-theme-mode="dark"] .dropdown-item:hover {
     background-color: rgba(255,255,255,0.05) !important;
     color: var(--octopus-text-main) !important;
 }
 
 /* =========================================
-   ADMIN DASHBOARD OVERRIDES
+   SHARED STYLES (Both modes)
    ========================================= */
-
-/* Admin Hero */
-.admin-hero {
-    background: var(--octopus-card-bg) !important;
-    border: 1px solid var(--octopus-border) !important;
-    color: var(--octopus-text-main) !important;
-    background-image: none !important;
-}
-.admin-hero::before {
-    background: rgba(255, 102, 0, 0.05) !important; /* Orange glow instead of white */
+.btn-primary, .btn-primary-gradient {
+    background: var(--octopus-primary);
+    border-color: var(--octopus-primary);
+    color: #fff;
 }
 
-/* Stat Cards (Specific to Admin) */
-.stat-card {
-    background: var(--octopus-card-bg) !important;
-    border: 1px solid var(--octopus-border) !important;
-    color: var(--octopus-text-main) !important;
-}
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
-    border-color: var(--octopus-primary) !important;
+.btn-primary:hover {
+    background: var(--octopus-primary-hover);
+    border-color: var(--octopus-primary-hover);
 }
 
-.stat-icon {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: var(--octopus-primary) !important;
-}
-
-/* Specific Stat Card Colors - Force them to respect theme or use muted versions */
-.stat-card.users .stat-icon,
-.stat-card.companies .stat-icon,
-.stat-card.jobs .stat-icon,
-.stat-card.revenue .stat-icon,
-.stat-card.subscriptions .stat-icon,
-.stat-card.applications .stat-icon {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: var(--octopus-primary) !important; /* Unify accent color */
-}
-
-/* Quick Actions */
-.quick-action {
-    background: rgba(255, 255, 255, 0.02) !important;
-    color: var(--octopus-text-main) !important;
-    border: 1px solid transparent;
-}
-.quick-action:hover {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-color: var(--octopus-border) !important;
-}
-.quick-action .action-icon {
-    background: rgba(255, 102, 0, 0.1) !important;
-    color: var(--octopus-primary) !important;
-}
-
-/* Role Badges */
-.role-badge {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: var(--octopus-text-muted) !important;
-}
-.role-badge.admin { color: var(--octopus-danger) !important; }
-.role-badge.employer { color: var(--octopus-primary) !important; }
-.role-badge.employee { color: var(--octopus-success) !important; }
-
-/* Progress Bars */
-.progress {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-}
+/* Progress bars */
 .progress-bar {
-    background-color: var(--octopus-primary) !important;
-}
-.bg-success, .bg-warning, .bg-info {
-    filter: brightness(0.8); /* Tone down bright bootstrap colors */
+    background-color: var(--octopus-primary);
 }
 
-/* =========================================
-   AUTH PAGES (Login/Signup)
-   ========================================= */
-.btn-login, .btn-register {
-    background: var(--octopus-primary) !important;
-    background: linear-gradient(45deg, #ff6600, #ff9f43) !important;
-    color: white !important;
-    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3) !important;
-}
-
-.login-bg {
-    background: var(--octopus-bg-dark) !important;
-    background: radial-gradient(circle at center, #2a2624 0%, #1a1614 100%) !important;
-}
-
-.role-option input:checked + .role-box {
-    background: linear-gradient(135deg, #ff6600 0%, #cc5200 100%) !important;
-    border-color: var(--octopus-primary) !important;
-}
-
-.role-option:hover .role-box {
-    border-color: var(--octopus-primary) !important;
-}
+/* Role badges */
+.role-badge.admin { color: var(--octopus-danger); }
+.role-badge.employer { color: var(--octopus-primary); }
+.role-badge.employee { color: var(--octopus-success); }

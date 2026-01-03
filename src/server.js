@@ -31,6 +31,7 @@ const ChatMessage = require('./models/ChatMessage')(sequelize); // [NEW] Import 
 const ChatGroup = require('./models/ChatGroup')(sequelize);
 const ChatGroupMember = require('./models/ChatGroupMember')(sequelize);
 const Notification = require('./models/Notification')(sequelize); // [NEW]
+const PushSubscription = require('./models/PushSubscription')(sequelize); // [PUSH]
 const Task = require('./models/Task')(sequelize);
 const TaskComment = require('./models/TaskComment')(sequelize);
 const TaskCommentLike = require('./models/TaskCommentLike')(sequelize);
@@ -91,6 +92,10 @@ ChatMessage.belongsTo(User, { as: 'receiver', foreignKey: 'receiver_id' }); // O
 // Notification Relationships
 User.hasMany(Notification, { foreignKey: 'user_id', as: 'notifications' });
 Notification.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// Push Subscriptions
+User.hasMany(PushSubscription, { foreignKey: 'user_id', as: 'push_subscriptions' });
+PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
 // --- EMPLOYEE RELATIONSHIPS ---
 // A Company has many Employees
@@ -178,7 +183,7 @@ app.use((req, res, next) => {
         TeamMember, Channel, ChannelMember,
         Task, TaskComment, TaskCommentLike,
         Attendance, AIInsight,
-        Subscription, Payment
+        Subscription, Payment, PushSubscription
     };
     next();
 });
@@ -387,14 +392,21 @@ app.use((req, res) => res.status(404).json({ error: "Endpoint not found" }));
 
 // --- SERVER START ---
 const PORT = process.env.PORT || 5000;
-
+const startTime = Date.now();
 sequelize.authenticate()
     .then(() => {
         console.log('✅ Database connected!');
-        return sequelize.sync({ alter: true });
+        
+        // Use ALTER_SYNC=true env var to enable slow alter mode
+        // Default: false for fast startup (no table modifications)
+        const shouldAlter = process.env.ALTER_SYNC === 'true';
+        console.log(shouldAlter ? '🔧 Syncing with ALTER (slow mode)...' : '⚡ Fast sync mode (no schema changes)');
+        
+        return sequelize.sync({ alter: shouldAlter });
     })
     .then(() => {
-        console.log('✅ Database Synced & Tables Ready');
+        const syncTime = ((Date.now() - startTime) / 1000).toFixed(2);
+        console.log(`✅ Database Synced & Tables Ready (${syncTime}s)`);
         
         // [NEW] Setup Socket.io
         const server = http.createServer(app);

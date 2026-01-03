@@ -68,6 +68,11 @@ exports.inviteMember = async (req, res) => {
             return res.status(400).json({ success: false, message: 'User ID or Email is required' });
         }
 
+        // Prevent inviting yourself
+        if (targetUserId === ownerId) {
+            return res.status(400).json({ success: false, message: 'You cannot invite yourself to your own team as an employee.' });
+        }
+
         // Check if already member
         const existing = await TeamMember.findOne({ where: { company_id: company.id, user_id: targetUserId } });
         if (existing) return res.status(400).json({ success: false, message: 'User already in team' });
@@ -82,10 +87,24 @@ exports.inviteMember = async (req, res) => {
         });
 
         // Update User Role & Company Link
-        await User.update({ 
-            role: 'employee',
-            company_id: company.id
-        }, { where: { id: targetUserId } });
+        // CRITICAL FIX: Do NOT overwrite if user is already an employer or admin.
+        // Also, do not overwrite if they are already an employee of ANOTHER company (unless we support switching).
+        // For now, only upgrade 'job_seeker' to 'employee'.
+        
+        const targetUserObj = await User.findByPk(targetUserId);
+        if (targetUserObj.role === 'job_seeker') {
+             await User.update({ 
+                role: 'employee',
+                company_id: company.id
+            }, { where: { id: targetUserId } });
+        } else if (targetUserObj.role === 'employee' && targetUserObj.company_id !== company.id) {
+             // Warn or block? 
+             // Letting them be in multiple teams is fine via TeamMember, but User.company_id implies primary workplace.
+             // We won't update their primary workplace if they already have one.
+             console.log(`User ${targetUserId} is already an employee of another company. Added to TeamMember but primary company unchanged.`);
+        } else if (targetUserObj.role === 'employer') {
+            console.log(`User ${targetUserId} is an employer. Added to TeamMember but role unchanged.`);
+        }
 
         // Generate Login URL
         const baseUrl = process.env.BASE_URL || 'https://job-ecosystem.onrender.com';
@@ -171,20 +190,27 @@ exports.updatePermissions = async (req, res) => {
 exports.toggleMemberStatus = async (req, res) => {
     try {
         const { memberId } = req.params;
-        const { status } = req.body; // active, suspended
+        const { status } = req.body; // 'suspend' or 'active'
         const { TeamMember, User } = req.db_models;
 
-        const member = await TeamMember.findByPk(memberId);
-        if(!member) return res.status(404).json({ success: false, message: 'Member not found' });
+        console.log('[Toggle Status] Request:', { memberId, status });
 
-        await member.update({ status: status === 'suspend' ? 'suspended' : 'active' });
+        const member = await TeamMember.findByPk(memberId);
+        if(!member) {
+            console.log('[Toggle Status] Member not found:', memberId);
+            return res.status(404).json({ success: false, message: 'Member not found' });
+        }
+
+        const newStatus = status === 'suspend' ? 'suspended' : 'active';
+        console.log('[Toggle Status] Updating status from', member.status, 'to', newStatus);
         
-        // Also update User login access if needed?
-        // simple toggle for now
+        await member.update({ status: newStatus });
         
-        res.json({ success: true, message: 'Status updated' });
+        console.log('[Toggle Status] Updated successfully. New status:', member.status);
+        
+        res.json({ success: true, message: 'Status updated', newStatus: member.status });
     } catch (error) {
-        console.error(error);
+        console.error('[Toggle Status] Error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
@@ -207,6 +233,50 @@ exports.removeMember = async (req, res) => {
         res.json({ success: true, message: 'Member removed' });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// Get current user's team membership (for permission checks in frontend)
+exports.getMyMembership = async (req, res) => {
+    try {
+        const { TeamMember, Company } = req.db_models;
+        
+        // For employers, return full permissions
+        if (req.user.role === 'employer') {
+            const company = await Company.findOne({ where: { owner_id: req.user.id } });
+            return res.json({
+                success: true,
+                membership: {
+                    role: 'owner',
+                    permissions: ['create_tasks', 'edit_tasks', 'delete_tasks', 'manage_team', 'view_reports'],
+                    status: 'active',
+                    company_id: company?.id
+                }
+            });
+        }
+        
+        // For employees, find their TeamMember record
+        const membership = await TeamMember.findOne({
+            where: { user_id: req.user.id, company_id: req.user.company_id }
+        });
+        
+        if (!membership) {
+            return res.json({ success: true, membership: null });
+        }
+        
+        res.json({
+            success: true,
+            membership: {
+                id: membership.id,
+                role: membership.role,
+                permissions: membership.permissions || [],
+                status: membership.status,
+                company_id: membership.company_id
+            }
+        });
+    } catch (error) {
+        console.error('Get My Membership Error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 };

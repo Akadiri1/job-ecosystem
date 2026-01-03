@@ -43,15 +43,15 @@
     
     /* Candidates Table */
     .candidates-table-card {
-        background: var(--custom-white);
+        background: var(--octopus-card-bg);
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.08);
+        border: 1px solid var(--octopus-border);
         overflow: hidden;
     }
     
     .candidates-table-header {
         padding: 1.25rem;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid var(--octopus-border);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -65,11 +65,13 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        color: var(--octopus-text-main);
     }
     
     .candidates-table-title i {
         color: #11998e;
     }
+
     
     .candidates-table {
         margin: 0;
@@ -103,8 +105,9 @@
     .candidates-table tbody td {
         padding: 1rem;
         vertical-align: middle;
-        border-color: rgba(255,255,255,0.05);
+        border-color: var(--octopus-border);
         background: transparent;
+        color: var(--octopus-text-main);
     }
     
     .candidate-avatar {
@@ -122,7 +125,7 @@
     
     .candidate-email {
         font-size: 0.8rem;
-        color: var(--text-muted);
+        color: var(--octopus-text-muted);
     }
     
     .status-badge {

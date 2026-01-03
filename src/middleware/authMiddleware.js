@@ -17,6 +17,22 @@ exports.protect = async (req, res, next) => {
                  return res.status(403).json({ error: "Your account has been deactivated. Please contact your administrator." });
             }
 
+            // [NEW] Check Team Suspension (For Employees)
+            if (req.user && req.user.role === 'employee' && req.user.company_id) {
+                console.log(`[Suspension Check] Employee ${req.user.id} belongs to company ${req.user.company_id}`);
+                
+                const member = await req.db_models.TeamMember.findOne({
+                    where: { user_id: req.user.id, company_id: req.user.company_id }
+                });
+                
+                console.log(`[Suspension Check] TeamMember record:`, member ? { id: member.id, status: member.status } : 'NOT FOUND');
+                
+                if (member && member.status === 'suspended') {
+                    console.log(`[Suspension Check] BLOCKED - User is suspended`);
+                    return res.status(403).json({ error: "Your access to this company workspace has been suspended." });
+                }
+            }
+
             next();
         } catch (error) {
             console.error(error);

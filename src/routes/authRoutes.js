@@ -37,7 +37,8 @@ const {
     resetPassword, 
     getMe, 
     protect, 
-    updateDetails 
+    updateDetails,
+    changePassword
 } = require('../controllers/authController');
 
 // Import validators
@@ -96,8 +97,15 @@ router.get('/facebook/callback',
 const upload = require('../middleware/upload');
 
 // --- Protected User Routes ---
-router.get('/me', protect, getMe);
+router.get('/me', protect, (req, res, next) => {
+    // Prevent caching to ensure suspension check runs every time
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+}, getMe);
 router.put('/updatedetails', protect, upload.single('profile_picture'), updateDetails); // <--- Added upload middleware
+router.put('/change-password', protect, changePassword); // <--- Password change
 
 // DEV ONLY: Quick role switch endpoint
 router.post('/switch-role', protect, async (req, res) => {

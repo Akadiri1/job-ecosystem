@@ -26,8 +26,77 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-capable" content="yes">
     
+        <!-- [CRITICAL] Theme Flash Prevention -->
+        <script>
+            (function() {
+                try {
+                    var localTheme = localStorage.getItem("zenodarktheme");
+                    var html = document.documentElement;
+                    if (localTheme) {
+                        html.setAttribute("data-theme-mode", "dark");
+                        html.setAttribute("data-header-styles", "dark");
+                        html.setAttribute("data-menu-styles", "dark");
+                    } else {
+                        html.setAttribute("data-theme-mode", "light");
+                        html.setAttribute("data-header-styles", "light");
+                        html.setAttribute("data-menu-styles", "light");
+                    }
+                } catch(e) {}
+            })();
+        </script>
         <!-- Main Theme Js -->
         <script src="/build/assets/main.js"></script>
+        
+        <!-- [CRITICAL] Global Suspension Interceptor - MUST run before any other fetch calls -->
+        <script>
+            (function() {
+                const originalFetch = window.fetch;
+                window.fetch = async function(...args) {
+                    const response = await originalFetch.apply(this, args);
+                    
+                    // Check for suspension on 403 responses
+                    if (response.status === 403) {
+                        const clonedResponse = response.clone();
+                        try {
+                            const data = await clonedResponse.json();
+                            if (data.error && data.error.toLowerCase().includes('suspended')) {
+                                console.log('[GLOBAL INTERCEPTOR] Suspension detected, blocking page');
+                                
+                                // Immediately replace the page
+                                document.body.innerHTML = `
+                                    <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); text-align: center; padding: 20px; position: fixed; top: 0; left: 0; width: 100%; z-index: 999999;">
+                                        <div style="background: white; padding: 3rem; border-radius: 24px; max-width: 480px; box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15); border: 1px solid rgba(102, 126, 234, 0.1);">
+                                            <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                            </div>
+                                            <h1 style="color: #667eea; font-size: 1.75rem; margin-bottom: 10px; font-weight: 700;">Access Suspended</h1>
+                                            <p style="color: #555; font-size: 1rem; margin-bottom: 1rem;">\${data.error}</p>
+                                            <p style="color: #888; font-size: 0.85rem; margin-bottom: 2rem;">Please contact your administrator to restore your access.</p>
+                                            <button onclick="localStorage.clear(); window.location.href='/login'" style="padding: 14px 40px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Return to Login</button>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Clear auth data
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('user');
+                                
+                                // Set global flag so other scripts know to stop
+                                window.__userSuspended = true;
+                                
+                                // Stop all further execution
+                                throw new Error('USER_SUSPENDED_BLOCKED');
+                            }
+                        } catch(e) {
+                            if (e.message === 'USER_SUSPENDED_BLOCKED') throw e;
+                            // If JSON parsing fails, continue normally
+                        }
+                    }
+                    
+                    return response;
+                };
+            })();
+        </script>
 
         <!-- ICONS CSS -->
         <link href="/build/assets/icon-fonts/icons.css" rel="stylesheet">
@@ -682,6 +751,29 @@
             const res = await fetch('/api/notifications', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            
+            // Clone the response so we can read it twice if needed
+            const resClone = res.clone();
+            
+            // [NEW] Check for suspension on ANY non-OK response
+            if (!res.ok) {
+                try {
+                    const errorData = await resClone.json();
+                    console.log('[Notification Check] Error response:', errorData);
+                    
+                    if (res.status === 403 && errorData.error && errorData.error.includes('suspended')) {
+                        console.log('[Suspension] DETECTED - Blocking page');
+                        showSuspensionScreen(errorData.error);
+                        return;
+                    }
+                } catch(parseErr) {
+                    console.error('Failed to parse error response');
+                }
+                // If we get here, it's some other error - just let it fail gracefully
+                if(container) container.innerHTML = '<li class="dropdown-item text-center p-3 text-danger">Failed to load</li>';
+                return;
+            }
+            
             const data = await res.json();
             
             if(data.success) {
@@ -689,9 +781,38 @@
             }
         } catch(e) {
             console.error("Failed to load notifications", e);
+            // Check if this was our intentional suspension throw
+            if (e.message === 'USER_SUSPENDED') return;
             if(container) container.innerHTML = '<li class="dropdown-item text-center p-3 text-danger">Failed to load</li>';
         }
     }
+    
+    // [NEW] Global Suspension Screen Function
+    function showSuspensionScreen(message) {
+        console.log('[Suspension Screen] Showing full page block');
+        
+        // Replace entire body with suspension message
+        document.body.innerHTML = `
+            <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); text-align: center; padding: 20px; position: fixed; top: 0; left: 0; width: 100%; z-index: 999999;">
+                <div style="background: rgba(255,255,255,0.05); padding: 3rem; border-radius: 20px; max-width: 500px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #ff5b5c, #ff9f43); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <h1 style="color: #ff9f43; font-size: 1.75rem; margin-bottom: 10px; font-weight: 700;">Access Suspended</h1>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 1.5rem;">${message}</p>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 1.5rem;">Please contact your administrator to restore your access.</p>
+                    <button onclick="localStorage.clear(); window.location.href='/login'" style="padding: 14px 40px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s ease;">Return to Login</button>
+                </div>
+            </div>
+        `;
+        
+        // Clear localStorage to force re-login
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+    }
+    
+    // [NEW] Make function globally available
+    window.showSuspensionScreen = showSuspensionScreen;
 
     function renderNotifications(notifications, unreadCount) {
         const container = document.getElementById('header-notification-scroll');
@@ -2193,5 +2314,87 @@
     document.addEventListener('DOMContentLoaded', () => {
         const savedFlag = localStorage.getItem('user_flag') || '/build/assets/images/flags/us_flag.jpg';
         updateLanguageUI(savedFlag);
+
+        // [CRITICAL FIX] Force Theme Toggle Logic
+        // This ensures clicking the theme buttons actually switches the mode regardless of what the minified JS tries to do
+        const lightBtn = document.getElementById('switcher-light-theme');
+        const darkBtn = document.getElementById('switcher-dark-theme');
+        const html = document.documentElement;
+
+        if(lightBtn) {
+            lightBtn.addEventListener('click', (e) => {
+                // Force Light Attributes
+                html.setAttribute('data-theme-mode', 'light');
+                html.style.removeProperty('--body-bg-rgb');
+                html.style.removeProperty('--body-bg-rgb2');
+                html.style.removeProperty('--light-rgb');
+                
+                // Clear any persisting dark flags
+                localStorage.removeItem('zenodarktheme');
+                localStorage.setItem('zenolighttheme', 'true');
+                
+                // Ensure correct check state
+                setTimeout(() => { lightBtn.checked = true; }, 50);
+            });
+        }
+        
+        if(darkBtn) {
+            darkBtn.addEventListener('click', (e) => {
+                // Force Dark Attributes
+                html.setAttribute('data-theme-mode', 'dark');
+                
+                // Set flags
+                localStorage.setItem('zenodarktheme', 'true');
+                localStorage.removeItem('zenolighttheme');
+                
+                // Ensure correct check state
+                setTimeout(() => { darkBtn.checked = true; }, 50);
+            });
+        }
     });
+</script>
+
+<!-- Web Push Subscription Logic -->
+<script>
+const PUBLIC_KEY = 'BAtSKsIVOlkH_DjFTS-vT1ysvHmsCm45SSutJpY-iFPwwbNvR6f6T7CLivUuBQpkxRtlSfltSXNRzuQZ9aa_sfY';
+
+function urlB64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+async function subscribeUser() {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlB64ToUint8Array(PUBLIC_KEY)
+      });
+      await fetch('/api/notifications/subscribe', {
+        method: 'POST',
+        body: JSON.stringify(sub),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log('Push Subscribed');
+    } catch (e) {
+      console.error('Push Subscribe Error', e);
+    }
+  }
+}
+
+// Auto-request permission
+if ('Notification' in window && Notification.permission !== 'denied') {
+    setTimeout(() => {
+        Notification.requestPermission().then(perm => {
+            if (perm === 'granted') subscribeUser();
+        });
+    }, 5000);
+}
 </script>

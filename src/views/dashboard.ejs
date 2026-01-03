@@ -6,6 +6,14 @@
     .employer-only, .seeker-only, .employee-only, #dashboard-employer, #dashboard-seeker, #dashboard-employee {
         display: none !important;
     }
+    
+    /* [NEW] Hide main content until auth is verified (prevents flash before suspension check) */
+    .main-content.app-content {
+        visibility: hidden;
+    }
+    .main-content.app-content.auth-verified {
+        visibility: visible;
+    }
 
     /* ============================================
        MODERN DASHBOARD STYLES
@@ -709,13 +717,19 @@
             if (response.status === 401 || response.status === 403) {
                 const errData = await response.json();
                 
-                // If Deactivated/Suspended
-                if (errData.error && errData.error.includes("deactivated")) {
+                // If Deactivated/Suspended - check for EITHER keyword
+                if (errData.error && (errData.error.includes("deactivated") || errData.error.includes("suspended"))) {
                     document.body.innerHTML = `
-                        <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8f9fa; text-align: center; padding: 20px;">
-                            <h1 style="color: #ff5b5c; font-size: 2rem; margin-bottom: 10px;">Access Revoked</h1>
-                            <p style="color: #6c757d; font-size: 1.2rem; max-width: 500px;">${errData.error}</p>
-                            <button onclick="localStorage.clear(); window.location.href='/login'" style="margin-top: 20px; padding: 10px 20px; background: #7b1fa2; color: white; border: none; border-radius: 5px; cursor: pointer;">Go to Login</button>
+                        <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); text-align: center; padding: 20px; position: fixed; top: 0; left: 0; width: 100%; z-index: 999999;">
+                            <div style="background: white; padding: 3rem; border-radius: 24px; max-width: 480px; box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15); border: 1px solid rgba(102, 126, 234, 0.1);">
+                                <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </div>
+                                <h1 style="color: #667eea; font-size: 1.75rem; margin-bottom: 10px; font-weight: 700;">Access Suspended</h1>
+                                <p style="color: #555; font-size: 1rem; margin-bottom: 1rem;">${errData.error}</p>
+                                <p style="color: #888; font-size: 0.85rem; margin-bottom: 2rem;">Please contact your administrator to restore your access.</p>
+                                <button onclick="localStorage.clear(); window.location.href='/login'" style="padding: 14px 40px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);">Return to Login</button>
+                            </div>
                         </div>
                     `;
                     localStorage.removeItem('token');
@@ -779,6 +793,10 @@
                 const welcomeName = document.getElementById('welcome-name');
                 if(welcomeName) welcomeName.innerText = user.full_name || user.email;
                 
+                // [NEW] Mark content as auth-verified (makes it visible)
+                const mainContent = document.querySelector('.main-content.app-content');
+                if(mainContent) mainContent.classList.add('auth-verified');
+                
                 const roleBadge = document.getElementById('user-role-badge');
                 if(roleBadge) {
                     roleBadge.innerText = user.role.toUpperCase();
@@ -796,7 +814,22 @@
                 const cachedUser = JSON.parse(localStorage.getItem('user') || 'null');
                 localStorage.setItem('user', JSON.stringify(user));
 
-                if (user.role === 'employer') {
+                if (user.role === 'employee') {
+                    // Populate Stats
+                    if (data.stats) {
+                        const { assignedTasks, pendingReviews, completedTasks, teamCount } = data.stats;
+                        
+                        const setSafeText = (id, val) => {
+                            const el = document.getElementById(id);
+                            if(el) el.innerText = val || 0;
+                        };
+
+                        setSafeText('stats-employee-tasks-count', assignedTasks);
+                        setSafeText('stats-employee-pending-count', pendingReviews);
+                        setSafeText('stats-employee-completed-count', completedTasks);
+                        setSafeText('stats-employee-team-count', teamCount);
+                    }
+
                     // --- EMPLOYER VIEW ---
                     const subtitle = document.getElementById('welcome-subtitle');
                     if(subtitle) subtitle.innerText = "Here's what's happening in your company.";
@@ -1224,6 +1257,12 @@
             }
 
         } catch (err) {
+            // Don't show error if user was suspended (page is already replaced)
+            if (err.message === 'USER_SUSPENDED_BLOCKED' || window.__userSuspended) {
+                console.log('[Dashboard] Suppressed error - user is suspended');
+                return;
+            }
+            
             console.error("Dashboard Init Error:", err);
             // alert("Dashboard Error: " + err.message);
             if (typeof Toastify !== 'undefined') {
