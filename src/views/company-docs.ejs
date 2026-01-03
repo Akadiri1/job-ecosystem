@@ -6,21 +6,18 @@
         <div class="row mt-4">
             <div id="docs-container" class="row">
                 <!-- Skeleton Docs -->
-                <% for(let i=0; i<4; i++) { %>
-                <div class="col-xl-3 col-md-4 col-sm-6 mb-4">
+                <!-- Empty State -->
+                <div class="col-12">
                     <div class="card custom-card">
-                        <div class="card-body text-center">
-                            <div class="skeleton-box" style="width: 60px; height: 60px; border-radius: 8px; margin-bottom: 1rem;"></div>
-                            <div class="skeleton-box skeleton-text" style="width: 80%; margin: 0 auto 0.5rem auto;"></div>
-                            <div class="skeleton-box skeleton-text" style="width: 60%; margin: 0 auto 1rem auto;"></div>
-                            <div class="d-flex justify-content-center gap-2">
-                                <div class="skeleton-box skeleton-btn" style="width: 40px;"></div>
-                                <div class="skeleton-box skeleton-btn" style="width: 40px;"></div>
-                            </div>
+                        <div class="card-body text-center p-5">
+                            <span class="avatar avatar-xl bg-light mb-3">
+                                <i class="ri-folder-info-line fs-36 text-muted"></i>
+                            </span>
+                            <h5 class="mb-2">No Company Documents</h5>
+                            <p class="text-muted mb-0">There are no documents shared with you yet.</p>
                         </div>
                     </div>
                 </div>
-                <% } %>
             </div>
         </div>
     </div>

@@ -814,7 +814,25 @@
                 const cachedUser = JSON.parse(localStorage.getItem('user') || 'null');
                 localStorage.setItem('user', JSON.stringify(user));
 
-                if (user.role === 'employee') {
+                if (user.role === 'employer') {
+                    // --- EMPLOYER VIEW ---
+                    const subtitle = document.getElementById('welcome-subtitle');
+                    if(subtitle) subtitle.innerText = "Here's what's happening in your company today.";
+
+                    document.getElementById('dashboard-employer').style.setProperty('display', 'block', 'important');
+                    document.getElementById('dashboard-employee').style.setProperty('display', 'none', 'important');
+                    document.getElementById('dashboard-seeker').style.setProperty('display', 'none', 'important');
+
+                    // Show Header Buttons
+                    const headerAction = document.getElementById('header-action-employer');
+                    if(headerAction) headerAction.style.setProperty('display', 'block', 'important');
+
+                    // Show Sidebar Links
+                    document.querySelectorAll('.employer-only').forEach(el => el.style.setProperty('display', 'block', 'important'));
+                    document.querySelectorAll('.seeker-only').forEach(el => el.style.setProperty('display', 'none', 'important'));
+                    document.querySelectorAll('.employee-only').forEach(el => el.style.setProperty('display', 'none', 'important'));
+
+                } else if (user.role === 'employee') {
                     // Populate Stats
                     if (data.stats) {
                         const { assignedTasks, pendingReviews, completedTasks, teamCount } = data.stats;
@@ -844,39 +862,23 @@
                     const seekerDash = document.getElementById('dashboard-seeker');
                     if(seekerDash) seekerDash.style.setProperty('display', 'none', 'important');
                     
-                    // Hide Header Buttons (Employees don't post jobs)
+                    // Hide Header Buttons
                     const headerAction = document.getElementById('header-action-employer');
                     if(headerAction) headerAction.style.setProperty('display', 'none', 'important');
 
                     // Show Sidebar Links
                     document.querySelectorAll('.employer-only').forEach(el => {
-                        // Some links might be shared, but mostly hidden for pure employee view if checking class
-                        // actually 'employer-only' class might be used for sidebar items.
-                        // For now let's leave sidebar logic as is if it relies on server-side rendering
-                        // But ensuring the dashboard VIEW is correct.
-                        el.style.setProperty('display', 'none', 'important'); 
-                    });
-                    
-                    // If there are specific employee sidebar links they should be shown
-                    document.querySelectorAll('.employee-only').forEach(el => {
-                        el.style.setProperty('display', 'block', 'important');
+                        el.style.setProperty('display', 'none', 'important');
                     });
                     document.querySelectorAll('.seeker-only').forEach(el => {
                         el.style.setProperty('display', 'none', 'important');
                     });
 
-                } else if (user.role === 'employee') {
-                    // --- EMPLOYEE VIEW ---
-                    const subtitle = document.getElementById('welcome-subtitle');
-                    if(subtitle) subtitle.innerText = "Welcome to your company workspace.";
-                    
-                    document.getElementById('dashboard-employee').style.setProperty('display', 'block', 'important');
-                    document.getElementById('dashboard-employer').style.setProperty('display', 'none', 'important');
-                    document.getElementById('dashboard-seeker').style.setProperty('display', 'none', 'important');
+                    // [NEW] Fetch & Render Real Employee Data
+                    fetchEmployeeData(token);
 
-                    // Hide Employer Header Buttons
-                    const headerAction = document.getElementById('header-action-employer');
-                    if(headerAction) headerAction.style.setProperty('display', 'none', 'important');
+
+
 
                     // Show Sidebar Links (Use user logic or shared class if we add one)
                     // For now, employees see 'seeker-only' set to NONE, 'employer-only' set to NONE?
@@ -1117,82 +1119,9 @@
                             }
 
                     } else if (user.role === 'employee') {
-// EMPLOYEE DASHBOARD RENDER
-                        
-                        // 1. Stats Calculation (Mock logic if fields missing)
-                        const taskCount = (stats.tasks && stats.tasks.length) || 0;
-                        const pendingCount = (stats.tasks && stats.tasks.filter(t => t.status !== 'completed').length) || 0;
-                        const completedCount = (stats.tasks && stats.tasks.filter(t => t.status === 'completed').length) || 0;
-                        
-                        // Update Quick Stats
-                        const elTasks = document.getElementById('stats-employee-tasks-count');
-                        if(elTasks) elTasks.innerText = taskCount;
-                        
-                        const elPending = document.getElementById('stats-employee-pending-count');
-                        if(elPending) elPending.innerText = pendingCount;
-                        
-                        const elCompleted = document.getElementById('stats-employee-completed-count');
-                        if(elCompleted) elCompleted.innerText = completedCount;
-                        
-                        // Mock Team Count (random for demo feel, or fetch real)
-                        const elTeam = document.getElementById('stats-employee-team-count');
-                        if(elTeam) elTeam.innerText = stats.teamCount || 12;
+                        // Employee Dashboard is handled by fetchEmployeeData()
+                        // preventing conflicts with stats.tasks dummy data
 
-                        // 2. Render Tasks List
-                        const tasksList = document.getElementById('employee-tasks-list');
-                        if (tasksList) {
-                            if (stats.tasks && stats.tasks.length > 0) {
-                                tasksList.innerHTML = stats.tasks.map(task => {
-                                    let badgeColor = 'warning';
-                                    let icon = 'ri-time-line';
-                                    if(task.status === 'completed') { badgeColor = 'success'; icon = 'ri-checkbox-circle-line'; }
-                                    if(task.status === 'in_progress') { badgeColor = 'info'; icon = 'ri-loader-4-line'; }
-
-                                    return `
-                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3 border-bottom-dashed">
-                                        <div class="d-flex align-items-start">
-                                            <span class="avatar avatar-sm bg-${badgeColor}-transparent rounded-circle me-3 mt-1">
-                                                <i class="${icon}"></i>
-                                            </span>
-                                            <div>
-                                                <span class="fw-semibold d-block text-dark">${task.title}</span>
-                                                <span class="d-block fs-12 text-muted mt-1"><i class="ri-calendar-event-line me-1"></i> Due: ${task.due}</span>
-                                            </div>
-                                        </div>
-                                        <span class="badge bg-${badgeColor}-transparent rounded-pill px-3 py-2 text-uppercase fs-11">${task.status.replace('_', ' ')}</span>
-                                    </li>
-                                    `;
-                                }).join('');
-                            } else {
-                                tasksList.innerHTML = `
-                                    <div class="text-center py-5">
-                                        <div class="avatar avatar-lg bg-light mb-3 rounded-circle"><i class="ri-checkbox-multiple-blank-line fs-24 text-muted"></i></div>
-                                        <p class="text-muted fw-medium">You're all caught up!</p>
-                                        <button class="btn btn-sm btn-primary-light mt-2">Create Task</button>
-                                    </div>
-                                `;
-                            }
-                        }
-
-                        // 3. Render Activity
-                        const activityList = document.getElementById('employee-activity-list');
-                        if (activityList && stats.activity) {
-                            activityList.innerHTML = stats.activity.map((act, index) => `
-                                <li class="d-flex gap-3 mb-4">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <span class="avatar avatar-xs bg-light rounded-circle border border-2 border-white shadow-sm ring-2 ring-light">
-                                            <span class="bg-${['primary','secondary','success','warning'][index % 4]} rounded-circle w-100 h-100"></span>
-                                        </span>
-                                        ${index !== stats.activity.length - 1 ? '<div class="vr h-100 bg-light mt-2" style="width: 2px;"></div>' : ''}
-                                    </div>
-                                    <div>
-                                        <p class="mb-1 text-dark fw-medium fs-13">${act.text}</p>
-                                        <span class="fs-11 text-muted"><i class="ri-time-line me-1"></i>${act.time}</span>
-                                    </div>
-                                </li>
-                            `).join('');
-                            activityList.innerHTML += `<li class="text-center mt-3"><a href="#" class="text-primary fs-12 fw-medium text-decoration-none">View All Activity <i class="ri-arrow-right-line ms-1"></i></a></li>`;
-                        }
 
                     } else {
                         // SEEKER DASHBOARD RENDER
@@ -1292,6 +1221,117 @@
             }
         }
     }
+    // [NEW] Helper to fetch employee specific lists
+    async function fetchEmployeeData(token) {
+        try {
+            // 1. Fetch My Tasks
+            const taskRes = await fetch('/api/tasks/my', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (taskRes.ok) {
+                const taskData = await taskRes.json();
+                renderEmployeeTasks(taskData.tasks || []);
+            }
+
+            // 2. Fetch Recent Activity (Notifications for now as proxy)
+            const notifRes = await fetch('/api/notifications', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (notifRes.ok) {
+                const notifData = await notifRes.json();
+                renderEmployeeActivity(notifData.notifications || []);
+            }
+        } catch (e) { console.error('Error fetching employee data:', e); }
+    }
+
+    function renderEmployeeTasks(tasks) {
+        // Update Lists
+        const list = document.getElementById('employee-tasks-list');
+        
+        // Update Stats Counters (Dynamically Calculated from Real Data)
+        const totalCount = tasks.length;
+        const pendingCount = tasks.filter(t => t.status !== 'completed').length;
+        const completedCount = tasks.filter(t => t.status === 'completed').length;
+
+        const setSafe = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+        setSafe('stats-employee-tasks-count', totalCount);
+        setSafe('stats-employee-pending-count', pendingCount);
+        setSafe('stats-employee-completed-count', completedCount);
+        
+        if (!list) return;
+
+        if (tasks.length === 0) {
+            list.innerHTML = `<li class="list-group-item text-center text-muted py-4 border-0">No active tasks found.</li>`;
+            return;
+        }
+
+        // Show top 5 tasks
+        const recentTasks = tasks.slice(0, 5);
+        
+        list.innerHTML = recentTasks.map(task => {
+            let priorityClass = 'bg-secondary';
+            if(task.priority === 'high') priorityClass = 'bg-danger';
+            if(task.priority === 'medium') priorityClass = 'bg-warning';
+            
+            let statusBadge = '';
+            if(task.status === 'todo') statusBadge = '<span class="badge bg-light text-dark">To Do</span>';
+            if(task.status === 'in_progress') statusBadge = '<span class="badge bg-info-transparent">In Progress</span>';
+            if(task.status === 'review') statusBadge = '<span class="badge bg-warning-transparent">Review</span>';
+            if(task.status === 'completed') statusBadge = '<span class="badge bg-success-transparent">Done</span>';
+
+            const due = task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No Date';
+
+            return `
+            <li class="list-group-item border-0 border-bottom px-0 py-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-xs rounded-circle ${priorityClass} me-3 flex-shrink-0">
+                            <i class="ri-checkbox-blank-circle-fill fs-10 text-white opacity-50"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1 fw-semibold text-truncate" style="max-width: 250px;">${task.title}</h6>
+                            <p class="fs-11 text-muted mb-0"><i class="ri-calendar-line me-1"></i> Due: ${due}</p>
+                        </div>
+                    </div>
+                    <div>${statusBadge}</div>
+                </div>
+            </li>
+            `;
+        }).join('');
+    }
+
+    function renderEmployeeActivity(notifications) {
+        // Use notifications as a proxy for "Activity" since we don't have a dedicated Activity feed yet
+        const list = document.getElementById('employee-activity-list');
+        if (!list) return;
+
+        if (notifications.length === 0) {
+            list.innerHTML = `<li class="d-flex mb-4"><div class="flex-grow-1"><p class="text-muted text-center">No recent activity.</p></div></li>`;
+            return;
+        }
+
+        list.innerHTML = notifications.slice(0, 5).map(n => {
+            let dateStr = 'Just now';
+            try {
+                if(n.created_at) {
+                    const d = new Date(n.created_at);
+                    if(!isNaN(d.getTime())) dateStr = d.toLocaleString();
+                }
+            } catch(e) {}
+            
+            return `
+            <li class="d-flex mb-4">
+                <div class="position-relative me-3">
+                    <span class="avatar avatar-xs rounded-circle bg-primary-transparent">
+                        <i class="ri-notification-3-line text-primary"></i>
+                    </span>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-primary border border-light rounded-circle"></span>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1 fs-13 fw-semibold">${n.title}</h6>
+                    <p class="mb-0 fs-12 text-muted">${n.message}</p>
+                    <small class="text-muted mt-1 d-block">${dateStr}</small>
+                </div>
+            </li>
+        `}).join('');
+    }
+
     // Run Logic when page loads
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
