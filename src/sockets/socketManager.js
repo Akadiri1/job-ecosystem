@@ -1,3 +1,5 @@
+const { createNotification } = require('../controllers/notificationController');
+
 module.exports = (io, dbModels) => {
     const { User, ChatMessage, ChatGroup, ChatGroupMember, Channel, ChannelMember } = dbModels;
 
@@ -90,17 +92,15 @@ module.exports = (io, dbModels) => {
                 socket.emit('message_sent', payload);
                 
                 // --- NOTIFICATION LOGIC (Private) ---
-                if(dbModels.Notification) {
-                    await dbModels.Notification.create({
-                        user_id: toUserId,
-                        title: 'New Message',
-                        message: `${sender ? sender.full_name : 'Someone'} dropped a message`,
-                        type: 'message',
-                        link: `/dashboard/chats?user=${fromUserId}`,
-                        related_id: fromUserId,
-                        is_read: false
-                    });
-                }
+                // --- NOTIFICATION LOGIC (Private) ---
+                await createNotification(dbModels, {
+                    user_id: toUserId,
+                    title: 'New Message',
+                    message: `${sender ? sender.full_name : 'Someone'} sent you a message`,
+                    type: 'message',
+                    link: `/dashboard/chats?user=${fromUserId}`,
+                    related_id: fromUserId
+                });
                 
                 io.to(toUserId).emit('receive_notification', {
                      title: 'New Message',
@@ -155,15 +155,16 @@ module.exports = (io, dbModels) => {
                 members.forEach(async (member) => {
                     if (member.user_id !== userId) {
                          if(dbModels.Notification) {
-                             await dbModels.Notification.create({
+                         if(dbModels.Notification) {
+                             await createNotification(dbModels, {
                                 user_id: member.user_id,
                                 title: 'New Group Message',
-                                message: `${sender ? sender.full_name : 'Someone'} dropped a message in ${groupInfo ? groupInfo.name : 'group'}`,
+                                message: `${sender ? sender.full_name : 'Someone'} posted in ${groupInfo ? groupInfo.name : 'group'}`,
                                 type: 'message',
                                 link: `/dashboard/chats?group=${groupId}`,
-                                related_id: groupId,
-                                is_read: false
+                                related_id: groupId
                             });
+                        }
                         }
                         io.to(member.user_id).emit('receive_notification', {
                             title: 'New Message',
@@ -219,14 +220,13 @@ module.exports = (io, dbModels) => {
                     channelMembers.forEach(async (member) => {
                         if (member.user_id !== userId) {
                             if(dbModels.Notification) {
-                                await dbModels.Notification.create({
+                                await createNotification(dbModels, {
                                     user_id: member.user_id,
                                     title: 'New Channel Message',
                                     message: `${sender ? sender.full_name : 'Someone'} posted in #${channelInfo ? channelInfo.name : 'channel'}`,
                                     type: 'message',
                                     link: `/dashboard/chats?channel=${channelId}`,
-                                    related_id: channelId,
-                                    is_read: false
+                                    related_id: channelId
                                 });
                             }
                             io.to(member.user_id).emit('receive_notification', {

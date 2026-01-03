@@ -416,7 +416,7 @@ sequelize.authenticate()
         // [NEW] Initialize Socket Manager
         require('./sockets/socketManager')(io, { 
             User, Company, Job, Application, SavedJob, 
-            ChatGroup, ChatGroupMember, ChatMessage, Notification 
+            ChatGroup, ChatGroupMember, ChatMessage, Notification, PushSubscription
         });
 
         // [AI] Initialize Cron Jobs for AI Assistant
