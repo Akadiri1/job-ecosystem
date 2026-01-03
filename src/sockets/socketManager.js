@@ -98,7 +98,7 @@ module.exports = (io, dbModels) => {
                     title: 'New Message',
                     message: `${sender ? sender.full_name : 'Someone'} sent you a message`,
                     type: 'message',
-                    link: `/dashboard/chats?user=${fromUserId}`,
+                    link: `/dashboard`,
                     related_id: fromUserId
                 });
                 
@@ -106,7 +106,7 @@ module.exports = (io, dbModels) => {
                      title: 'New Message',
                      message: `${sender ? sender.full_name : 'Someone'} dropped a message`,
                      type: 'message',
-                     link: `/dashboard/chats?user=${fromUserId}`
+                     link: `/dashboard`
                 });
                 
             } catch (err) {
@@ -161,7 +161,7 @@ module.exports = (io, dbModels) => {
                                 title: 'New Group Message',
                                 message: `${sender ? sender.full_name : 'Someone'} posted in ${groupInfo ? groupInfo.name : 'group'}`,
                                 type: 'message',
-                                link: `/dashboard/chats?group=${groupId}`,
+                                link: `/dashboard`,
                                 related_id: groupId
                             });
                         }
@@ -170,7 +170,7 @@ module.exports = (io, dbModels) => {
                             title: 'New Message',
                             message: `${sender ? sender.full_name : 'Someone'} dropped a message in ${groupInfo ? groupInfo.name : 'group'}`,
                             type: 'message',
-                            link: `/dashboard/chats?group=${groupId}`
+                            link: `/dashboard`
                         });
                     }
                 });
@@ -225,7 +225,7 @@ module.exports = (io, dbModels) => {
                                     title: 'New Channel Message',
                                     message: `${sender ? sender.full_name : 'Someone'} posted in #${channelInfo ? channelInfo.name : 'channel'}`,
                                     type: 'message',
-                                    link: `/dashboard/chats?channel=${channelId}`,
+                                    link: `/dashboard`,
                                     related_id: channelId
                                 });
                             }
@@ -233,7 +233,7 @@ module.exports = (io, dbModels) => {
                                 title: 'New Channel Message',
                                 message: `${sender ? sender.full_name : 'Someone'} posted in #${channelInfo ? channelInfo.name : 'channel'}`,
                                 type: 'message',
-                                link: `/dashboard/chats?channel=${channelId}`
+                                link: `/dashboard`
                             });
                         }
                     });

@@ -1,12 +1,11 @@
-const CACHE_NAME = 'job-ecosystem-v3';
+const CACHE_NAME = 'job-ecosystem-v5';
 
-// Core assets to cache for offline support
+// Core STATIC assets to cache for offline support
+// NOTE: Do NOT cache HTML pages - they contain dynamic theme state
 const ASSETS_TO_CACHE = [
-  '/',
-  '/login',
-  '/dashboard',
   '/assets/css/style.css',
   '/assets/css/preloader.css',
+  '/assets/css/theme-octopus.css',
   '/modules/materialize/materialize.min.css',
   '/modules/materialize/materialize.js',
   '/modules/jquery/jquery-2.2.4.min.js',
@@ -54,19 +53,10 @@ self.addEventListener('fetch', (event) => {
   // Skip API requests (don't cache dynamic data)
   if (event.request.url.includes('/api/')) return;
   
-  // For navigation requests, try network first
+  // For navigation requests, ALWAYS use network (never cache HTML)
+  // This ensures theme state is always fresh from server/client JS
   if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          return caches.match(event.request)
-            .then((response) => {
-              if (response) return response;
-              // Fallback to cached dashboard
-              return caches.match('/dashboard');
-            });
-        })
-    );
+    event.respondWith(fetch(event.request));
     return;
   }
 

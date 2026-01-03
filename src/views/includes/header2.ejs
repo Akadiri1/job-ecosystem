@@ -2321,33 +2321,44 @@
         const darkBtn = document.getElementById('switcher-dark-theme');
         const html = document.documentElement;
 
-        if(lightBtn) {
-            lightBtn.addEventListener('click', (e) => {
-                // Force Light Attributes
-                html.setAttribute('data-theme-mode', 'light');
-                html.style.removeProperty('--body-bg-rgb');
-                html.style.removeProperty('--body-bg-rgb2');
-                html.style.removeProperty('--light-rgb');
-                
-                // Clear any persisting dark flags
+        // Helper function to apply theme instantly
+        function applyTheme(mode) {
+            // Set all theme attributes
+            html.setAttribute('data-theme-mode', mode);
+            html.setAttribute('data-header-styles', mode);
+            html.setAttribute('data-menu-styles', mode);
+            
+            // Clear any inline style overrides that might persist
+            html.style.removeProperty('--body-bg-rgb');
+            html.style.removeProperty('--body-bg-rgb2');
+            html.style.removeProperty('--light-rgb');
+            html.style.removeProperty('--dark-rgb');
+            
+            // Force browser to repaint
+            document.body.style.display = 'none';
+            document.body.offsetHeight; // Trigger reflow
+            document.body.style.display = '';
+            
+            // Update localStorage
+            if (mode === 'dark') {
+                localStorage.setItem('zenodarktheme', 'true');
+                localStorage.removeItem('zenolighttheme');
+            } else {
                 localStorage.removeItem('zenodarktheme');
                 localStorage.setItem('zenolighttheme', 'true');
-                
-                // Ensure correct check state
+            }
+        }
+
+        if(lightBtn) {
+            lightBtn.addEventListener('click', (e) => {
+                applyTheme('light');
                 setTimeout(() => { lightBtn.checked = true; }, 50);
             });
         }
         
         if(darkBtn) {
             darkBtn.addEventListener('click', (e) => {
-                // Force Dark Attributes
-                html.setAttribute('data-theme-mode', 'dark');
-                
-                // Set flags
-                localStorage.setItem('zenodarktheme', 'true');
-                localStorage.removeItem('zenolighttheme');
-                
-                // Ensure correct check state
+                applyTheme('dark');
                 setTimeout(() => { darkBtn.checked = true; }, 50);
             });
         }
@@ -2385,10 +2396,19 @@ async function subscribeUser() {
         applicationServerKey: urlB64ToUint8Array(PUBLIC_KEY)
       });
       
+      const token = localStorage.getItem('token');
+      if (!token) {
+          console.log('No token found, skipping push subscription');
+          return;
+      }
+      
       const res = await fetch('/api/notifications/subscribe', {
         method: 'POST',
         body: JSON.stringify(sub),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
       });
       
       if(res.ok) {
