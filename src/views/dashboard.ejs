@@ -830,20 +830,35 @@
                         setSafeText('stats-employee-team-count', teamCount);
                     }
 
-                    // --- EMPLOYER VIEW ---
+                    // --- EMPLOYEE VIEW ---
                     const subtitle = document.getElementById('welcome-subtitle');
-                    if(subtitle) subtitle.innerText = "Here's what's happening in your company.";
+                    if(subtitle) subtitle.innerText = "Here's your personal workspace.";
                     
-                    // Show Main Dashboard
-                    document.getElementById('dashboard-employer').style.setProperty('display', 'block', 'important');
-                    document.getElementById('dashboard-seeker').style.setProperty('display', 'none', 'important');
+                    // Show Employee Dashboard, Hide others
+                    const empDash = document.getElementById('dashboard-employee');
+                    if(empDash) empDash.style.setProperty('display', 'block', 'important');
                     
-                    // Show Header Buttons
+                    const employerDash = document.getElementById('dashboard-employer');
+                    if(employerDash) employerDash.style.setProperty('display', 'none', 'important');
+                    
+                    const seekerDash = document.getElementById('dashboard-seeker');
+                    if(seekerDash) seekerDash.style.setProperty('display', 'none', 'important');
+                    
+                    // Hide Header Buttons (Employees don't post jobs)
                     const headerAction = document.getElementById('header-action-employer');
-                    if(headerAction) headerAction.style.setProperty('display', 'flex', 'important');
+                    if(headerAction) headerAction.style.setProperty('display', 'none', 'important');
 
                     // Show Sidebar Links
                     document.querySelectorAll('.employer-only').forEach(el => {
+                        // Some links might be shared, but mostly hidden for pure employee view if checking class
+                        // actually 'employer-only' class might be used for sidebar items.
+                        // For now let's leave sidebar logic as is if it relies on server-side rendering
+                        // But ensuring the dashboard VIEW is correct.
+                        el.style.setProperty('display', 'none', 'important'); 
+                    });
+                    
+                    // If there are specific employee sidebar links they should be shown
+                    document.querySelectorAll('.employee-only').forEach(el => {
                         el.style.setProperty('display', 'block', 'important');
                     });
                     document.querySelectorAll('.seeker-only').forEach(el => {

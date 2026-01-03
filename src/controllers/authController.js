@@ -239,14 +239,30 @@ exports.getMe = async (req, res) => {
         // [NEW] Fetch Employee Stats
         if (user.role === 'employee' && user.company_id) {
              const { Task, TeamMember } = req.db_models;
+             const { Op } = require('sequelize');
              
              // Get Team Count
              const teamCount = await TeamMember.count({ where: { company_id: user.company_id } });
              
-             // Get Tasks
-             const assignedTasks = await Task.count({ where: { assigned_to: user.id, status: ['todo', 'in_progress'] } });
-             const completedTasks = await Task.count({ where: { assigned_to: user.id, status: 'completed' } });
-             const pendingReviews = await Task.count({ where: { assigned_to: user.id, status: 'review' } });
+             // Get Tasks - using simple equality for assigned_to (UUID)
+             const assignedTasks = await Task.count({ 
+                 where: { 
+                     assigned_to: user.id,
+                     status: { [Op.in]: ['todo', 'in_progress'] } 
+                 } 
+             });
+             const completedTasks = await Task.count({ 
+                 where: { 
+                     assigned_to: user.id,
+                     status: 'completed' 
+                 } 
+             });
+             const pendingReviews = await Task.count({ 
+                 where: { 
+                     assigned_to: user.id,
+                     status: 'review' 
+                 } 
+             });
 
              stats = {
                 teamCount,

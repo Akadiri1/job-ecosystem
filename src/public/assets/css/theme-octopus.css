@@ -67,6 +67,45 @@
     color: var(--octopus-text-main-light) !important;
 }
 
+/* Light mode form inputs - VISIBLE BORDERS */
+.form-control,
+.form-select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+    border: 1px solid #d1d5db !important; /* Gray-300 */
+    border-radius: 8px !important;
+    padding: 0.625rem 0.875rem !important;
+    background-color: #ffffff !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--octopus-primary) !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+    outline: none !important;
+}
+
+[data-theme-mode="light"] .form-control,
+[data-theme-mode="light"] .form-select,
+[data-theme-mode="light"] input[type="text"],
+[data-theme-mode="light"] textarea {
+    border: 1px solid #d1d5db !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+}
+
 /* Fallback for body if no attribute (Default) */
 body {
     background-color: var(--octopus-bg-light);
@@ -189,21 +228,32 @@ body {
     color: var(--octopus-text-muted) !important;
 }
 
-/* Dark mode forms */
+/* Dark mode forms - VISIBLE BORDERS */
 [data-theme-mode="dark"] .form-control, 
-[data-theme-mode="dark"] .form-select {
-    background-color: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid var(--octopus-border) !important;
+[data-theme-mode="dark"] .form-select,
+[data-theme-mode="dark"] input[type="text"],
+[data-theme-mode="dark"] input[type="email"],
+[data-theme-mode="dark"] input[type="password"],
+[data-theme-mode="dark"] input[type="number"],
+[data-theme-mode="dark"] input[type="date"],
+[data-theme-mode="dark"] textarea,
+[data-theme-mode="dark"] select {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* More visible border */
+    border-radius: 8px !important;
     color: var(--octopus-text-main) !important;
 }
 
 [data-theme-mode="dark"] .form-control::placeholder {
-    color: rgba(255, 255, 255, 0.3) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
 }
 
-[data-theme-mode="dark"] .form-control:focus {
+[data-theme-mode="dark"] .form-control:focus,
+[data-theme-mode="dark"] .form-select:focus,
+[data-theme-mode="dark"] input:focus,
+[data-theme-mode="dark"] textarea:focus {
     border-color: var(--octopus-primary) !important;
-    box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.2) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
 }
 
 /* Dark mode buttons */
@@ -273,6 +323,97 @@ body {
 [data-theme-mode="dark"] .dropdown-item:hover {
     background-color: rgba(255,255,255,0.05) !important;
     color: var(--octopus-text-main) !important;
+}
+
+/* Dark mode table row hover - CRITICAL FIX */
+[data-theme-mode="dark"] table tr:hover,
+[data-theme-mode="dark"] .table tr:hover,
+[data-theme-mode="dark"] tbody tr:hover,
+[data-theme-mode="dark"] .table-hover > tbody > tr:hover,
+[data-theme-mode="dark"] .table-hover tbody tr:hover > * {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    --bs-table-hover-bg: rgba(59, 130, 246, 0.1) !important;
+    --bs-table-accent-bg: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Dark mode select/dropdown elements */
+[data-theme-mode="dark"] select,
+[data-theme-mode="dark"] .form-select,
+[data-theme-mode="dark"] .custom-select,
+[data-theme-mode="dark"] select option {
+    background-color: var(--octopus-card-bg) !important;
+    color: var(--octopus-text-main) !important;
+    border-color: var(--octopus-border) !important;
+}
+
+/* Dark mode multiselect/choices.js dropdowns */
+[data-theme-mode="dark"] .choices,
+[data-theme-mode="dark"] .choices__inner,
+[data-theme-mode="dark"] .choices__list--dropdown {
+    background-color: var(--octopus-card-bg) !important;
+    border-color: var(--octopus-border) !important;
+}
+
+[data-theme-mode="dark"] .choices__list--dropdown .choices__item {
+    color: var(--octopus-text-main) !important;
+}
+
+[data-theme-mode="dark"] .choices__list--dropdown .choices__item--selectable.is-highlighted {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Dark mode modals */
+[data-theme-mode="dark"] .modal-content {
+    background-color: var(--octopus-card-bg) !important;
+    border-color: var(--octopus-border) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+[data-theme-mode="dark"] .modal-header,
+[data-theme-mode="dark"] .modal-footer {
+    border-color: var(--octopus-border) !important;
+}
+
+/* Dark mode popovers and tooltips */
+[data-theme-mode="dark"] .popover,
+[data-theme-mode="dark"] .tooltip-inner {
+    background-color: var(--octopus-card-bg) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+/* Dark mode badges */
+[data-theme-mode="dark"] .badge-light,
+[data-theme-mode="dark"] .bg-light {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+/* Dark mode list groups */
+[data-theme-mode="dark"] .list-group-item {
+    background-color: var(--octopus-card-bg) !important;
+    border-color: var(--octopus-border) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+[data-theme-mode="dark"] .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Dark mode pagination */
+[data-theme-mode="dark"] .page-link {
+    background-color: var(--octopus-card-bg) !important;
+    border-color: var(--octopus-border) !important;
+    color: var(--octopus-text-muted) !important;
+}
+
+[data-theme-mode="dark"] .page-link:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--octopus-text-main) !important;
+}
+
+[data-theme-mode="dark"] .page-item.active .page-link {
+    background-color: var(--octopus-primary) !important;
+    border-color: var(--octopus-primary) !important;
 }
 
 /* =========================================
