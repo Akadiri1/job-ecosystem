@@ -45,6 +45,29 @@
                     </a>
                 </li>
 
+                <!-- PRIVILEGED MODULES (Hidden by default) -->
+                <li class="slide d-none" id="nav-manage-team">
+                    <a href="/dashboard/employee/team" class="side-menu__item">
+                        <i class="ri-team-line side-menu__icon"></i>
+                        <span class="side-menu__label">Manage Team</span>
+                    </a>
+                </li>
+
+                <!-- RECRUITMENT (Hidden by default) -->
+                <li class="slide__category d-none" id="nav-head-recruitment"><span class="category-name">Recruitment</span></li>
+                <li class="slide d-none" id="nav-post-job">
+                    <a href="/dashboard/employee/jobs/create" class="side-menu__item">
+                        <i class="ri-briefcase-line side-menu__icon"></i>
+                        <span class="side-menu__label">Post a Job</span>
+                    </a>
+                </li>
+                <li class="slide d-none" id="nav-candidates">
+                    <a href="/dashboard/employee/candidates" class="side-menu__item">
+                        <i class="ri-user-search-line side-menu__icon"></i>
+                        <span class="side-menu__label">Candidates</span>
+                    </a>
+                </li>
+
                 <!-- SETTINGS MENU -->
                 <li class="slide__category"><span class="category-name">Settings</span></li>
                 <li class="slide">
@@ -65,9 +88,10 @@
     </div>
 </aside>
 
-<!-- Script to handle active state -->
+<!-- Script to handle active state & Permissions -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    // 1. Active State
     const currentPath = window.location.pathname;
     const menuItems = document.querySelectorAll('.side-menu__item');
     
@@ -77,5 +101,47 @@ document.addEventListener("DOMContentLoaded", function() {
             item.parentElement.classList.add('active');
         }
     });
+
+    // 2. Fetch & Apply Permissions
+    checkSidebarPermissions();
 });
+
+async function checkSidebarPermissions() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const response = await fetch('/api/team/my-membership', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (data.success && data.membership) {
+            let perms = data.membership.permissions || [];
+            // Handle possible string format
+            if (typeof perms === 'string') {
+                try { perms = JSON.parse(perms); } catch(e) { perms = []; }
+            }
+
+            // Toggle Links
+            if (perms.includes('manage_team')) {
+                document.getElementById('nav-manage-team').classList.remove('d-none');
+            }
+            
+            if (perms.includes('post_jobs') || perms.includes('view_applicants')) {
+                document.getElementById('nav-head-recruitment').classList.remove('d-none');
+            }
+
+            if (perms.includes('post_jobs')) {
+                document.getElementById('nav-post-job').classList.remove('d-none');
+            }
+
+            if (perms.includes('view_applicants') || perms.includes('manage_applicants')) {
+                document.getElementById('nav-candidates').classList.remove('d-none');
+            }
+        }
+    } catch (e) {
+        console.error("Sidebar Permission Check Failed", e);
+    }
+}
 </script>

@@ -129,3 +129,56 @@ exports.ensureRole = (...roles) => {
         next();
     };
 };
+
+/*
+ * GRANULAR PERMISSION CHECKER
+ * Allows access if:
+ * 1. User is 'employer' or 'owner' (Full Access)
+ * 2. User is 'employee' AND has the specific permission in TeamMember table
+ */
+exports.requirePermission = (permission) => {
+    return async (req, res, next) => {
+        try {
+            // 1. Owners and Employers have full access by default
+            if (req.user.role === 'owner' || req.user.role === 'employer' || req.user.role === 'admin') {
+                return next();
+            }
+
+            // 2. Employees need to check TeamMember permissions
+            if (req.user.role === 'employee') {
+                 // Check if user has company_id
+                 if (!req.user.company_id) {
+                     return res.status(403).json({ error: 'You are not assigned to any company.' });
+                 }
+
+                 const member = await req.db_models.TeamMember.findOne({
+                     where: { user_id: req.user.id, company_id: req.user.company_id }
+                 });
+
+                 if (!member) {
+                     return res.status(403).json({ error: 'Team membership not found.' });
+                 }
+
+                 // Check permissions array
+                 let perms = member.permissions || [];
+                 // Handle potential string persistence
+                 if (typeof perms === 'string') {
+                     try { perms = JSON.parse(perms); } catch(e) { perms = []; }
+                 }
+
+                 if (perms.includes(permission)) {
+                     req.teamMember = member; // Attach membership for controller use
+                     return next();
+                 }
+            }
+
+            return res.status(403).json({ 
+                error: `Access denied. Requires permission: '${permission}'` 
+            });
+
+        } catch (error) {
+            console.error('Permission Check Error:', error);
+            res.status(500).json({ error: 'Server error checking permissions' });
+        }
+    };
+};

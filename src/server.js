@@ -315,6 +315,11 @@ app.get('/dashboard/employee/docs', (req, res) => res.render('company-docs', { s
 app.get('/dashboard/employee/profile', (req, res) => res.render('profile', { sidebar: 'includes/sidebar-employee' }));
 app.get('/dashboard/employee/ai-assistant', (req, res) => res.render('ai-employee', { sidebar: 'includes/sidebar-employee' }));
 
+// [NEW] Privileged Employee Routes (Access controlled by Client JS & API Permissions)
+app.get('/dashboard/employee/team', (req, res) => res.render('manage-team', { sidebar: 'includes/sidebar-employee' }));
+app.get('/dashboard/employee/jobs/create', (req, res) => res.render('post-job', { sidebar: 'includes/sidebar-employee' }));
+app.get('/dashboard/employee/candidates', (req, res) => res.render('candidates', { sidebar: 'includes/sidebar-employee' }));
+
 // 4. SEEKER ROUTES (/dashboard/seeker/...)
 app.get('/dashboard/seeker/jobs/feed', (req, res) => res.render('job-feed', { sidebar: 'includes/sidebar-seeker' }));
 app.get('/dashboard/seeker/applications', (req, res) => res.render('my-applications', { sidebar: 'includes/sidebar-seeker' }));

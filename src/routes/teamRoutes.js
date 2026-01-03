@@ -4,16 +4,16 @@ const router = express.Router();
 // I created TeamController.js with Capital T. Require should match or be case insensitive on Windows.
 // Safer to use proper case.
 const teamController = require('../controllers/teamController'); 
-const { protect, restrictTo } = require('../middleware/authMiddleware');
+const { protect, restrictTo, requirePermission } = require('../middleware/authMiddleware');
 
 // All routes are protected
 router.use(protect);
 
 // Search Users to Invite
-router.get('/search', restrictTo('employer', 'admin'), teamController.searchUsers);
+router.get('/search', requirePermission('manage_team'), teamController.searchUsers);
 
 // Invite/Add Member
-router.post('/invite', restrictTo('employer', 'admin'), teamController.inviteMember);
+router.post('/invite', requirePermission('manage_team'), teamController.inviteMember);
 
 // List Members
 // Allowing employees to view team too? For chat, yes.
@@ -23,12 +23,12 @@ router.get('/members', restrictTo('employer', 'admin', 'employee'), teamControll
 router.get('/my-membership', restrictTo('employer', 'admin', 'employee'), teamController.getMyMembership);
 
 // Update Permissions
-router.put('/members/:memberId', restrictTo('employer', 'admin'), teamController.updatePermissions);
+router.put('/members/:memberId', requirePermission('manage_team'), teamController.updatePermissions);
 
 // Toggle Status (Suspend/Activate)
-router.patch('/members/:memberId/status', restrictTo('employer', 'admin'), teamController.toggleMemberStatus);
+router.patch('/members/:memberId/status', requirePermission('manage_team'), teamController.toggleMemberStatus);
 
 // Remove Member
-router.delete('/members/:memberId', restrictTo('employer', 'admin'), teamController.removeMember);
+router.delete('/members/:memberId', requirePermission('manage_team'), teamController.removeMember);
 
 module.exports = router;

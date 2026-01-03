@@ -713,6 +713,25 @@
         }
     }
     
+    // Role Permission Presets
+    const ROLE_PRESETS = {
+        'admin': ['post_jobs', 'view_applicants', 'manage_applicants', 'manage_team'],
+        'member': ['view_applicants'], // Minimal default?
+        'owner': ['post_jobs', 'view_applicants', 'manage_applicants', 'manage_team']
+    };
+
+    document.getElementById('perm-role').addEventListener('change', function() {
+        const role = this.value;
+        const presets = ROLE_PRESETS[role] || [];
+        
+        document.querySelectorAll('.edit-perm-checkbox').forEach(cb => {
+            cb.checked = presets.includes(cb.value);
+        });
+        
+        // Visual feedback
+        Toastify({ text: `Permissions set to ${role} defaults`, duration: 2000, backgroundColor: "#667eea" }).showToast();
+    });
+
     function openPermissionsModal(id) {
         currentEditId = id;
         currentEditMember = allMembers.find(m => m.id === id);
@@ -726,7 +745,12 @@
         document.getElementById('perm-role').value = currentEditMember.role || 'member';
         
         // Set permission checkboxes
-        const perms = currentEditMember.permissions || [];
+        // FIX: Ensure it handles both array and potential JSON string
+        let perms = currentEditMember.permissions || [];
+        if (typeof perms === 'string') {
+            try { perms = JSON.parse(perms); } catch(e) { perms = []; }
+        }
+
         document.querySelectorAll('.edit-perm-checkbox').forEach(cb => {
             cb.checked = perms.includes(cb.value);
         });
@@ -762,10 +786,12 @@
                 bootstrap.Modal.getInstance(document.getElementById('permissionsModal')).hide();
                 fetchTeam();
             } else {
-                Toastify({ text: "Failed to update", backgroundColor: "#ff5b5c" }).showToast();
+                const errData = await response.json();
+                Toastify({ text: errData.message || "Failed to update", backgroundColor: "#ff5b5c" }).showToast();
             }
         } catch (e) {
             console.error(e);
+            Toastify({ text: "Network Error", backgroundColor: "#ff5b5c" }).showToast();
         } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;
