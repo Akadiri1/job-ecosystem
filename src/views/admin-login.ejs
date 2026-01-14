@@ -84,33 +84,63 @@
     .admin-input {
         width: 100%;
         padding: 1rem;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 12px;
-        color: white;
+        color: #ffffff;
         font-size: 1rem;
         transition: all 0.3s ease;
         box-sizing: border-box;
+        font-weight: 500;
+        letter-spacing: 0.5px;
     }
 
     .admin-input:focus {
         outline: none;
         border-color: #dc3545;
-        background: rgba(220, 53, 69, 0.1);
+        background: rgba(220, 53, 69, 0.15);
         box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
     }
 
     .admin-input::placeholder {
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.5);
     }
 
     /* Autofill fix for dark theme */
     .admin-input:-webkit-autofill,
     .admin-input:-webkit-autofill:hover,
     .admin-input:-webkit-autofill:focus {
-        -webkit-box-shadow: 0 0 0 30px #1a1a2e inset !important;
-        -webkit-text-fill-color: white !important;
+        -webkit-box-shadow: 0 0 0 30px #2a2a4e inset !important;
+        -webkit-text-fill-color: #ffffff !important;
         transition: background-color 5000s ease-in-out 0s;
+        caret-color: white;
+    }
+
+    /* Password input wrapper */
+    .password-wrapper {
+        position: relative;
+    }
+
+    .password-wrapper .admin-input {
+        padding-right: 50px;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        padding: 5px;
+        font-size: 1.2rem;
+        transition: color 0.2s ease;
+    }
+
+    .toggle-password:hover {
+        color: white;
     }
 
     .admin-btn {
@@ -239,13 +269,18 @@
 
             <div class="admin-input-group">
                 <label for="adminPassword">Password</label>
-                <input 
-                    type="password" 
-                    id="adminPassword" 
-                    class="admin-input" 
-                    placeholder="••••••••"
-                    required
-                >
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="adminPassword" 
+                        class="admin-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <i class="ri-eye-off-line" id="toggleIcon"></i>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="admin-btn" id="loginBtn">
@@ -271,6 +306,20 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 });
+
+// Toggle password visibility
+function togglePassword() {
+    const passwordInput = document.getElementById('adminPassword');
+    const toggleIcon = document.getElementById('toggleIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.className = 'ri-eye-line';
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.className = 'ri-eye-off-line';
+    }
+}
 
 document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
