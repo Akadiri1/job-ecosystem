@@ -1,0 +1,729 @@
+<%- include('includes/header2') %>
+
+<style>
+/* ============================================
+   USER ACTIVITY TRACKING STYLES
+   ============================================ */
+
+.activity-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+
+.activity-hero h1 {
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Stat Cards */
+.activity-stat-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    padding: 1.25rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.activity-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+}
+
+.activity-stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin: 0 auto 0.75rem;
+}
+
+.activity-stat-card .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.activity-stat-card .stat-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.activity-stat-card.signups .stat-icon { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.activity-stat-card.logins .stat-icon { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.activity-stat-card.active .stat-icon { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+.activity-stat-card.online .stat-icon { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+
+/* Event Type Badges */
+.event-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.event-badge.signup { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.event-badge.login { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.event-badge.logout { background: rgba(108, 117, 125, 0.15); color: #6c757d; }
+.event-badge.password_reset { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+.event-badge.password_change { background: rgba(118, 75, 162, 0.15); color: #764ba2; }
+
+/* Role Badges */
+.role-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.role-badge.admin { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.role-badge.employer { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.role-badge.employee { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.role-badge.job_seeker { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+
+/* Status Badges */
+.status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status-badge.active { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.status-badge.suspended { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.status-badge.terminated { background: rgba(108, 117, 125, 0.15); color: #6c757d; }
+
+/* Filters Card */
+.filters-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Activity Table */
+.activity-table {
+    background: var(--custom-white);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.activity-table th {
+    background: rgba(102, 126, 234, 0.05);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.activity-table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+}
+
+.activity-table tbody tr {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.activity-table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.03);
+}
+
+/* User Avatar */
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Device Info */
+.device-info {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.device-info i {
+    margin-right: 0.25rem;
+}
+
+/* Modal Styles */
+.user-modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.user-modal-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    margin-bottom: 1rem;
+}
+
+.user-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.user-detail-row:last-child {
+    border-bottom: none;
+}
+
+.user-detail-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.user-detail-value {
+    font-weight: 500;
+}
+
+/* Activity Timeline in Modal */
+.activity-timeline {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+}
+
+.timeline-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.timeline-icon.signup { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.timeline-icon.login { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+
+/* Pagination */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.pagination-info {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* Online Indicator */
+.online-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.online-indicator.online { background: #00b074; }
+.online-indicator.offline { background: #6c757d; }
+</style>
+
+<!-- Start::app-content -->
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+
+        <!-- Activity Hero -->
+        <div class="activity-hero">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="ri-user-follow-line me-2"></i>User Activity Tracking</h1>
+                    <p class="mb-0 opacity-75">Monitor signups, logins, and user engagement</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/dashboard/admin" class="btn btn-light btn-sm">
+                        <i class="ri-arrow-left-line me-1"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-2 col-6">
+                <div class="activity-stat-card signups">
+                    <div class="stat-icon"><i class="ri-user-add-line"></i></div>
+                    <div class="stat-value" id="stat-signups-today">0</div>
+                    <div class="stat-label">Signups Today</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="activity-stat-card signups">
+                    <div class="stat-icon"><i class="ri-user-add-line"></i></div>
+                    <div class="stat-value" id="stat-signups-week">0</div>
+                    <div class="stat-label">Signups This Week</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="activity-stat-card logins">
+                    <div class="stat-icon"><i class="ri-login-box-line"></i></div>
+                    <div class="stat-value" id="stat-logins-today">0</div>
+                    <div class="stat-label">Logins Today</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="activity-stat-card logins">
+                    <div class="stat-icon"><i class="ri-login-box-line"></i></div>
+                    <div class="stat-value" id="stat-logins-week">0</div>
+                    <div class="stat-label">Logins This Week</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="activity-stat-card active">
+                    <div class="stat-icon"><i class="ri-user-star-line"></i></div>
+                    <div class="stat-value" id="stat-active-today">0</div>
+                    <div class="stat-label">Active Today</div>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="activity-stat-card online">
+                    <div class="stat-icon"><i class="ri-wifi-line"></i></div>
+                    <div class="stat-value" id="stat-online-now">0</div>
+                    <div class="stat-label">Online Now</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-card">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Search User</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="ri-search-line"></i></span>
+                        <input type="text" class="form-control" id="search-input" placeholder="Name or email...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Event Type</label>
+                    <select class="form-select" id="event-type-filter">
+                        <option value="all">All Events</option>
+                        <option value="signup">Signups</option>
+                        <option value="login">Logins</option>
+                        <option value="password_reset">Password Reset</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="start-date">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="end-date">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="loadActivities()">
+                        <i class="ri-filter-line me-1"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Table -->
+        <div class="activity-table">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Event</th>
+                            <th>Device</th>
+                            <th>IP Address</th>
+                            <th>Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-table-body">
+                        <tr><td colspan="7" class="text-center py-4 text-muted">Loading activities...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <div class="pagination-info">
+                    Showing <span id="showing-count">0</span> of <span id="total-count">0</span> activities
+                </div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="pagination-controls">
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- User Detail Modal -->
+<div class="modal fade" id="userDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="user-modal-header">
+                <img id="modal-user-avatar" src="/build/assets/images/faces/1.jpg" class="user-modal-avatar">
+                <h4 id="modal-user-name">John Doe</h4>
+                <p class="mb-0 opacity-75" id="modal-user-email">john@example.com</p>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="mb-3"><i class="ri-user-settings-line me-2"></i>User Details</h6>
+                        <div class="user-detail-row">
+                            <span class="user-detail-label">User ID</span>
+                            <span class="user-detail-value" id="modal-user-id">-</span>
+                        </div>
+                        <div class="user-detail-row">
+                            <span class="user-detail-label">Role</span>
+                            <span class="user-detail-value" id="modal-user-role">-</span>
+                        </div>
+                        <div class="user-detail-row">
+                            <span class="user-detail-label">Status</span>
+                            <span class="user-detail-value" id="modal-user-status">-</span>
+                        </div>
+                        <div class="user-detail-row">
+                            <span class="user-detail-label">Phone</span>
+                            <span class="user-detail-value" id="modal-user-phone">-</span>
+                        </div>
+                        <div class="user-detail-row">
+                            <span class="user-detail-label">Registered</span>
+                            <span class="user-detail-value" id="modal-user-created">-</span>
+                        </div>
+                        <div class="user-detail-row">
+                            <span class="user-detail-label">Last Active</span>
+                            <span class="user-detail-value" id="modal-user-last-active">-</span>
+                        </div>
+                        <div class="user-detail-row">
+                            <span class="user-detail-label">Online Status</span>
+                            <span class="user-detail-value" id="modal-user-online">-</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-3"><i class="ri-history-line me-2"></i>Recent Activity</h6>
+                        <div class="activity-timeline" id="modal-activity-timeline">
+                            <p class="text-muted text-center py-3">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" id="btn-suspend-user">
+                    <i class="ri-forbid-line me-1"></i> Suspend
+                </button>
+                <button type="button" class="btn btn-success" id="btn-activate-user">
+                    <i class="ri-check-line me-1"></i> Activate
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+let currentPage = 1;
+let currentUserId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadStats();
+    loadActivities();
+    
+    // Debounced search
+    let searchTimeout;
+    document.getElementById('search-input').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadActivities(), 500);
+    });
+});
+
+async function loadStats() {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch('/api/admin/activities/stats', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const s = data.stats;
+            document.getElementById('stat-signups-today').textContent = s.signups.today;
+            document.getElementById('stat-signups-week').textContent = s.signups.week;
+            document.getElementById('stat-logins-today').textContent = s.logins.today;
+            document.getElementById('stat-logins-week').textContent = s.logins.week;
+            document.getElementById('stat-active-today').textContent = s.activeUsersToday;
+            document.getElementById('stat-online-now').textContent = s.onlineNow;
+        }
+    } catch (e) {
+        console.error('Stats error:', e);
+    }
+}
+
+async function loadActivities(page = 1) {
+    const token = localStorage.getItem('token');
+    currentPage = page;
+    
+    const params = new URLSearchParams({
+        page,
+        limit: 25,
+        event_type: document.getElementById('event-type-filter').value,
+        search: document.getElementById('search-input').value,
+        start_date: document.getElementById('start-date').value,
+        end_date: document.getElementById('end-date').value
+    });
+    
+    try {
+        const res = await fetch(`/api/admin/activities?${params}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderActivities(data.activities);
+            renderPagination(data.pagination);
+        }
+    } catch (e) {
+        console.error('Activities error:', e);
+        document.getElementById('activity-table-body').innerHTML = 
+            '<tr><td colspan="7" class="text-center py-4 text-danger">Error loading activities</td></tr>';
+    }
+}
+
+function renderActivities(activities) {
+    const tbody = document.getElementById('activity-table-body');
+    
+    if (activities.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No activities found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = activities.map(activity => {
+        const user = activity.user;
+        const eventDate = new Date(activity.createdAt);
+        const timeAgo = getTimeAgo(eventDate);
+        
+        return `
+            <tr onclick="viewUserDetails('${user.id}')">
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="${user.profile_picture_url || '/build/assets/images/faces/1.jpg'}" 
+                             class="user-avatar me-2" alt="">
+                        <div>
+                            <div class="fw-medium">${user.full_name}</div>
+                            <small class="text-muted">${user.email}</small>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="role-badge ${user.role}">${user.role.replace('_', ' ')}</span></td>
+                <td><span class="event-badge ${activity.event_type}">${activity.event_type}</span></td>
+                <td>
+                    <div class="device-info">
+                        <div><i class="ri-device-line"></i>${activity.device_type || 'Unknown'}</div>
+                        <div><i class="ri-global-line"></i>${activity.browser || 'Unknown'} / ${activity.os || 'Unknown'}</div>
+                    </div>
+                </td>
+                <td><small class="text-muted">${activity.ip_address || '-'}</small></td>
+                <td>
+                    <div><small>${eventDate.toLocaleDateString()}</small></div>
+                    <div><small class="text-muted">${eventDate.toLocaleTimeString()}</small></div>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); viewUserDetails('${user.id}')">
+                        <i class="ri-eye-line"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function renderPagination(pagination) {
+    document.getElementById('showing-count').textContent = 
+        Math.min(pagination.page * 25, pagination.total);
+    document.getElementById('total-count').textContent = pagination.total;
+    
+    const controls = document.getElementById('pagination-controls');
+    let html = '';
+    
+    if (pagination.page > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="loadActivities(${pagination.page - 1})">Prev</a></li>`;
+    }
+    
+    for (let i = 1; i <= Math.min(pagination.pages, 5); i++) {
+        html += `<li class="page-item ${i === pagination.page ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="loadActivities(${i})">${i}</a>
+        </li>`;
+    }
+    
+    if (pagination.page < pagination.pages) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="loadActivities(${pagination.page + 1})">Next</a></li>`;
+    }
+    
+    controls.innerHTML = html;
+}
+
+async function viewUserDetails(userId) {
+    currentUserId = userId;
+    const token = localStorage.getItem('token');
+    
+    try {
+        const res = await fetch(`/api/admin/activities/user/${userId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const user = data.user;
+            
+            // Populate modal
+            document.getElementById('modal-user-avatar').src = 
+                user.profile_picture_url || '/build/assets/images/faces/1.jpg';
+            document.getElementById('modal-user-name').textContent = user.full_name;
+            document.getElementById('modal-user-email').textContent = user.email;
+            document.getElementById('modal-user-id').textContent = user.id.slice(0, 8) + '...';
+            document.getElementById('modal-user-role').innerHTML = 
+                `<span class="role-badge ${user.role}">${user.role.replace('_', ' ')}</span>`;
+            document.getElementById('modal-user-status').innerHTML = 
+                `<span class="status-badge ${user.account_status}">${user.account_status}</span>`;
+            document.getElementById('modal-user-phone').textContent = user.phone_number || 'Not provided';
+            document.getElementById('modal-user-created').textContent = 
+                new Date(user.createdAt).toLocaleDateString();
+            document.getElementById('modal-user-last-active').textContent = 
+                user.last_active_at ? getTimeAgo(new Date(user.last_active_at)) : 'Never';
+            document.getElementById('modal-user-online').innerHTML = 
+                user.is_online 
+                    ? '<span class="online-indicator online"></span>Online' 
+                    : '<span class="online-indicator offline"></span>Offline';
+            
+            // Render activity timeline
+            const timeline = document.getElementById('modal-activity-timeline');
+            timeline.innerHTML = data.activities.slice(0, 20).map(activity => `
+                <div class="timeline-item">
+                    <div class="timeline-icon ${activity.event_type}">
+                        <i class="ri-${activity.event_type === 'signup' ? 'user-add' : 'login-box'}-line"></i>
+                    </div>
+                    <div>
+                        <div class="fw-medium">${activity.event_type}</div>
+                        <small class="text-muted">
+                            ${new Date(activity.createdAt).toLocaleString()} 
+                            · ${activity.device_type || 'Unknown'} · ${activity.browser || 'Unknown'}
+                        </small>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-muted text-center py-3">No activity recorded</p>';
+            
+            // Show/hide action buttons based on status
+            document.getElementById('btn-suspend-user').style.display = 
+                user.account_status === 'active' ? 'inline-block' : 'none';
+            document.getElementById('btn-activate-user').style.display = 
+                user.account_status !== 'active' ? 'inline-block' : 'none';
+            
+            new bootstrap.Modal(document.getElementById('userDetailModal')).show();
+        }
+    } catch (e) {
+        console.error('User details error:', e);
+    }
+}
+
+document.getElementById('btn-suspend-user').addEventListener('click', async function() {
+    if (!currentUserId) return;
+    await updateUserStatus('suspended');
+});
+
+document.getElementById('btn-activate-user').addEventListener('click', async function() {
+    if (!currentUserId) return;
+    await updateUserStatus('active');
+});
+
+async function updateUserStatus(status) {
+    const token = localStorage.getItem('token');
+    
+    try {
+        const res = await fetch(`/api/admin/users/${currentUserId}`, {
+            method: 'PATCH',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ account_status: status })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('userDetailModal')).hide();
+            loadActivities(currentPage);
+            alert(`User ${status === 'active' ? 'activated' : 'suspended'} successfully`);
+        }
+    } catch (e) {
+        console.error('Update status error:', e);
+    }
+}
+
+function getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + ' years ago';
+    
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + ' months ago';
+    
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + ' days ago';
+    
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + ' hours ago';
+    
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + ' minutes ago';
+    
+    return 'Just now';
+}
+</script>

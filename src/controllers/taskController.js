@@ -52,32 +52,20 @@ const { createNotification } = require('./notificationController');
  */
 exports.createTask = async (req, res) => {
     try {
-        const { Task, User, Company, TeamMember } = req.db_models; // Added TeamMember
-        const { title, description, priority, due_date, assigned_to, attachments, assignees } = req.body;
+        const { Task, User, Company, TeamMember } = req.db_models;
+        const { title, description, priority, due_date, assignees, attachments } = req.body; // remove assigned_to destructuring to handle logic below
 
         let company;
-        
-        // 1. Resolve Company
         if (req.user.role === 'employer') {
             company = await Company.findOne({ where: { owner_id: req.user.id } });
         } else if (req.user.role === 'employee') {
-            if (req.user.company_id) {
-                company = await Company.findByPk(req.user.company_id);
-            }
+            if (req.user.company_id) company = await Company.findByPk(req.user.company_id);
         }
 
-        if (!company) {
-            return res.status(400).json({ error: 'No company found associated with your account.' });
-        }
+        if (!company) return res.status(400).json({ error: 'No company found associated with your account.' });
 
-        // 2. Permission Check (For Employees)
         if (req.user.role === 'employee') {
-            const member = await TeamMember.findOne({ 
-                where: { user_id: req.user.id, company_id: company.id } 
-            });
-            
-            // Check if member exists AND has permission
-            // Note: Permissions is JSON/Array
+            const member = await TeamMember.findOne({ where: { user_id: req.user.id, company_id: company.id } });
             if (!member || !member.permissions || !member.permissions.includes('create_tasks')) {
                  return res.status(403).json({ error: "You do not have permission to create tasks." });
             }
@@ -85,42 +73,54 @@ exports.createTask = async (req, res) => {
 
         const maxPos = await Task.max('position', { where: { company_id: company.id, status: 'todo' } }) || 0;
 
+        // Handle Assignees
+        let assigneeList = [];
+        if (assignees && Array.isArray(assignees)) assigneeList = assignees;
+        
+        // Primary assignee is the first one, or null
+        const primaryAssignee = assigneeList.length > 0 ? assigneeList[0] : null;
+
         const task = await Task.create({
             title,
             description,
             priority: priority || 'medium',
             due_date,
-            assigned_to,
+            assigned_to: primaryAssignee, // Legacy support
+            assignees: assigneeList,      // New support
             company_id: company.id,
             created_by: req.user.id,
             status: 'todo',
             position: maxPos + 1,
             is_accepted: false,
-            attachments: attachments || [],
-            assignees: assignees || []
+            attachments: attachments || []
         });
 
-        if (assigned_to) {
-            const assignee = await User.findByPk(assigned_to);
-            if (assignee) {
-                const taskUrl = `${req.protocol}://${req.get('host')}/dashboard/employer/tasks`;
-                await sendTaskAssignment({
-                    to: assignee.email,
-                    inviteeName: assignee.full_name,
-                    taskTitle: title,
-                    taskUrl,
-                    assignerName: req.user.full_name
-                });
-                
-                // [NEW] Push Notification
-                await createNotification(req.db_models, {
-                     user_id: assigned_to,
-                     title: 'New Task Assigned',
-                     message: `You have been assigned: ${title}`,
-                     type: 'info',
-                     link: `/dashboard/employer/tasks/${task.id}`,
-                     related_id: task.id
-                 });
+        // Send Notifications to ALL assignees
+        if (assigneeList.length > 0) {
+            const taskUrl = `${req.protocol}://${req.get('host')}/dashboard/employer/tasks`;
+            
+            // Loop through all assignees
+            for(const userId of assigneeList) {
+                const user = await User.findByPk(userId);
+                if(user) {
+                    // Email
+                    await sendTaskAssignment({
+                        to: user.email,
+                        inviteeName: user.full_name,
+                        taskTitle: title,
+                        taskUrl,
+                        assignerName: req.user.full_name
+                    });
+                     // In-App Notification
+                    await createNotification(req.db_models, {
+                         user_id: user.id,
+                         title: 'New Task Assigned',
+                         message: `You have been assigned: ${title}`,
+                         type: 'info',
+                         link: `/dashboard/employer/tasks/${task.id}`,
+                         related_id: task.id
+                     });
+                }
             }
         }
 
@@ -150,11 +150,14 @@ exports.acceptTask = async (req, res) => {
         console.log('[Accept Task] Task assigned_to:', task.assigned_to);
         console.log('[Accept Task] Match:', task.assigned_to === req.user.id);
         
-        // Check if user is the assignee
-        if (task.assigned_to !== req.user.id) {
+        // Check if user is the assignee (Primary or Multi)
+        const isAssignee = task.assigned_to === req.user.id || 
+                          (task.assignees && Array.isArray(task.assignees) && task.assignees.includes(req.user.id));
+        
+        if (!isAssignee) {
             return res.status(403).json({ 
-                message: 'Only the assigned employee can accept this task',
-                debug: { userId: req.user.id, assignedTo: task.assigned_to }
+                message: 'Only an assigned employee can accept this task',
+                debug: { userId: req.user.id, assignedTo: task.assigned_to, assignees: task.assignees }
             });
         }
         
@@ -301,12 +304,10 @@ exports.updateTask = async (req, res) => {
     try {
         const { Task, User, Company, TeamMember } = req.db_models;
         const { id } = req.params;
-        const { title, description, priority, due_date, assigned_to } = req.body;
+        const { title, description, priority, due_date, assignees } = req.body;
 
         const task = await Task.findByPk(id);
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
+        if (!task) return res.status(404).json({ error: 'Task not found' });
 
         // Permission Check
         const company = await Company.findByPk(task.company_id);
@@ -316,22 +317,24 @@ exports.updateTask = async (req, res) => {
         let hasPermission = isOwner || isCreator;
         
         if (!hasPermission && req.user.role === 'employee') {
-            const member = await TeamMember.findOne({ 
-                where: { user_id: req.user.id, company_id: task.company_id } 
-            });
+            const member = await TeamMember.findOne({ where: { user_id: req.user.id, company_id: task.company_id } });
             hasPermission = member && member.permissions && member.permissions.includes('edit_tasks');
         }
         
-        if (!hasPermission) {
-            return res.status(403).json({ error: 'You do not have permission to edit this task.' });
-        }
+        if (!hasPermission) return res.status(403).json({ error: 'You do not have permission to edit this task.' });
 
         // Update fields
         if (title) task.title = title;
         if (description !== undefined) task.description = description;
         if (priority) task.priority = priority;
         if (due_date !== undefined) task.due_date = due_date;
-        if (assigned_to !== undefined) task.assigned_to = assigned_to;
+        
+        // Update Assignees
+        if (assignees !== undefined) {
+             task.assignees = assignees;
+             // Sync primary
+             task.assigned_to = (assignees && assignees.length > 0) ? assignees[0] : null;
+        }
 
         await task.save();
 

@@ -34,4 +34,9 @@ router.patch('/subscriptions/:id', adminController.updateSubscription);
 // Payment History
 router.get('/payments', adminController.getPayments);
 
+// User Activity Tracking
+router.get('/activities', adminController.getUserActivities);
+router.get('/activities/stats', adminController.getActivityStats);
+router.get('/activities/user/:userId', adminController.getUserActivityHistory);
+
 module.exports = router;

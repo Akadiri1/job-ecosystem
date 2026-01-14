@@ -31,6 +31,7 @@ const ChatMessage = require('./models/ChatMessage')(sequelize); // [NEW] Import 
 const ChatGroup = require('./models/ChatGroup')(sequelize);
 const ChatGroupMember = require('./models/ChatGroupMember')(sequelize);
 const Notification = require('./models/Notification')(sequelize); // [NEW]
+const NotificationPreference = require('./models/NotificationPreference')(sequelize); // [NEW]
 const PushSubscription = require('./models/PushSubscription')(sequelize); // [PUSH]
 const Task = require('./models/Task')(sequelize);
 const TaskComment = require('./models/TaskComment')(sequelize);
@@ -41,6 +42,8 @@ const AIInsight = require('./models/AIInsight')(sequelize);
 // [BILLING] Payment Models
 const Subscription = require('./models/Subscription')(sequelize);
 const Payment = require('./models/Payment')(sequelize);
+// [ADMIN] User Activity Tracking
+const UserActivity = require('./models/UserActivity')(sequelize);
 
 // Routes Imports
 const authRoutes = require('./routes/authRoutes');
@@ -96,6 +99,10 @@ Notification.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 // Push Subscriptions
 User.hasMany(PushSubscription, { foreignKey: 'user_id', as: 'push_subscriptions' });
 PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// Notification Preferences
+User.hasOne(NotificationPreference, { foreignKey: 'user_id', as: 'preferences' });
+NotificationPreference.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
 // --- EMPLOYEE RELATIONSHIPS ---
 // A Company has many Employees
@@ -153,6 +160,10 @@ AIInsight.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
 User.hasMany(AIInsight, { foreignKey: 'user_id', as: 'ai_insights' });
 AIInsight.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
+// --- USER ACTIVITY TRACKING ---
+User.hasMany(UserActivity, { foreignKey: 'user_id', as: 'activities' });
+UserActivity.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 const app = express();
 
 // --- MIDDLEWARE ---
@@ -183,7 +194,8 @@ app.use((req, res, next) => {
         TeamMember, Channel, ChannelMember,
         Task, TaskComment, TaskCommentLike,
         Attendance, AIInsight,
-        Subscription, Payment, PushSubscription
+        Subscription, Payment, PushSubscription, NotificationPreference,
+        UserActivity
     };
     next();
 });
@@ -336,6 +348,7 @@ app.get('/dashboard/admin/subscriptions', (req, res) => res.render('admin-dashbo
 app.get('/dashboard/admin/payments', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
 app.get('/dashboard/admin/ai-insights', (req, res) => res.render('ai-insights', { sidebar: 'includes/sidebar-admin' })); // Reuse AI dashboard
 app.get('/dashboard/admin/settings', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/user-activity', (req, res) => res.render('admin-user-activity', { sidebar: 'includes/sidebar-admin' }));
 
 
 // ============================================================

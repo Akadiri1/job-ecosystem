@@ -227,7 +227,7 @@
                                 </div>
 
                                 <!-- NOTIFICATION TAB -->
-                                <div class="tab-pane" id="notification-pane" role="tabpanel" tabindex="0">
+                                 <div class="tab-pane" id="notification-pane" role="tabpanel" tabindex="0">
                                     <h6 class="fw-bold mb-3">Email Preferences</h6>
                                     <div class="list-group">
                                         <div class="list-group-item d-flex align-items-center justify-content-between border-0 px-0">
@@ -236,7 +236,7 @@
                                                 <p class="fs-12 text-muted mb-0">Get notified when new jobs match your profile.</p>
                                             </div>
                                             <div class="form-check form-switch mb-0">
-                                                <input class="form-check-input" type="checkbox" role="switch" checked>
+                                                <input class="form-check-input" type="checkbox" role="switch" id="pref-job-alerts">
                                             </div>
                                         </div>
                                         <div class="list-group-item d-flex align-items-center justify-content-between border-0 px-0">
@@ -245,7 +245,7 @@
                                                 <p class="fs-12 text-muted mb-0">Receive status updates on your applications.</p>
                                             </div>
                                             <div class="form-check form-switch mb-0">
-                                                <input class="form-check-input" type="checkbox" role="switch" checked>
+                                                <input class="form-check-input" type="checkbox" role="switch" id="pref-app-updates">
                                             </div>
                                         </div>
                                          <div class="list-group-item d-flex align-items-center justify-content-between border-0 px-0">
@@ -254,12 +254,12 @@
                                                 <p class="fs-12 text-muted mb-0">News, tips, and promotions.</p>
                                             </div>
                                             <div class="form-check form-switch mb-0">
-                                                <input class="form-check-input" type="checkbox" role="switch">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="pref-marketing">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-end mt-4">
-                                        <button type="button" class="btn btn-primary" onclick="Toastify({text:'Notification settings saved (simulated)', backgroundColor:'#00b074'}).showToast()">Save Preferences</button>
+                                        <button type="button" class="btn btn-primary" onclick="savePreferences()" id="btnSavePrefs">Save Preferences</button>
                                     </div>
                                 </div>
 
@@ -305,6 +305,40 @@
                                             </button>
                                         </div>
                                     </form>
+
+                                    <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+                                    
+                                    <!-- Verification Settings -->
+                                    <div>
+                                        <h6 class="fw-bold mb-3"><i class="ri-shield-check-line me-1"></i> Verification Settings</h6>
+                                        <div class="d-sm-flex d-block align-items-top justify-content-between">
+                                            <div class="w-50">
+                                                <p class="fs-14 mb-1 fw-medium">Notification Channels</p>
+                                                <p class="fs-12 mb-0 text-muted">Control how you receive security alerts and notifications.</p>
+                                            </div>
+                                            <div class="d-flex gap-4">
+                                                <div class="form-check ">
+                                                    <input class="form-check-input" type="checkbox" value="" id="email-verification-check" checked="">
+                                                    <label class="form-check-label" for="email-verification-check">
+                                                        Email
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="sms-verification-check">
+                                                    <label class="form-check-label" for="sms-verification-check">
+                                                        SMS
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-sm-flex d-block align-items-top justify-content-between mt-3">
+                                            <div class="w-50">
+                                                <p class="fs-14 mb-1 fw-medium">Two-Factor Authentication</p>
+                                                <p class="fs-12 mb-0 text-muted">Protect your account with an extra layer of security.</p>
+                                            </div>
+                                            <a href="javascript:void(0);" class="link-primary text-decoration-underline" onclick="Toastify({text:'Two-Factor Authentication coming soon!', backgroundColor:'#4b4b4b'}).showToast()">Set Up 2FA</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -438,6 +472,94 @@
             Toastify({ text: "Network Error", backgroundColor: "#ff5b5c" }).showToast();
         }
     }
+
+    // Load Preferences
+    async function loadPreferences() {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch('/api/notifications/preferences', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const prefs = data.preferences;
+                if (prefs) {
+                    if(document.getElementById('pref-job-alerts')) document.getElementById('pref-job-alerts').checked = prefs.job_alerts;
+                    if(document.getElementById('pref-app-updates')) document.getElementById('pref-app-updates').checked = prefs.application_updates;
+                    if(document.getElementById('pref-marketing')) document.getElementById('pref-marketing').checked = prefs.marketing_emails;
+                    
+                    // Verification Checks
+                    if(document.getElementById('email-verification-check')) document.getElementById('email-verification-check').checked = prefs.security_email;
+                    if(document.getElementById('sms-verification-check')) document.getElementById('sms-verification-check').checked = prefs.security_sms;
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    // Call load on boot
+    document.addEventListener("DOMContentLoaded", loadPreferences);
+
+    async function savePreferences() {
+        const token = localStorage.getItem('token');
+        const updates = {
+            job_alerts: document.getElementById('pref-job-alerts')?.checked,
+            application_updates: document.getElementById('pref-app-updates')?.checked,
+            marketing_emails: document.getElementById('pref-marketing')?.checked
+        };
+        
+        const btn = document.getElementById('btnSavePrefs');
+        const originalText = btn.innerText;
+        btn.innerText = 'Saving...';
+        btn.disabled = true;
+
+        try {
+             const response = await fetch('/api/notifications/preferences', {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updates)
+            });
+            
+            if (response.ok) {
+                Toastify({ text: "Preferences saved successfully!", backgroundColor: "#00b074" }).showToast();
+            } else {
+                Toastify({ text: "Failed to save preferences", backgroundColor: "#ff5b5c" }).showToast();
+            }
+        } catch (e) {
+            console.error(e);
+            Toastify({ text: "Network Error", backgroundColor: "#ff5b5c" }).showToast();
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
+    
+    // Auto-save Verification Settings when toggled
+    document.addEventListener('change', async (e) => {
+        if (e.target.id === 'email-verification-check' || e.target.id === 'sms-verification-check') {
+             const token = localStorage.getItem('token');
+             const updates = {
+                 security_email: document.getElementById('email-verification-check').checked,
+                 security_sms: document.getElementById('sms-verification-check').checked
+             };
+             
+             try {
+                await fetch('/api/notifications/preferences', {
+                    method: 'PUT',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updates)
+                });
+                Toastify({ text: "Security preference updated", backgroundColor: "#4b4b4b", duration: 1000 }).showToast();
+             } catch(e) { console.error(e); }
+        }
+    });
 
     // Toggle password visibility
     function togglePasswordVisibility(inputId, btn) {

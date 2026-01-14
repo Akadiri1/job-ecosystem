@@ -4,11 +4,42 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer'); 
 
 // ==========================================
+// HELPER FUNCTIONS - User Agent Parsing
+// ==========================================
+function parseDeviceType(userAgent) {
+    if (!userAgent) return 'Unknown';
+    if (/mobile/i.test(userAgent)) return 'Mobile';
+    if (/tablet|ipad/i.test(userAgent)) return 'Tablet';
+    return 'Desktop';
+}
+
+function parseBrowser(userAgent) {
+    if (!userAgent) return 'Unknown';
+    if (/edg/i.test(userAgent)) return 'Edge';
+    if (/chrome/i.test(userAgent)) return 'Chrome';
+    if (/firefox/i.test(userAgent)) return 'Firefox';
+    if (/safari/i.test(userAgent)) return 'Safari';
+    if (/opera|opr/i.test(userAgent)) return 'Opera';
+    if (/msie|trident/i.test(userAgent)) return 'Internet Explorer';
+    return 'Unknown';
+}
+
+function parseOS(userAgent) {
+    if (!userAgent) return 'Unknown';
+    if (/windows/i.test(userAgent)) return 'Windows';
+    if (/macintosh|mac os/i.test(userAgent)) return 'macOS';
+    if (/linux/i.test(userAgent)) return 'Linux';
+    if (/android/i.test(userAgent)) return 'Android';
+    if (/iphone|ipad|ipod/i.test(userAgent)) return 'iOS';
+    return 'Unknown';
+}
+
+// ==========================================
 // 1. SIGNUP CONTROLLER
 // ==========================================
 exports.signup = async (req, res) => {
     console.log("🚀 Signup Request Body:", req.body);
-    const { User } = req.db_models;
+    const { User, UserActivity } = req.db_models;
 
     if (!User) return res.status(500).json({ error: "Server Error: User model failed to load." });
 
@@ -28,6 +59,23 @@ exports.signup = async (req, res) => {
             role: role || 'job_seeker',
             phone_number: phone
         });
+
+        // Log signup activity
+        try {
+            const userAgent = req.headers['user-agent'] || '';
+            await UserActivity.create({
+                user_id: newUser.id,
+                event_type: 'signup',
+                ip_address: req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress,
+                user_agent: userAgent,
+                device_type: parseDeviceType(userAgent),
+                browser: parseBrowser(userAgent),
+                os: parseOS(userAgent),
+                metadata: { registration_role: role || 'job_seeker' }
+            });
+        } catch (activityErr) {
+            console.error('Activity logging error:', activityErr);
+        }
 
         console.log("✅ User created successfully:", newUser.id);
         res.status(201).json({ message: 'User registered successfully!', userId: newUser.id });
@@ -49,7 +97,7 @@ exports.login = async (req, res) => {
         return res.status(500).json({ error: "Server Error: Database models not injected." });
     }
 
-    const { User } = req.db_models;
+    const { User, UserActivity } = req.db_models;
     if (!User) {
         console.error("❌ [DEBUG] User model is missing from req.db_models");
         return res.status(500).json({ error: "Server Error: User model missing." });
@@ -77,6 +125,28 @@ exports.login = async (req, res) => {
 
         if (user.account_status === 'suspended') {
             return res.status(403).json({ error: "Your account is deactivated. Please contact your administrator." });
+        }
+
+        // Log login activity
+        try {
+            const userAgent = req.headers['user-agent'] || '';
+            await UserActivity.create({
+                user_id: user.id,
+                event_type: 'login',
+                ip_address: req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress,
+                user_agent: userAgent,
+                device_type: parseDeviceType(userAgent),
+                browser: parseBrowser(userAgent),
+                os: parseOS(userAgent),
+                metadata: { login_method: 'email' }
+            });
+
+            // Update last_active_at
+            user.last_active_at = new Date();
+            user.is_online = true;
+            await user.save();
+        } catch (activityErr) {
+            console.error('Activity logging error:', activityErr);
         }
 
         const secretKey = process.env.JWT_SECRET || 'temporary_dev_secret_key';

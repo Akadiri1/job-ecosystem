@@ -1,290 +1,238 @@
 <%- include('includes/header2', { title: 'Task Details' }) %>
 
 <style>
-    /* ==========================================================================
-       TASK DETAIL PAGE STYLES
-       
-       ROLE SYSTEM:
-       - Manager (creator): Full edit/delete controls, all task visibility
-       - Employee (assignee): Accept task, update status, comment only
-       ========================================================================== */
-    
-    /* Custom Styles for Facebook-like Comments and Page Layout */
-    .task-meta-label {
-        color: #64748b;
-        font-size: 0.85rem;
-        margin-bottom: 0.25rem;
-    }
-    .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e2e5e7 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: skeleton-loading 1.5s infinite;
-        border-radius: 4px;
-        display: inline-block;
-    }
-    @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-    /* Comment Section Styles */
-    .comment-thread {
-        position: relative;
-    }
-    .comment-item {
-        margin-bottom: 1rem;
-    }
-    .comment-bubble {
-        background-color: #f0f2f5;
-        border-radius: 18px;
-        padding: 10px 15px;
-        display: inline-block;
-        min-width: 150px;
-        color: #1c1e21;
-    }
-    .comment-actions {
-        font-size: 12px;
-        margin-left: 10px;
-        margin-top: 4px;
-        color: #65676b;
-    }
-    .comment-actions a {
-        color: #65676b;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        margin-right: 10px;
-    }
-    .comment-actions a:hover {
-        text-decoration: underline;
-    }
-    .reply-list {
-        margin-left: 50px; /* Indent replies */
-        margin-top: 10px;
-        border-left: 2px solid #e9ecef;
-        padding-left: 10px;
-    }
-    .reply-input-container {
-        margin-left: 50px;
-        margin-top: 10px;
-    }
-    .avatar-sm-custom {
-        width: 32px;
-        height: 32px;
-        object-fit: cover;
-    }
-    
-    /* Dark Mode Support */
-    [data-theme-mode="dark"] .comment-bubble,
-    .dark .comment-bubble,
-    html[data-bs-theme="dark"] .comment-bubble {
-        background-color: #3a3b3c;
-        color: #e4e6eb;
-    }
-    [data-theme-mode="dark"] .comment-bubble .text-dark,
-    .dark .comment-bubble .text-dark,
-    html[data-bs-theme="dark"] .comment-bubble .text-dark {
-        color: #e4e6eb !important;
-    }
-    [data-theme-mode="dark"] .comment-actions,
-    .dark .comment-actions,
-    html[data-bs-theme="dark"] .comment-actions {
-        color: #b0b3b8;
-    }
-    [data-theme-mode="dark"] .comment-actions a,
-    .dark .comment-actions a,
-    html[data-bs-theme="dark"] .comment-actions a {
-        color: #b0b3b8;
-    }
-    [data-theme-mode="dark"] .reply-list,
-    .dark .reply-list,
-    html[data-bs-theme="dark"] .reply-list {
-        border-left-color: #3a3b3c;
+    /* --- Dark Theme Palette --- */
+    :root {
+        --chat-bg: #0f172a;       /* Very dark blue/slate for background */
+        --chat-surface: #1e293b;  /* Slightly lighter for cards/bubbles */
+        --chat-border: #334155;   /* Border color */
+        --chat-text: #f1f5f9;     /* Main text */
+        --chat-meta: #94a3b8;     /* Secondary text */
+        --primary-accent: #3b82f6;
     }
 
-    /* ==========================================================================
-       ROLE BADGES - Visual differentiation between managers and employees
-       ========================================================================== */
-    .role-badge-manager {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-size: 10px;
-        padding: 2px 8px;
+    /* --- Chat Layout --- */
+    .chat-card {
+        background-color: var(--chat-surface);
+        border: 1px solid var(--chat-border);
         border-radius: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .role-badge-employee {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        color: white;
-        font-size: 10px;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        overflow: hidden;
     }
 
-    /* ==========================================================================
-       EMOJI PICKER MODAL
-       ========================================================================== */
-    .emoji-picker-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1050;
-    }
-    .emoji-picker-modal.show {
-        display: flex;
-    }
-    .emoji-picker-container {
-        background: white;
-        border-radius: 16px;
-        padding: 20px;
-        max-width: 320px;
-        width: 90%;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    }
-    .emoji-picker-header {
+    .chat-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--chat-border);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
     }
+
+    .chat-body {
+        padding: 20px;
+        background-color: var(--chat-bg);
+        min-height: 300px;
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .chat-footer {
+        padding: 15px 20px;
+        background-color: var(--chat-surface);
+        border-top: 1px solid var(--chat-border);
+        position: relative; /* For emoji picker positioning */
+    }
+
+    /* --- Comments --- */
+    .comment-item {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        animation: fadeIn 0.2s ease-in;
+    }
+    
+    .comment-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--chat-border);
+    }
+
+    .comment-content {
+        max-width: 80%;
+    }
+
+    .comment-bubble {
+        background-color: var(--chat-surface);
+        border: 1px solid var(--chat-border);
+        padding: 10px 14px;
+        border-radius: 0 12px 12px 12px;
+        color: var(--chat-text);
+        position: relative;
+    }
+    
+    /* Author Header */
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+    .comment-author { font-weight: 600; font-size: 0.9rem; color: #fff; }
+    .comment-time { font-size: 0.75rem; color: var(--chat-meta); }
+
+    /* Text & Files */
+    .comment-text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    .comment-image-preview {
+        display: block;
+        max-width: 100%;
+        border-radius: 8px;
+        margin-top: 10px;
+        cursor: pointer;
+        border: 1px solid var(--chat-border);
+    }
+
+    .comment-file-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.05);
+        padding: 6px 10px;
+        border-radius: 6px;
+        color: var(--primary-accent);
+        text-decoration: none;
+        margin-top: 5px;
+        font-size: 0.85rem;
+    }
+    .comment-file-link:hover { background: rgba(255,255,255,0.1); }
+
+    /* --- New Input Styling (Pill Shape) --- */
+    .input-container {
+        display: flex;
+        align-items: flex-end;
+        background-color: var(--chat-bg);
+        border: 1px solid var(--chat-border);
+        border-radius: 24px;
+        padding: 8px 16px;
+        transition: all 0.2s ease;
+    }
+
+    .input-container:focus-within {
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .chat-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #fff;
+        max-height: 100px;
+        resize: none;
+        padding: 8px 0;
+        font-size: 0.95rem;
+    }
+    .chat-input:focus { outline: none; }
+    .chat-input::placeholder { color: var(--chat-meta); }
+
+    .input-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px; /* Align with single line text */
+        margin-right: 8px;
+    }
+
+    .input-btn {
+        background: transparent;
+        border: none;
+        color: var(--chat-meta);
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 50%;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .input-btn:hover { background-color: rgba(255,255,255,0.1); color: #fff; }
+    .input-btn i { font-size: 1.2rem; }
+
+    .send-btn {
+        background-color: var(--primary-accent);
+        color: white;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-bottom: 2px;
+        transition: 0.2s;
+    }
+    .send-btn:hover { background-color: #2563eb; transform: scale(1.05); }
+
+    /* --- Emoji Picker (Floating Modal) --- */
+    .emoji-picker-modal {
+        position: absolute;
+        bottom: 70px; /* Floats above footer */
+        left: 20px;
+        background-color: var(--chat-surface);
+        border: 1px solid var(--chat-border);
+        border-radius: 12px;
+        padding: 12px;
+        width: 300px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 50;
+    }
+
     .emoji-grid {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
         gap: 8px;
-    }
-    .emoji-btn {
-        font-size: 24px;
-        padding: 8px;
-        border: none;
-        background: #f8f9fa;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    .emoji-btn:hover {
-        background: #e9ecef;
-        transform: scale(1.15);
+        max-height: 200px;
+        overflow-y: auto;
     }
 
-    /* Reaction display under comments */
-    .comment-reactions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        margin-top: 4px;
-        margin-left: 10px;
+    .emoji-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: 0.2s;
     }
-    .reaction-chip {
+    .emoji-btn:hover { background-color: rgba(255,255,255,0.1); transform: scale(1.1); }
+
+    /* --- File Preview --- */
+    .file-preview-area {
+        margin-bottom: 10px;
+        display: none;
+    }
+    .preview-chip {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        background: #f0f2f5;
-        border: 1px solid #e4e6eb;
-        border-radius: 20px;
-        padding: 2px 8px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .reaction-chip:hover {
-        background: #e4e6eb;
-    }
-    .reaction-chip.active {
-        background: #e7f3ff;
-        border-color: #1877f2;
-    }
-    .reaction-emoji {
-        font-size: 14px;
-    }
-
-    /* ==========================================================================
-       FILE UPLOAD MODAL
-       ========================================================================== */
-    .file-upload-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1050;
-    }
-    .file-upload-modal.show {
-        display: flex;
-    }
-    .file-upload-container {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        max-width: 450px;
-        width: 90%;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    }
-    .file-drop-zone {
-        border: 2px dashed #dee2e6;
-        border-radius: 12px;
-        padding: 40px 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #fafbfc;
-    }
-    .file-drop-zone:hover, .file-drop-zone.dragover {
-        border-color: #667eea;
-        background: #f0f4ff;
-    }
-    .file-drop-zone i {
-        font-size: 48px;
-        color: #adb5bd;
-        margin-bottom: 10px;
-    }
-    .file-preview-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px;
-        background: #f8f9fa;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
         border-radius: 8px;
-        margin-top: 12px;
+        padding: 6px 12px;
+        color: #fff;
+        font-size: 0.85rem;
     }
-    .file-preview-item img {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 6px;
-    }
-    .file-icon {
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #e9ecef;
-        border-radius: 6px;
-        font-size: 20px;
-        color: #6c757d;
-    }
-
-    /* Manager-only controls (hidden for employees) */
-    .manager-only {
-        display: block; /* Default visible, hidden via JS for non-managers */
-    }
-    .manager-only.hidden {
-        display: none !important;
-    }
+    .preview-chip img { width: 30px; height: 30px; border-radius: 4px; margin-right: 8px; object-fit: cover; }
+    
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .spin { animation: spin 1s linear infinite; }
 </style>
 
 <div class="page">
@@ -293,226 +241,102 @@
     <div class="main-content app-content">
         <div class="container-fluid">
 
-            <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-                <div>
-                    <h4 class="mb-0">Task Details</h4>
-                    <p class="mb-0 text-muted fs-13">View and manage task progress and communications.</p>
-                </div>
-                <div class="d-flex gap-2 mt-md-0 mt-2">
-                    <button type="button" class="btn btn-primary btn-sm btn-wave" id="btnEditTask">
-                        <i class="ri-edit-line me-1 align-middle"></i>Edit Task
-                    </button>
-                </div>
+            <div class="d-flex align-items-center justify-content-between my-4">
+                <h4 class="mb-0 fw-bold text-white">Task Details</h4>
+                <button class="btn btn-dark btn-sm border-secondary text-light" onclick="history.back()">
+                    <i class="ri-arrow-left-line"></i> Back
+                </button>
             </div>
 
             <div class="row">
-                <div class="col-xl-8">
-                    <div class="card custom-card">
+                <div class="col-xl-4 mb-4">
+                    <div class="card custom-card h-100 border-0" style="background: #1e293b; color: white;">
                         <div class="card-body">
-                            <div class="d-flex align-items-start justify-content-between mb-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <h5 class="fw-bold mb-1" id="task-title">
-                                        <span class="skeleton" style="width: 250px; height: 24px;"></span>
-                                    </h5>
-                                    <div class="d-flex align-items-center text-muted fs-12 mt-1" id="task-meta-header">
-                                        <span class="skeleton" style="width: 150px; height: 15px;"></span>
-                                    </div>
+                                    <h5 class="fw-bold mb-1" id="task-title">Loading...</h5>
+                                    <div id="status-badge"></div>
                                 </div>
-                                <div id="acceptance-badge-area"></div>
+                                <button class="btn btn-primary btn-sm" id="btnEditTask" style="display:none;">Edit</button>
                             </div>
 
-                            <h6 class="fw-semibold">Description</h6>
-                            <div class="text-muted mb-4 task-desc-content" id="task-description">
-                                <span class="skeleton" style="width: 100%; height: 15px; margin-bottom: 5px;"></span>
-                                <span class="skeleton" style="width: 90%; height: 15px; margin-bottom: 5px;"></span>
-                                <span class="skeleton" style="width: 60%; height: 15px;"></span>
+                            <div id="acceptance-box" class="p-3 mb-3 rounded border border-warning bg-warning bg-opacity-10 text-warning" style="display:none;">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span><i class="ri-alert-line me-1"></i> Action Required</span>
+                                    <button class="btn btn-sm btn-warning text-dark fw-bold" id="btnAccept">Accept</button>
+                                </div>
                             </div>
 
-                            <div id="acceptance-section" class="alert alert-soft-warning d-flex align-items-center justify-content-between" style="display: none;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="ri-time-line fs-20"></i>
-                                    <div>
-                                        <span class="fw-semibold d-block">Action Required</span>
-                                        <span class="fs-12">Please accept this task to begin tracking progress.</span>
-                                    </div>
+                            <p class="text-secondary mb-4" id="task-desc"></p>
+
+                            <div class="table-responsive">
+                                <table class="table table-borderless text-white mb-0">
+                                    <tbody>
+                                        <tr><td class="text-secondary ps-0">Priority</td><td class="text-end" id="task-priority">-</td></tr>
+                                        <tr><td class="text-secondary ps-0">Due Date</td><td class="text-end" id="task-due">-</td></tr>
+                                        <tr><td class="text-secondary ps-0">Assigned To</td><td class="text-end" id="task-assignee">-</td></tr>
+                                        <tr><td class="text-secondary ps-0">Created By</td><td class="text-end" id="task-creator">-</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="text-secondary fs-12 fw-bold text-uppercase mb-2">Attachments</label>
+                                <div id="attachments-container" class="d-flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-8 mb-4">
+                    <div class="chat-card">
+                        <div class="chat-header">
+                            <h6 class="mb-0 text-white fw-bold">Discussion <span class="badge bg-primary rounded-pill ms-2" id="msg-count">0</span></h6>
+                        </div>
+                        
+                        <div class="chat-body" id="chat-thread">
+                            <div class="text-center text-muted mt-5">Loading discussion...</div>
+                        </div>
+
+                        <div class="chat-footer">
+                            <div class="file-preview-area" id="file-preview"></div>
+
+                            <div class="emoji-picker-modal" id="emoji-picker">
+                                <div class="emoji-grid">
+                                    <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+                                    <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
+                                    <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
+                                    <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
+                                    <button class="emoji-btn" onclick="addEmoji('😮')">😮</button>
+                                    <button class="emoji-btn" onclick="addEmoji('😢')">😢</button>
+                                    <button class="emoji-btn" onclick="addEmoji('😡')">😡</button>
+                                    <button class="emoji-btn" onclick="addEmoji('🎉')">🎉</button>
+                                    <button class="emoji-btn" onclick="addEmoji('✅')">✅</button>
+                                    <button class="emoji-btn" onclick="addEmoji('👀')">👀</button>
+                                    <button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
+                                    <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
                                 </div>
-                                <button class="btn btn-warning btn-sm" id="btnAcceptTask">
-                                    <i class="ri-check-double-line me-1"></i>Accept Task
+                            </div>
+
+                            <div class="input-container">
+                                <div class="input-actions">
+                                    <button class="input-btn" onclick="toggleEmoji()" title="Add Emoji"><i class="ri-emotion-line"></i></button>
+                                    <button class="input-btn" onclick="triggerFile()" title="Attach File"><i class="ri-attachment-2"></i></button>
+                                </div>
+                                <textarea id="chat-input" class="chat-input" rows="1" placeholder="Write a comment..." oninput="autoResize(this)"></textarea>
+                                <button class="send-btn" id="btnSend" onclick="sendMessage()">
+                                    <i class="ri-send-plane-fill"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-
-                    <div class="card custom-card">
-                        <div class="card-header">
-                            <div class="card-title">Attachments</div>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush" id="attachments-list">
-                                <li class="text-muted text-center py-2 fs-13">No attachments available.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    
-                    <div class="card custom-card">
-                        <div class="card-header justify-content-between">
-                            <div class="card-title">Discussion</div>
-                            <span class="badge bg-light text-dark" id="comment-count-badge">0 Comments</span>
-                        </div>
-                        <div class="card-body">
-                            
-                            <div class="d-flex gap-2 mb-4">
-                                <div class="avatar avatar-md avatar-rounded flex-shrink-0">
-                                    <img src="/build/assets/images/faces/9.jpg" id="current-user-avatar" alt="user">
-                                </div>
-                                <div class="flex-fill">
-                                    <div class="input-group">
-                                        <textarea class="form-control bg-light border-0" id="main-comment-input" rows="2" placeholder="Write a comment..." style="resize: none;"></textarea>
-                                        <button class="btn btn-light border-0" type="button" onclick="triggerFileUpload('main')"><i class="bi bi-paperclip"></i></button>
-                                        <button class="btn btn-primary-light" type="button" id="btnPostComment"><i class="ri-send-plane-fill"></i></button>
-                                    </div>
-                                    <div id="file-preview-main" class="mt-2"></div>
-                                </div>
-                            </div>
-
-                            <div class="comment-thread" id="comments-list">
-                                <div class="text-center py-5">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-4">
-                    <div class="card custom-card">
-                        <div class="card-header">
-                            <div class="card-title">Task Info</div>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-muted fs-13" style="width: 40%;">Task ID</td>
-                                            <td class="fw-medium" id="info-task-id">TSK-...</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted fs-13">Status</td>
-                                            <td id="info-status">-</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted fs-13">Priority</td>
-                                            <td id="info-priority">-</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted fs-13">Due Date</td>
-                                            <td id="info-due-date">-</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted fs-13">Last Updated</td>
-                                            <td id="info-updated">-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card custom-card">
-                        <div class="card-header">
-                            <div class="card-title">People</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label class="task-meta-label">Assigned To</label>
-                                <div id="info-assigned-to" class="d-flex align-items-center mt-1">
-                                    <span class="avatar avatar-xs me-2"><img src="/build/assets/images/faces/1.jpg" class="rounded-circle"></span>
-                                    <span>Unassigned</span>
-                                </div>
-                            </div>
-                            <hr class="border-light">
-                            <div class="mb-3">
-                                <label class="task-meta-label">Created By</label>
-                                <div id="info-created-by" class="d-flex align-items-center mt-1">
-                                    <span class="skeleton" style="width: 100px;"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-            </div>
-    </div>
-</div>
-
-<input type="file" id="global-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.zip">
-
-<!-- ==========================================================================
-     EMOJI PICKER MODAL
-     Opens when user clicks emoji button on a comment
-     ========================================================================== -->
-<div class="emoji-picker-modal" id="emojiPickerModal">
-    <div class="emoji-picker-container">
-        <div class="emoji-picker-header">
-            <h6 class="mb-0 fw-semibold">Add Reaction</h6>
-            <button type="button" class="btn-close" onclick="closeEmojiPicker()"></button>
-        </div>
-        <div class="emoji-grid" id="emojiGrid">
-            <!-- Common reactions -->
-            <button class="emoji-btn" onclick="selectEmoji('👍')">👍</button>
-            <button class="emoji-btn" onclick="selectEmoji('❤️')">❤️</button>
-            <button class="emoji-btn" onclick="selectEmoji('😂')">😂</button>
-            <button class="emoji-btn" onclick="selectEmoji('😮')">😮</button>
-            <button class="emoji-btn" onclick="selectEmoji('😢')">😢</button>
-            <button class="emoji-btn" onclick="selectEmoji('😡')">😡</button>
-            <!-- Additional reactions -->
-            <button class="emoji-btn" onclick="selectEmoji('🎉')">🎉</button>
-            <button class="emoji-btn" onclick="selectEmoji('🚀')">🚀</button>
-            <button class="emoji-btn" onclick="selectEmoji('💯')">💯</button>
-            <button class="emoji-btn" onclick="selectEmoji('👀')">👀</button>
-            <button class="emoji-btn" onclick="selectEmoji('🔥')">🔥</button>
-            <button class="emoji-btn" onclick="selectEmoji('✅')">✅</button>
         </div>
     </div>
 </div>
 
-<!-- ==========================================================================
-     FILE UPLOAD MODAL
-     Opens when user clicks attachment button
-     Allows drag-and-drop or click to select files
-     ========================================================================== -->
-<div class="file-upload-modal" id="fileUploadModal">
-    <div class="file-upload-container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0 fw-semibold">Upload Attachment</h6>
-            <button type="button" class="btn-close" onclick="closeFileUploadModal()"></button>
-        </div>
-        
-        <div class="file-drop-zone" id="fileDropZone" onclick="document.getElementById('modalFileInput').click()">
-            <i class="ri-upload-cloud-2-line d-block"></i>
-            <p class="mb-1 fw-medium">Drag and drop file here</p>
-            <p class="mb-0 text-muted fs-12">or click to browse</p>
-        </div>
-        
-        <input type="file" id="modalFileInput" style="display:none" accept="image/*,.pdf,.doc,.docx,.zip,.txt">
-        
-        <div id="modalFilePreview" class="mt-3" style="display: none;">
-            <!-- File preview will be inserted here -->
-        </div>
-        
-        <div class="d-flex gap-2 mt-3">
-            <button type="button" class="btn btn-light flex-fill" onclick="closeFileUploadModal()">Cancel</button>
-            <button type="button" class="btn btn-primary flex-fill" id="btnConfirmUpload" onclick="confirmFileUpload()" disabled>
-                <i class="ri-check-line me-1"></i>Attach File
-            </button>
-        </div>
-    </div>
-</div>
+<input type="file" id="hidden-file" style="display:none" onchange="handleFile(this)">
 
 <%- include('includes/footer2') %>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -521,800 +345,260 @@
     const token = localStorage.getItem('token');
     const taskId = window.location.pathname.split('/').pop();
     let currentTask = null;
-    let currentUser = null; // Store basic user info if available from token
-    let pendingFiles = {}; // Map contextId -> File
+    let currentUser = null;
+    let selectedFile = null;
 
-    // --- Initialization ---
     document.addEventListener('DOMContentLoaded', async () => {
-        if (!token) { window.location.href = '/login'; return; }
+        if (!token) window.location.href = '/login';
         
-        // Decode token for simple user info (id)
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            currentUser = { id: payload.id || payload.userId };
-        } catch(e) { console.error("Token decode error", e); }
+        await fetchUser();
+        await loadTask();
+        await loadMessages();
 
-        await loadTaskDetail();
-        await loadComments();
-
-        // Event Listeners
-        document.getElementById('btnPostComment').addEventListener('click', () => postComment()); // Main comment
-        document.getElementById('btnAcceptTask').addEventListener('click', acceptTask);
-        document.getElementById('global-file-input').addEventListener('change', handleFileSelect);
-
-        // Enter key to send main comment (Shift+Enter for new line)
-        document.getElementById('main-comment-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                postComment();
+        // Listeners
+        document.getElementById('btnAccept').addEventListener('click', acceptTask);
+        
+        // Close emoji picker on outside click
+        document.addEventListener('click', (e) => {
+            const picker = document.getElementById('emoji-picker');
+            const btn = document.querySelector('.input-btn[onclick="toggleEmoji()"]');
+            if (picker.style.display === 'block' && !picker.contains(e.target) && !btn.contains(e.target)) {
+                picker.style.display = 'none';
             }
         });
 
-        // Edit Button Logic
-        document.getElementById('btnEditTask').addEventListener('click', () => {
-            const rolePath = window.location.pathname.includes('/employee/') ? 'employee' : 'employer';
-            window.location.href = `/dashboard/${rolePath}/tasks?edit=${taskId}`;
+        // Enter key to send
+        document.getElementById('chat-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
     });
 
-    // --- Task Details Logic ---
-    async function loadTaskDetail() {
+    // --- Data Loading ---
+    async function fetchUser() {
+        try {
+            const res = await fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${token}` } });
+            currentUser = (await res.json()).user;
+            if (currentUser.role === 'employer') document.getElementById('btnEditTask').style.display = 'block';
+        } catch(e) {}
+    }
+
+    async function loadTask() {
         try {
             const res = await fetch(`/api/tasks/${taskId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (!res.ok) throw new Error('Failed to load task');
             const data = await res.json();
             currentTask = data.task;
-            renderTask(data.task);
-        } catch (e) {
-            console.error(e);
-            showToast('Error loading task details', '#ef4444');
-        }
+            renderTask(currentTask);
+        } catch(e) {}
     }
 
-    function renderTask(task) {
-        // Text Content
-        document.getElementById('task-title').textContent = task.title;
-        document.getElementById('task-description').innerHTML = (task.description || 'No description provided.').replace(/\n/g, '<br>');
+    function renderTask(t) {
+        document.getElementById('task-title').textContent = t.title;
+        document.getElementById('task-desc').innerHTML = t.description ? t.description.replace(/\n/g, '<br>') : 'No description';
+        document.getElementById('task-priority').innerHTML = `<span class="badge bg-secondary">${t.priority.toUpperCase()}</span>`;
         
-        // Header Meta
-        document.getElementById('task-meta-header').innerHTML = `
-            <span class="badge bg-light text-muted border me-2">Created ${formatDate(task.createdAt)}</span>
-        `;
+        // FIX: Readable Date Format
+        if (t.due_date) {
+            const d = new Date(t.due_date);
+            document.getElementById('task-due').textContent = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        } else {
+            document.getElementById('task-due').textContent = '-';
+        }
 
-        // Status & Priority Badges
-        document.getElementById('info-task-id').textContent = `TSK-${task.id.substring(0,6).toUpperCase()}`;
-        document.getElementById('info-status').innerHTML = `<span class="badge ${getStatusClass(task.status)}">${formatStatus(task.status)}</span>`;
-        document.getElementById('info-priority').innerHTML = `<span class="badge ${getPriorityBadge(task.priority)}">${task.priority.toUpperCase()}</span>`;
-        document.getElementById('info-due-date').textContent = task.due_date ? formatDate(task.due_date) : 'No due date';
-        document.getElementById('info-updated').textContent = formatDateTime(task.updatedAt);
+        document.getElementById('task-assignee').textContent = t.assignee?.full_name || 'Unassigned';
+        document.getElementById('task-creator').textContent = t.creator?.full_name || 'Unknown';
 
-        // Assignee & Creator with role badges
-        /**
-         * Renders a user avatar with name and optional role badge
-         * @param {Object} user - User object with profile info
-         * @param {string} fallbackText - Text to show if user is null
-         * @param {string} role - 'manager' | 'employee' | null for no badge
-         */
-        const renderUser = (user, fallbackText, role = null) => {
-            if (!user) return `<span class="text-muted">${fallbackText}</span>`;
-            const imgUrl = user.profile_picture_url || '/build/assets/images/faces/1.jpg';
-            
-            // Role badge HTML based on role parameter
-            let roleBadge = '';
-            if (role === 'manager') {
-                roleBadge = '<span class="role-badge-manager ms-2">Manager</span>';
-            } else if (role === 'employee') {
-                roleBadge = '<span class="role-badge-employee ms-2">Assigned</span>';
+        // Acceptance Logic
+        const badge = document.getElementById('status-badge');
+        const box = document.getElementById('acceptance-box');
+        
+        if (t.is_accepted) {
+            badge.innerHTML = `<span class="badge bg-success"><i class="ri-check-double-line"></i> Accepted</span>`;
+            box.style.display = 'none';
+        } else {
+            badge.innerHTML = `<span class="badge bg-secondary">Pending</span>`;
+            // Show accept button only if I am the assignee
+            if (currentUser.id === t.assigned_to) {
+                box.style.display = 'block';
             }
-            
-            return `
-                <div class="d-flex align-items-center">
-                    <span class="avatar avatar-sm avatar-rounded me-2">
-                        <img src="${imgUrl}" alt="">
-                    </span>
-                    <span class="fw-medium">${escapeHtml(user.full_name)}</span>
-                    ${roleBadge}
-                </div>`;
-        };
-        
-        // Show creator as "Manager" and assignee as "Assigned"
-        document.getElementById('info-assigned-to').innerHTML = renderUser(task.assignee, 'Unassigned', 'employee');
-        document.getElementById('info-created-by').innerHTML = renderUser(task.creator, 'Unknown', 'manager');
+        }
 
-        // Acceptance Logic - Only show Accept button to the assigned employee
-        const myId = currentUser?.id;
-        const isAssignedToMe = task.assigned_to === myId;
-        
-        console.log('[Accept Task Debug]', {
-            myId,
-            assigned_to: task.assigned_to,
-            isAssignedToMe,
-            is_accepted: task.is_accepted
-        });
-        
-        if (isAssignedToMe && !task.is_accepted) {
-            document.getElementById('acceptance-section').style.display = 'flex';
+        // Attachments
+        const attDiv = document.getElementById('attachments-container');
+        if (t.attachments?.length) {
+            attDiv.innerHTML = t.attachments.map(a => `
+                <a href="${a.url}" target="_blank" class="btn btn-sm btn-dark border border-secondary">
+                    <i class="ri-attachment-2"></i> ${a.file_name}
+                </a>
+            `).join('');
         } else {
-            document.getElementById('acceptance-section').style.display = 'none';
+            attDiv.innerHTML = '<span class="text-muted fs-12">No files</span>';
         }
-        
-        if (task.is_accepted) {
-            document.getElementById('acceptance-badge-area').innerHTML = `<span class="badge bg-success"><i class="ri-check-line me-1"></i>Accepted</span>`;
-        } else {
-            document.getElementById('acceptance-badge-area').innerHTML = `<span class="badge bg-warning text-dark">Pending Acceptance</span>`;
-        }
-        
-        // Render attachments if available
-        renderAttachments(task.attachments || []);
-        
-        // Apply role-based UI visibility (hide/show Edit button based on user role)
-        applyRoleBasedUI();
-    }
-    
-    /**
-     * Renders task attachments as clickable links
-     */
-    function renderAttachments(attachments) {
-        const container = document.getElementById('attachments-list');
-        if (!container) return;
-        
-        if (!attachments || attachments.length === 0) {
-            container.innerHTML = '<li class="text-muted text-center py-2 fs-13">No attachments available.</li>';
-            return;
-        }
-        
-        container.innerHTML = attachments.map(att => {
-            const fileName = att.file_name || att.url?.split('/').pop() || 'File';
-            const fileUrl = att.url || att.file_url || att;
-            const icon = getFileIcon(fileName);
-            
-            return `
-                <li class="list-group-item d-flex align-items-center gap-2">
-                    <i class="${icon} fs-18"></i>
-                    <div class="flex-fill">
-                        <a href="${fileUrl}" target="_blank" class="fw-medium text-primary">${escapeHtml(fileName)}</a>
-                        ${att.file_size ? `<small class="text-muted d-block">${formatFileSize(att.file_size)}</small>` : ''}
-                    </div>
-                    <a href="${fileUrl}" target="_blank" class="btn btn-sm btn-light" title="Download">
-                        <i class="ri-download-line"></i>
-                    </a>
-                </li>
-            `;
-        }).join('');
     }
 
     async function acceptTask() {
-        const btn = document.getElementById('btnAcceptTask');
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Accepting...';
-        btn.disabled = true;
-        
+        const btn = document.getElementById('btnAccept');
+        btn.innerHTML = '...'; btn.disabled = true;
         try {
-            const res = await fetch(`/api/tasks/${taskId}/accept`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (res.ok) {
-                showToast('Task Accepted Successfully', '#22c55e');
-                loadTaskDetail(); // Refresh UI
-            } else {
-                const error = await res.json();
-                showToast(error.message || 'Failed to accept task', '#ef4444');
-            }
-        } catch (e) { 
-            console.error('Accept task error:', e);
-            showToast('Failed to accept task', '#ef4444'); 
-        } finally {
-            btn.innerHTML = originalHtml;
-            btn.disabled = false;
-        }
+            await fetch(`/api/tasks/${taskId}/accept`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } });
+            loadTask();
+        } catch(e) { btn.innerHTML = 'Accept'; btn.disabled = false; }
     }
 
-    // --- Comment & Reply Logic (Facebook Style) ---
-
-    async function loadComments() {
-        try {
-            const res = await fetch(`/api/tasks/${taskId}/comments`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (res.ok) {
-                const data = await res.json();
-                const comments = data.comments || [];
-                document.getElementById('comment-count-badge').textContent = `${comments.length} Comments`;
-                renderCommentsTree(comments);
-            }
-        } catch (e) { console.error(e); }
+    // --- Chat Logic ---
+    async function loadMessages() {
+        const res = await fetch(`/api/tasks/${taskId}/comments`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        document.getElementById('msg-count').textContent = data.comments.length;
+        renderMessages(data.comments);
     }
 
-    // This function handles the nesting visual logic
-    function renderCommentsTree(comments) {
-        const container = document.getElementById('comments-list');
-        
-        if (comments.length === 0) {
-            container.innerHTML = `<div class="text-center text-muted my-4"><i class="ri-chat-1-line fs-24 d-block mb-2"></i>No comments yet. Be the first to say something!</div>`;
+    function renderMessages(msgs) {
+        const container = document.getElementById('chat-thread');
+        if (!msgs.length) {
+            container.innerHTML = '<div class="text-center text-muted mt-5 opacity-50">No messages yet. Start the conversation!</div>';
             return;
         }
 
-        // Helper to generate HTML for a single comment and its children
-        const createCommentHTML = (c) => {
-            const authorImg = c.author?.profile_picture_url || '/build/assets/images/faces/1.jpg';
-            const authorName = escapeHtml(c.author?.full_name || 'User');
+        container.innerHTML = msgs.map(m => {
+            const isMe = m.author.id === currentUser.id;
+            const avatar = m.author.profile_picture_url || '/build/assets/images/faces/9.jpg';
             
-            // Check if this comment author is the task creator (manager)
-            const isTaskCreator = currentTask?.creator?.id === c.author?.id || 
-                                  currentTask?.created_by === c.author?.id;
-            const roleBadgeHtml = isTaskCreator ? 
-                '<span class="role-badge-manager ms-1">Manager</span>' : 
-                '<span class="role-badge-employee ms-1">Team</span>';
+            // Parse Content (Handle Brackets/Images)
+            let content = m.content || "";
+            let mediaHtml = "";
             
-            // Process content - convert markdown links to clickable HTML
-            let contentHtml = escapeHtml(c.content).replace(/\n/g, '<br>');
+            // Regex to find [Attachment: name](url)
+            // Updated regex to handle potentially nested brackets if any slipped through, 
+            // but primarily relying on the Sanitizer in sendMessage()
+            const regex = /\[(Attachment|Image): (.*?)\]\((.*?)\)/g;
             
-            // Convert [Attachment: filename](url) to clickable link with icon
-            contentHtml = contentHtml.replace(
-                /\[Attachment: ([^\]]+)\]\(([^)]+)\)/g,
-                '<a href="$2" target="_blank" class="d-inline-flex align-items-center gap-1 text-primary"><i class="ri-attachment-2"></i>$1</a>'
-            );
-            
-            // Convert regular markdown links [text](url) to HTML
-            contentHtml = contentHtml.replace(
-                /\[([^\]]+)\]\(([^)]+)\)/g,
-                '<a href="$2" target="_blank" class="text-primary">$1</a>'
-            );
+            content = content.replace(regex, (match, type, name, url) => {
+                const ext = url.split('.').pop().toLowerCase().split('?')[0];
+                if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+                    mediaHtml += `<img src="${url}" class="comment-image-preview" onclick="window.open('${url}')">`;
+                } else {
+                    mediaHtml += `<a href="${url}" target="_blank" class="comment-file-link"><i class="ri-file-text-line"></i> ${name}</a>`;
+                }
+                return ""; // Remove markdown from text
+            });
 
             return `
-            <div class="comment-item" id="comment-${c.id}">
-                <div class="d-flex align-items-start gap-2">
-                    <img src="${authorImg}" class="avatar avatar-sm avatar-rounded rounded-circle" alt="img">
-                    
-                    <div class="flex-fill">
-                        <div class="comment-bubble">
-                            <div class="fw-bold fs-13 text-dark mb-1">
-                                ${authorName}${roleBadgeHtml}
-                            </div>
-                            <div class="fs-13 text-dark">${contentHtml}</div>
-                        </div>
-
-                        <div class="comment-actions d-flex align-items-center">
-                            <span class="text-muted me-3">${timeAgo(c.createdAt)}</span>
-                            <a onclick="voteComment('${c.id}', 'like')" class="${c.current_user_vote === 'like' ? 'text-primary' : ''}">Like${c.likes_count > 0 ? ` (${c.likes_count})` : ''}</a>
-                            <a onclick="openEmojiPicker('${c.id}')" title="Add Reaction"><i class="ri-emotion-line"></i></a>
-                            <a onclick="toggleReplyForm('${c.id}')">Reply</a>
-                        </div>
-
-                        <div id="reply-form-${c.id}" class="reply-input-container" style="display:none;">
-                            <div class="d-flex gap-2 align-items-center">
-                                <img src="/build/assets/images/faces/9.jpg" class="avatar-sm-custom rounded-circle" alt="">
-                                <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control rounded-pill bg-light border-0 px-3" id="reply-input-${c.id}" placeholder="Write a reply..." onkeydown="if(event.key==='Enter'){event.preventDefault();postReply('${c.id}');}">
-                                    <button class="btn btn-link text-muted" onclick="triggerFileUpload('${c.id}')"><i class="bi bi-paperclip"></i></button>
-                                    <button class="btn btn-primary-light rounded-pill" onclick="postReply('${c.id}')"><i class="ri-send-plane-fill"></i></button>
-                                </div>
-                            </div>
-                            <div id="file-preview-${c.id}" class="ms-5 mt-1"></div>
-                        </div>
-
-                        ${c.replies && c.replies.length > 0 ? `
-                            <div class="reply-list">
-                                ${c.replies.map(reply => createCommentHTML(reply)).join('')}
-                            </div>
-                        ` : ''}
+            <div class="comment-item" style="flex-direction: ${isMe ? 'row-reverse' : 'row'};">
+                <img src="${avatar}" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-header" style="justify-content: ${isMe ? 'flex-end' : 'flex-start'}">
+                        <span class="comment-author">${m.author.full_name}</span>
+                        <span class="comment-time">${new Date(m.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div class="comment-bubble" style="${isMe ? 'background: #3b82f6; border-color: #3b82f6; border-radius: 12px 0 12px 12px;' : ''}">
+                        <div class="comment-text">${content}</div>
+                        ${mediaHtml}
                     </div>
                 </div>
             </div>`;
-        };
-
-        container.innerHTML = comments.map(c => createCommentHTML(c)).join('');
+        }).join('');
+        
+        // Scroll to bottom
+        container.scrollTop = container.scrollHeight;
     }
 
-    // Post Main Comment (Parent)
-    async function postComment() {
-        const input = document.getElementById('main-comment-input');
-        const content = input.value.trim();
-        await submitComment(content, null, 'main'); // null parentId
+    // --- Input Handling ---
+    function toggleEmoji() {
+        const picker = document.getElementById('emoji-picker');
+        picker.style.display = picker.style.display === 'none' ? 'grid' : 'none';
     }
 
-    // Post Reply (Child)
-    async function postReply(parentId) {
-        const input = document.getElementById(`reply-input-${parentId}`);
-        const content = input.value.trim();
-        await submitComment(content, parentId, parentId);
+    function addEmoji(emoji) {
+        const input = document.getElementById('chat-input');
+        input.value += emoji;
+        input.focus();
     }
 
-    // Unified Submit Logic
-    async function submitComment(content, parentId, contextId) {
-        if (!content && !pendingFiles[contextId]) return;
+    function triggerFile() {
+        document.getElementById('hidden-file').click();
+    }
 
-        // Visual Feedback
-        const btn = parentId ? 
-            document.querySelector(`#reply-form-${parentId} button:last-child`) : 
-            document.getElementById('btnPostComment');
+    function handleFile(input) {
+        if (input.files[0]) {
+            selectedFile = input.files[0];
+            const area = document.getElementById('file-preview');
+            area.style.display = 'block';
+            
+            let icon = '<i class="ri-file-text-line"></i>';
+            if (selectedFile.type.startsWith('image/')) {
+                icon = `<img src="${URL.createObjectURL(selectedFile)}">`;
+            }
+
+            area.innerHTML = `
+                <div class="preview-chip">
+                    ${icon} <span>${selectedFile.name}</span>
+                    <i class="ri-close-line ms-2 cursor-pointer" onclick="clearFile()"></i>
+                </div>
+            `;
+        }
+    }
+
+    function clearFile() {
+        selectedFile = null;
+        document.getElementById('file-preview').style.display = 'none';
+        document.getElementById('hidden-file').value = '';
+    }
+
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        const btn = document.getElementById('btnSend');
+        
+        if (!text && !selectedFile) return;
+
+        // Loading UI
         const originalIcon = btn.innerHTML;
-        btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+        btn.innerHTML = `<i class="ri-loader-4-line spin"></i>`;
         btn.disabled = true;
 
         try {
-            let finalContent = content;
+            let finalContent = text;
 
-            // Handle File Upload if exists
-            if (pendingFiles[contextId]) {
-                const fileUrl = await uploadFile(pendingFiles[contextId]);
-                if (fileUrl) {
-                    finalContent += `\n[Attachment: ${pendingFiles[contextId].name}](${fileUrl})`;
+            if (selectedFile) {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                const upRes = await fetch('/api/tasks/upload', {
+                    method: 'POST', 
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                
+                if (upRes.ok) {
+                    const data = await upRes.json();
+                    // --- CRITICAL FIX: Sanitize filename ---
+                    // Remove brackets [] to prevent Markdown parser breakage
+                    const safeName = selectedFile.name.replace(/[\[\]]/g, '').trim();
+                    finalContent += `\n\n[Attachment: ${safeName}](${data.url})`;
                 }
             }
 
-            const payload = { content: finalContent };
-            if (parentId) payload.parent_id = parentId;
-
-            const res = await fetch(`/api/tasks/${taskId}/comments`, {
+            await fetch(`/api/tasks/${taskId}/comments`, {
                 method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: finalContent })
             });
 
-            if (res.ok) {
-                // Clear inputs immediately (optimistic)
-                if (parentId) {
-                    document.getElementById(`reply-input-${parentId}`).value = '';
-                    toggleReplyForm(parentId); // Hide form
-                } else {
-                    document.getElementById('main-comment-input').value = '';
-                }
-                
-                // Clear file
-                delete pendingFiles[contextId];
-                const previewEl = document.getElementById(`file-preview-${contextId}`);
-                if (previewEl) previewEl.innerHTML = '';
+            // Cleanup
+            input.value = '';
+            input.style.height = 'auto';
+            clearFile();
+            loadMessages(); // Refresh UI
 
-                // No success toast - just refresh comments silently
-                loadComments();
-            } else {
-                throw new Error('Failed');
-            }
         } catch (e) {
-            console.error(e);
-            showToast('Failed to post comment', '#ef4444');
+            Toastify({ text: "Failed to send", backgroundColor: "#ef4444" }).showToast();
         } finally {
             btn.innerHTML = originalIcon;
             btn.disabled = false;
         }
-    }
-
-    async function voteComment(commentId, type) {
-        // Optimistic UI - update the button immediately
-        const likeLink = document.querySelector(`#comment-${commentId} .comment-actions a:first-of-type`);
-        if (likeLink) {
-            likeLink.classList.toggle('text-primary');
-        }
-        
-        try {
-            await fetch(`/api/tasks/comments/${commentId}/vote`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type })
-            });
-            // Silent refresh - no toast
-            loadComments();
-        } catch(e) { 
-            console.error(e);
-            showToast('Failed to update reaction', '#ef4444');
-        }
-    }
-
-    function toggleReplyForm(id) {
-        const el = document.getElementById(`reply-form-${id}`);
-        if(el.style.display === 'none') {
-            el.style.display = 'block';
-            document.getElementById(`reply-input-${id}`).focus();
-        } else {
-            el.style.display = 'none';
-        }
-    }
-
-    // --- File Handling ---
-    function triggerFileUpload(contextId) {
-        const input = document.getElementById('global-file-input');
-        input.dataset.context = contextId;
-        input.click();
-    }
-
-    function handleFileSelect(e) {
-        const file = e.target.files[0];
-        const contextId = e.target.dataset.context;
-        if (!file || !contextId) return;
-
-        pendingFiles[contextId] = file;
-
-        // Show preview
-        const previewEl = document.getElementById(`file-preview-${contextId}`);
-        previewEl.innerHTML = `
-            <div class="badge bg-light text-dark border p-2">
-                <i class="ri-attachment-2"></i> ${file.name}
-                <i class="ri-close-circle-line ms-2 cursor-pointer text-danger" onclick="removePendingFile('${contextId}')"></i>
-            </div>
-        `;
-        e.target.value = ''; // Reset input
-    }
-
-    window.removePendingFile = function(contextId) {
-        delete pendingFiles[contextId];
-        document.getElementById(`file-preview-${contextId}`).innerHTML = '';
-    }
-
-    async function uploadFile(file) {
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            const res = await fetch('/api/tasks/upload', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData
-            });
-            if(res.ok) return (await res.json()).url;
-        } catch(e) { console.error(e); }
-        return null;
-    }
-
-    // --- Utilities ---
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text || '';
-        return div.innerHTML;
-    }
-
-    function showToast(text, color) {
-        Toastify({ text, backgroundColor: color, duration: 3000, close: true }).showToast();
-    }
-
-    function getStatusClass(status) {
-        const map = { todo: 'bg-primary-transparent', in_progress: 'bg-info-transparent', completed: 'bg-success-transparent' };
-        return map[status] || 'bg-secondary-transparent';
-    }
-
-    function formatStatus(s) {
-        return s ? s.replace('_', ' ').toUpperCase() : '-';
-    }
-
-    function getPriorityBadge(p) {
-        const map = { high: 'bg-danger-transparent text-danger', medium: 'bg-warning-transparent text-warning', low: 'bg-success-transparent text-success' };
-        return map[p] || 'bg-light text-dark';
-    }
-
-    function formatDate(d) {
-        if(!d) return '';
-        return new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-    }
-
-    function formatDateTime(d) {
-        if(!d) return '';
-        return new Date(d).toLocaleString('en-GB');
-    }
-
-    function timeAgo(dateParam) {
-        if (!dateParam) return null;
-        const date = new Date(dateParam);
-        const today = new Date();
-        const seconds = Math.round((today - date) / 1000);
-        const minutes = Math.round(seconds / 60);
-        const hours = Math.round(minutes / 60);
-        const days = Math.round(hours / 24);
-
-        if (seconds < 60) return 'Just now';
-        else if (minutes < 60) return `${minutes}m`;
-        else if (hours < 24) return `${hours}h`;
-        else if (days < 7) return `${days}d`;
-        else return formatDate(date);
-    }
-
-    // =========================================================================
-    // EMOJI PICKER MODAL FUNCTIONS
-    // =========================================================================
-    let currentEmojiCommentId = null;
-
-    /**
-     * Opens the emoji picker modal for a specific comment
-     * @param {string} commentId - The ID of the comment to add emoji to
-     */
-    function openEmojiPicker(commentId) {
-        currentEmojiCommentId = commentId;
-        document.getElementById('emojiPickerModal').classList.add('show');
-    }
-
-    /**
-     * Closes the emoji picker modal
-     */
-    function closeEmojiPicker() {
-        currentEmojiCommentId = null;
-        document.getElementById('emojiPickerModal').classList.remove('show');
-    }
-
-    /**
-     * Handles emoji selection - sends reaction to server
-     * Currently uses the like/dislike system, but emoji type is stored
-     * @param {string} emoji - The selected emoji
-     */
-    async function selectEmoji(emoji) {
-        if (!currentEmojiCommentId) return;
-        
-        try {
-            // For now, map common emojis to like/dislike
-            // In future, backend can be extended to support emoji types
-            const type = ['👎', '😢', '😡'].includes(emoji) ? 'dislike' : 'like';
-            
-            await fetch(`/api/tasks/comments/${currentEmojiCommentId}/vote`, {
-                method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ type, emoji }) // Pass emoji for future use
-            });
-            
-            // No success toast - silent update
-            closeEmojiPicker();
-            loadComments(); // Refresh to show new reaction
-        } catch (e) {
-            console.error('Emoji reaction error:', e);
-            showToast('Failed to add reaction', '#ef4444');
-        }
-    }
-
-    // Close emoji modal when clicking outside
-    document.getElementById('emojiPickerModal').addEventListener('click', (e) => {
-        if (e.target.classList.contains('emoji-picker-modal')) {
-            closeEmojiPicker();
-        }
-    });
-
-    // =========================================================================
-    // FILE UPLOAD MODAL FUNCTIONS
-    // =========================================================================
-    let currentUploadContextId = null;
-    let modalSelectedFile = null;
-
-    /**
-     * Opens the file upload modal instead of triggering file input directly
-     * @param {string} contextId - 'main' for new comment, or parent comment ID for replies
-     */
-    function triggerFileUpload(contextId) {
-        currentUploadContextId = contextId;
-        modalSelectedFile = null;
-        
-        // Reset modal state
-        document.getElementById('modalFilePreview').style.display = 'none';
-        document.getElementById('modalFilePreview').innerHTML = '';
-        document.getElementById('modalFileInput').value = '';
-        document.getElementById('btnConfirmUpload').disabled = true;
-        
-        // Show modal
-        document.getElementById('fileUploadModal').classList.add('show');
-    }
-
-    /**
-     * Closes the file upload modal and clears state
-     */
-    function closeFileUploadModal() {
-        currentUploadContextId = null;
-        modalSelectedFile = null;
-        document.getElementById('fileUploadModal').classList.remove('show');
-    }
-
-    /**
-     * Confirms the file selection and adds it to pending files
-     */
-    function confirmFileUpload() {
-        if (!modalSelectedFile || !currentUploadContextId) return;
-        
-        pendingFiles[currentUploadContextId] = modalSelectedFile;
-        
-        // Show preview in the comment area
-        const previewEl = document.getElementById(`file-preview-${currentUploadContextId}`);
-        if (previewEl) {
-            previewEl.innerHTML = `
-                <div class="badge bg-light text-dark border p-2">
-                    <i class="ri-attachment-2"></i> ${modalSelectedFile.name}
-                    <i class="ri-close-circle-line ms-2 cursor-pointer text-danger" onclick="removePendingFile('${currentUploadContextId}')"></i>
-                </div>
-            `;
-        }
-        
-        // No success toast - just close modal
-        closeFileUploadModal();
-    }
-
-    // Handle file selection in modal
-    document.getElementById('modalFileInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        modalSelectedFile = file;
-        
-        // Show preview in modal
-        const previewContainer = document.getElementById('modalFilePreview');
-        previewContainer.style.display = 'block';
-        
-        if (file.type.startsWith('image/')) {
-            // Image preview
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                previewContainer.innerHTML = `
-                    <div class="file-preview-item">
-                        <img src="${event.target.result}" alt="Preview">
-                        <div class="flex-fill">
-                            <div class="fw-medium">${escapeHtml(file.name)}</div>
-                            <small class="text-muted">${formatFileSize(file.size)}</small>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-light" onclick="clearModalFile()">
-                            <i class="ri-close-line"></i>
-                        </button>
-                    </div>
-                `;
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // Non-image file preview
-            previewContainer.innerHTML = `
-                <div class="file-preview-item">
-                    <div class="file-icon">
-                        <i class="${getFileIcon(file.name)}"></i>
-                    </div>
-                    <div class="flex-fill">
-                        <div class="fw-medium">${escapeHtml(file.name)}</div>
-                        <small class="text-muted">${formatFileSize(file.size)}</small>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-light" onclick="clearModalFile()">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-            `;
-        }
-        
-        document.getElementById('btnConfirmUpload').disabled = false;
-    });
-
-    /**
-     * Clears the selected file in modal
-     */
-    function clearModalFile() {
-        modalSelectedFile = null;
-        document.getElementById('modalFilePreview').style.display = 'none';
-        document.getElementById('modalFilePreview').innerHTML = '';
-        document.getElementById('modalFileInput').value = '';
-        document.getElementById('btnConfirmUpload').disabled = true;
-    }
-
-    // Drag and drop handling for file upload modal
-    const dropZone = document.getElementById('fileDropZone');
-    
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('dragover');
-    });
-    
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.classList.remove('dragover');
-    });
-    
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            // Trigger the same handling as file input
-            const fileInput = document.getElementById('modalFileInput');
-            fileInput.files = files;
-            fileInput.dispatchEvent(new Event('change'));
-        }
-    });
-
-    // Close file modal when clicking outside
-    document.getElementById('fileUploadModal').addEventListener('click', (e) => {
-        if (e.target.classList.contains('file-upload-modal')) {
-            closeFileUploadModal();
-        }
-    });
-
-    // =========================================================================
-    // ROLE-BASED UI HELPERS
-    // =========================================================================
-    
-    /**
-     * Determines user's role level for task management
-     * Uses the task data to determine if current user is manager or employee
-     * 
-     * ROLE DEFINITIONS:
-     * - 'manager': User created the task (task.created_by === user.id) OR is company owner
-     * - 'assignee': User is assigned to the task (task.assigned_to === user.id)
-     * - 'viewer': User can view but has limited permissions
-     * 
-     * @returns {string} 'manager' | 'assignee' | 'viewer'
-     */
-    function getCurrentUserTaskRole() {
-        if (!currentTask || !currentUser) return 'viewer';
-        
-        const myId = currentUser.id;
-        
-        // Check if user created the task (manager)
-        if (currentTask.created_by === myId) return 'manager';
-        if (currentTask.creator?.id === myId) return 'manager';
-        
-        // Check if user is assigned to the task (employee/assignee)
-        if (currentTask.assigned_to === myId) return 'assignee';
-        if (currentTask.assignee?.id === myId) return 'assignee';
-        
-        return 'viewer';
-    }
-
-    /**
-     * Updates UI elements based on user's role
-     * Hides manager-only controls for non-managers
-     */
-    function applyRoleBasedUI() {
-        const role = getCurrentUserTaskRole();
-        const isManager = role === 'manager';
-        
-        // Show/hide edit button based on role
-        const editBtn = document.getElementById('btnEditTask');
-        if (editBtn) {
-            editBtn.style.display = isManager ? 'inline-flex' : 'none';
-        }
-        
-        console.log(`[Role System] Current user role: ${role}`);
-    }
-
-    /**
-     * Returns a role badge HTML for display next to user names
-     * @param {boolean} isCreator - Whether this user is the task creator
-     * @returns {string} HTML for the role badge
-     */
-    function getRoleBadge(isCreator) {
-        if (isCreator) {
-            return '<span class="role-badge-manager ms-2">Manager</span>';
-        }
-        return '<span class="role-badge-employee ms-2">Team Member</span>';
-    }
-
-    // =========================================================================
-    // UTILITY HELPERS
-    // =========================================================================
-
-    /**
-     * Formats file size to human readable string
-     * @param {number} bytes - File size in bytes
-     * @returns {string} Formatted size (e.g., "1.5 MB")
-     */
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
-    /**
-     * Returns appropriate icon class for file type
-     * @param {string} filename - The file name
-     * @returns {string} Icon class
-     */
-    function getFileIcon(filename) {
-        const ext = filename.split('.').pop().toLowerCase();
-        const iconMap = {
-            'pdf': 'ri-file-pdf-line text-danger',
-            'doc': 'ri-file-word-line text-primary',
-            'docx': 'ri-file-word-line text-primary',
-            'xls': 'ri-file-excel-line text-success',
-            'xlsx': 'ri-file-excel-line text-success',
-            'zip': 'ri-file-zip-line text-warning',
-            'txt': 'ri-file-text-line text-secondary',
-            'jpg': 'ri-image-line text-info',
-            'jpeg': 'ri-image-line text-info',
-            'png': 'ri-image-line text-info',
-            'gif': 'ri-image-line text-info'
-        };
-        return iconMap[ext] || 'ri-file-line text-secondary';
     }
 </script>

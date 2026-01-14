@@ -102,7 +102,12 @@ const sendTeamInvitation = async ({ to, inviteeName, inviterName, companyName, t
                                                 <td style="padding: 8px 0; color: #666;">🔑 Temporary Password:</td>
                                                 <td style="padding: 8px 0; color: #333; font-weight: 500; font-family: monospace; background: #fff3cd; padding: 4px 8px; border-radius: 4px;">${tempPassword}</td>
                                             </tr>
-                                            ` : ''}
+                                            ` : `
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #666;">🔑 Password:</td>
+                                                <td style="padding: 8px 0; color: #333; font-style: italic;">Use your existing account password</td>
+                                            </tr>
+                                            `}
                                         </table>
                                     </div>
                                     

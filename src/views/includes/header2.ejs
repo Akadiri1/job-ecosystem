@@ -333,6 +333,39 @@
              border-left-color: var(--primary-color, #4466f2);
         }
 
+        /* SOFTER DARK MODE OVERRIDES */
+        [data-theme-mode="dark"] {
+            --body-bg: #0f172a;      /* Slate 900 */
+            --custom-white: #1e293b; /* Slate 800 */
+            --border-color: rgba(255,255,255,0.08);
+            --header-bg: #1e293b;    /* Match Cards */
+            --menu-bg: #1e293b;      /* Match Cards */
+        }
+        [data-theme-mode="dark"] body {
+            background-color: var(--body-bg) !important;
+            background-image: none !important;
+        }
+        [data-theme-mode="dark"] .app-header {
+            background-color: var(--header-bg) !important;
+            background-image: none !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+        [data-theme-mode="dark"] .app-sidebar {
+            background-color: var(--body-bg) !important; /* Match Body to "remove" distinct color */
+            background-image: none !important;
+            border-right: 1px solid var(--border-color) !important;
+        }
+        [data-theme-mode="dark"] .card {
+            background-color: var(--custom-white) !important;
+            background-image: none !important;
+        }
+        /* Ensure Inputs match card bg but slightly darker/lighter */
+        [data-theme-mode="dark"] .form-control {
+            background-color: #0f172a !important; /* Match Body */
+            border-color: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
         /* ============================================
            GLOBAL MODERN UI STYLES
            ============================================ */
@@ -447,6 +480,21 @@
         
         .card.custom-card:hover {
             box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        /* Light Mode Form Borders & Visibility Fixes */
+        [data-theme-mode="light"] .card.custom-card,
+        [data-theme-mode="light"] .company-card,
+        [data-theme-mode="light"] .profile-card {
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+        [data-theme-mode="light"] .form-control {
+            border: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        [data-theme-mode="light"] hr,
+        [data-theme-mode="light"] .border-bottom {
+            border-color: #e2e8f0 !important;
         }
         
         .card-header {
@@ -1552,14 +1600,16 @@
 							<a href="javascript:void(0);" class="header-link layout-setting">
 								<span class="light-layout">
 									<!-- Start::header-link-icon -->
-									<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<!-- Moon Icon (Purple for Premium/Night feel) -->
+									<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" style="color: #7b1fa2;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 										<path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
 									</svg>
 									<!-- End::header-link-icon -->
 								</span>
 								<span class="dark-layout">
 									<!-- Start::header-link-icon -->
-									<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<!-- Sun Icon (Yellow/Amber for Day/Light feel) -->
+									<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 header-link-icon" style="color: #ffd700;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 										<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
 									</svg>
 									<!-- End::header-link-icon -->
@@ -1745,13 +1795,13 @@
     </li>
     
     <li>
-        <a class="dropdown-item d-flex align-items-center" href="/profile">
+        <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="goToProfile()">
             <i class="ri-user-line lh-1 p-1 rounded-circle bg-primary-transparent text-primary me-2 fs-14"></i>Profile
         </a>
     </li>
     
     <li>
-        <a class="dropdown-item d-flex align-items-center" href="/settings">
+        <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" onclick="goToSettings()">
             <i class="ri-settings-5-line lh-1 p-1 rounded-circle bg-primary-transparent text-primary me-2 fs-14"></i>Settings
         </a>
     </li>
@@ -1900,6 +1950,61 @@
         window.location.href = '/login';
     }
 
+    // Role-Based Navigation Helpers for Header Dropdown
+    async function goToProfile() {
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/login'; return; }
+        
+        try {
+            const res = await fetch('/api/auth/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.user) {
+                const role = data.user.role;
+                if (role === 'employer') {
+                    window.location.href = '/dashboard/employer/company/settings';
+                } else if (role === 'admin') {
+                    window.location.href = '/dashboard/admin/profile';
+                } else if (role === 'employee') {
+                    window.location.href = '/dashboard/employee/profile';
+                } else {
+                    window.location.href = '/dashboard/seeker/profile';
+                }
+            }
+        } catch(e) {
+            console.error('Navigation error:', e);
+        }
+    }
+
+    async function goToSettings() {
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/login'; return; }
+        
+        try {
+            const res = await fetch('/api/auth/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.user) {
+                const role = data.user.role;
+                if (role === 'employer') {
+                    window.location.href = '/dashboard/employer/company/settings';
+                } else if (role === 'admin') {
+                    window.location.href = '/dashboard/admin/settings';
+                } else if (role === 'employee') {
+                    window.location.href = '/dashboard/employee/settings';
+                } else {
+                    window.location.href = '/dashboard/seeker/settings';
+                }
+            }
+        } catch(e) {
+            console.error('Navigation error:', e);
+        }
+    }
+
     // Run immediately
     initDashboard();
     
@@ -1914,8 +2019,8 @@
             });
 
             if (res.status === 401) {
-                localStorage.removeItem('token');
-                window.location.href = '/login';
+                console.warn("Unread count fetch failed (401). Token might be expiring soon.");
+                // Do NOT auto-logout here. Let the main navigation guards handle critical auth failures.
                 return;
             }
             

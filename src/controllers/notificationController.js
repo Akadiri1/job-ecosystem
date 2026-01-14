@@ -108,3 +108,65 @@ exports.createNotification = async (models, data) => {
         console.error("Failed to create notification:", e);
     }
 };
+// [NEW] Get Notification Preferences
+exports.getPreferences = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { NotificationPreference } = req.db_models;
+
+        // Find or Create default preferences
+        const [prefs, created] = await NotificationPreference.findOrCreate({
+            where: { user_id: userId },
+            defaults: {
+                 email_alerts: true,
+                 push_alerts: true,
+                 in_app_alerts: true,
+                 sms_alerts: false
+            }
+        });
+
+        res.json({ success: true, preferences: prefs });
+    } catch (e) {
+        console.error('Get Preferences Error:', e);
+        res.status(500).json({ error: 'Failed to fetch preferences' });
+    }
+};
+
+// [NEW] Update Notification Preferences
+exports.updatePreferences = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { NotificationPreference } = req.db_models;
+        const updates = req.body; // e.g., { email_alerts: false }
+
+        const prefs = await NotificationPreference.findOne({ where: { user_id: userId } });
+        
+        if (!prefs) {
+            // Should exist from getPreferences call, but handle edge case
+            await NotificationPreference.create({
+                user_id: userId,
+                ...updates
+            });
+        } else {
+            // Update only allowed fields to prevent abuse
+            const allowedFields = [
+                'email_alerts', 'push_alerts', 'in_app_alerts', 'sms_alerts',
+                'job_alerts', 'application_updates', 'marketing_emails',
+                'security_email', 'security_sms'
+            ];
+            
+            allowedFields.forEach(field => {
+                if (updates[field] !== undefined) {
+                    prefs[field] = updates[field];
+                }
+            });
+            
+            await prefs.save();
+        }
+
+        res.json({ success: true, message: "Preferences saved" });
+    } catch (e) {
+        console.error('Update Preferences Error:', e);
+        res.status(500).json({ error: 'Failed to update preferences' });
+    }
+};

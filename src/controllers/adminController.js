@@ -358,3 +358,148 @@ exports.getPayments = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
+/**
+ * GET /api/admin/activities
+ * Get all user activities (signup, login, etc.)
+ */
+exports.getUserActivities = async (req, res) => {
+    try {
+        const { UserActivity, User } = req.db_models;
+        const { page = 1, limit = 50, event_type, search, start_date, end_date } = req.query;
+        const offset = (page - 1) * limit;
+        
+        const where = {};
+        
+        // Filter by event type
+        if (event_type && event_type !== 'all') {
+            where.event_type = event_type;
+        }
+        
+        // Filter by date range
+        if (start_date || end_date) {
+            where.createdAt = {};
+            if (start_date) where.createdAt[Op.gte] = new Date(start_date);
+            if (end_date) where.createdAt[Op.lte] = new Date(end_date + 'T23:59:59');
+        }
+        
+        // Build search condition for user
+        let userWhere = {};
+        if (search) {
+            userWhere = {
+                [Op.or]: [
+                    { full_name: { [Op.iLike]: `%${search}%` } },
+                    { email: { [Op.iLike]: `%${search}%` } }
+                ]
+            };
+        }
+        
+        const { count, rows } = await UserActivity.findAndCountAll({
+            where,
+            include: [{
+                model: User,
+                as: 'user',
+                where: search ? userWhere : undefined,
+                attributes: ['id', 'full_name', 'email', 'role', 'phone_number', 'profile_picture_url', 'account_status', 'createdAt', 'last_active_at', 'is_online']
+            }],
+            order: [['createdAt', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
+        
+        res.json({
+            success: true,
+            activities: rows,
+            pagination: {
+                total: count,
+                page: parseInt(page),
+                pages: Math.ceil(count / limit)
+            }
+        });
+    } catch (error) {
+        console.error('Get activities error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+/**
+ * GET /api/admin/activities/stats
+ * Get activity statistics
+ */
+exports.getActivityStats = async (req, res) => {
+    try {
+        const { UserActivity, User } = req.db_models;
+        
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        
+        const [
+            signupsToday, signupsWeek, signupsMonth, signupsTotal,
+            loginsToday, loginsWeek, loginsMonth, loginsTotal,
+            activeUsersToday, onlineNow
+        ] = await Promise.all([
+            // Signups
+            UserActivity.count({ where: { event_type: 'signup', createdAt: { [Op.gte]: todayStart } } }),
+            UserActivity.count({ where: { event_type: 'signup', createdAt: { [Op.gte]: weekStart } } }),
+            UserActivity.count({ where: { event_type: 'signup', createdAt: { [Op.gte]: monthStart } } }),
+            UserActivity.count({ where: { event_type: 'signup' } }),
+            // Logins
+            UserActivity.count({ where: { event_type: 'login', createdAt: { [Op.gte]: todayStart } } }),
+            UserActivity.count({ where: { event_type: 'login', createdAt: { [Op.gte]: weekStart } } }),
+            UserActivity.count({ where: { event_type: 'login', createdAt: { [Op.gte]: monthStart } } }),
+            UserActivity.count({ where: { event_type: 'login' } }),
+            // Active users
+            User.count({ where: { last_active_at: { [Op.gte]: todayStart } } }),
+            User.count({ where: { is_online: true } })
+        ]);
+        
+        res.json({
+            success: true,
+            stats: {
+                signups: { today: signupsToday, week: signupsWeek, month: signupsMonth, total: signupsTotal },
+                logins: { today: loginsToday, week: loginsWeek, month: loginsMonth, total: loginsTotal },
+                activeUsersToday,
+                onlineNow
+            }
+        });
+    } catch (error) {
+        console.error('Get activity stats error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+/**
+ * GET /api/admin/activities/user/:userId
+ * Get all activities for a specific user
+ */
+exports.getUserActivityHistory = async (req, res) => {
+    try {
+        const { UserActivity, User } = req.db_models;
+        const { userId } = req.params;
+        
+        const user = await User.findByPk(userId, {
+            attributes: { exclude: ['password_hash', 'reset_token'] }
+        });
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        
+        const activities = await UserActivity.findAll({
+            where: { user_id: userId },
+            order: [['createdAt', 'DESC']],
+            limit: 100
+        });
+        
+        res.json({
+            success: true,
+            user,
+            activities
+        });
+    } catch (error) {
+        console.error('Get user activity history error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};

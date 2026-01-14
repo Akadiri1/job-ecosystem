@@ -130,6 +130,7 @@ exports.inviteMember = async (req, res) => {
             success: true, 
             message: 'Member added successfully', 
             email_sent: emailSent,
+            generated_password: generatedPassword, // Explicitly return this
             debug_link 
         });
     } catch (error) {
