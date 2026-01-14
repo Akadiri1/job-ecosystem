@@ -1,5 +1,6 @@
 require('dotenv').config();
 const sequelize = require('../config/database');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User')(sequelize);
 
 const ADMIN_EMAIL = 'admin@jobecosystem.com';
@@ -29,6 +30,18 @@ async function resetAdmin() {
         console.log('📧 Email:', ADMIN_EMAIL);
         console.log('🔑 Password:', NEW_PASSWORD);
         console.log('🆔 User ID:', admin.id);
+        
+        // VERIFICATION: Test password comparison
+        const verifyUser = await User.findOne({ where: { email: ADMIN_EMAIL } });
+        const passwordValid = await bcrypt.compare(NEW_PASSWORD, verifyUser.password_hash);
+        console.log('');
+        console.log('🔐 Password Verification:', passwordValid ? '✅ PASS' : '❌ FAIL');
+        console.log('🔒 Hash stored:', verifyUser.password_hash.substring(0, 20) + '...');
+        
+        if (!passwordValid) {
+            console.log('');
+            console.log('⚠️ Password verification failed! This indicates a hashing issue.');
+        }
         
     } catch (error) {
         console.error('❌ Error:', error);
