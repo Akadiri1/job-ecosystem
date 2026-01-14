@@ -166,6 +166,9 @@ UserActivity.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
 const app = express();
 
+// Trust proxy for Render deployment (needed for rate limiting behind reverse proxy)
+app.set('trust proxy', 1);
+
 // --- MIDDLEWARE ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
