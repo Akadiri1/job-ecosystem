@@ -344,7 +344,7 @@ app.get('/dashboard/seeker/profile', (req, res) => res.render('profile', { sideb
 app.get('/dashboard/seeker/ai-coach', (req, res) => res.render('ai-seeker', { sidebar: 'includes/sidebar-seeker' }));
 
 // 5. ADMIN ROUTES (/dashboard/admin/...)
-app.get('/dashboard/admin/users', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/users', (req, res) => res.render('admin-users', { sidebar: 'includes/sidebar-admin' }));
 app.get('/dashboard/admin/companies', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
 app.get('/dashboard/admin/jobs', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
 app.get('/dashboard/admin/subscriptions', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));

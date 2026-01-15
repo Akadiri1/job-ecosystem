@@ -1,0 +1,255 @@
+<%- include('includes/header2') %>
+
+<style>
+.page-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.page-hero h1 { font-weight: 700; font-size: 1.75rem; margin-bottom: 0.5rem; }
+
+.data-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.data-card .card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.data-table { width: 100%; }
+.data-table th { background: rgba(102, 126, 234, 0.05); font-weight: 600; font-size: 0.85rem; padding: 1rem; }
+.data-table td { padding: 0.75rem 1rem; vertical-align: middle; border-bottom: 1px solid rgba(0,0,0,0.03); }
+.data-table tbody tr:hover { background: rgba(102, 126, 234, 0.03); }
+
+.role-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+.role-badge.admin { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.role-badge.employer { background: rgba(102, 126, 234, 0.15); color: #667eea; }
+.role-badge.employee { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.role-badge.job_seeker { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+
+.status-badge { padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+.status-badge.active { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.status-badge.suspended { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+
+.filters-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.filters-row .form-control, .filters-row .form-select { max-width: 200px; }
+
+.pagination-wrapper { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+</style>
+
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+        
+        <div class="page-hero">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="ri-user-line me-2"></i>User Management</h1>
+                    <p class="mb-0 opacity-75">View and manage all platform users</p>
+                </div>
+                <a href="/dashboard/admin" class="btn btn-light btn-sm"><i class="ri-arrow-left-line me-1"></i> Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-row">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by name or email...">
+            <select class="form-select" id="roleFilter">
+                <option value="">All Roles</option>
+                <option value="job_seeker">Job Seekers</option>
+                <option value="employer">Employers</option>
+                <option value="employee">Employees</option>
+                <option value="admin">Admins</option>
+            </select>
+            <select class="form-select" id="statusFilter">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+            </select>
+            <button class="btn btn-primary" onclick="loadUsers()"><i class="ri-filter-line me-1"></i> Filter</button>
+        </div>
+
+        <!-- Users Table -->
+        <div class="data-card">
+            <div class="card-header">
+                <h6 class="mb-0">All Users</h6>
+                <span class="text-muted" id="userCount">Loading...</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Phone</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr><td colspan="6" class="text-center py-4">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <span class="text-muted" id="paginationInfo">-</span>
+                <nav><ul class="pagination pagination-sm mb-0" id="paginationControls"></ul></nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Edit User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <input type="hidden" id="editUserId">
+                <div class="mb-3"><label class="form-label">Full Name</label><input type="text" class="form-control" id="editUserName"></div>
+                <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="editUserEmail"></div>
+                <div class="mb-3"><label class="form-label">Phone</label><input type="tel" class="form-control" id="editUserPhone"></div>
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="editUserRole">
+                        <option value="job_seeker">Job Seeker</option>
+                        <option value="employer">Employer</option>
+                        <option value="employee">Employee</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="editUserStatus">
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveUser()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+let currentPage = 1;
+
+document.addEventListener('DOMContentLoaded', () => { loadUsers(); });
+
+async function loadUsers(page = 1) {
+    currentPage = page;
+    const token = localStorage.getItem('token');
+    const params = new URLSearchParams({
+        page, limit: 20,
+        search: document.getElementById('searchInput').value,
+        role: document.getElementById('roleFilter').value,
+        status: document.getElementById('statusFilter').value
+    });
+    
+    try {
+        const res = await fetch(`/api/admin/users?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderUsers(data.users);
+            document.getElementById('userCount').textContent = `${data.pagination.total} users`;
+            document.getElementById('paginationInfo').textContent = `Page ${data.pagination.page} of ${data.pagination.pages}`;
+            renderPagination(data.pagination);
+        }
+    } catch (e) { console.error(e); }
+}
+
+function renderUsers(users) {
+    const tbody = document.getElementById('usersTableBody');
+    if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No users found</td></tr>'; return; }
+    
+    tbody.innerHTML = users.map(u => `
+        <tr>
+            <td>
+                <div class="d-flex align-items-center">
+                    <img src="${u.profile_picture_url || '/build/assets/images/faces/1.jpg'}" class="user-avatar me-2">
+                    <div><div class="fw-medium">${u.full_name}</div><small class="text-muted">${u.email}</small></div>
+                </div>
+            </td>
+            <td><span class="role-badge ${u.role}">${u.role.replace('_', ' ')}</span></td>
+            <td><span class="status-badge ${u.account_status}">${u.account_status}</span></td>
+            <td>${u.phone_number || '-'}</td>
+            <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser('${u.id}', '${u.full_name}', '${u.email}', '${u.phone_number || ''}', '${u.role}', '${u.account_status}')"><i class="ri-edit-line"></i></button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="ri-delete-bin-line"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderPagination(p) {
+    let html = '';
+    if (p.page > 1) html += `<li class="page-item"><a class="page-link" href="#" onclick="loadUsers(${p.page-1})">Prev</a></li>`;
+    for (let i = 1; i <= Math.min(p.pages, 5); i++) html += `<li class="page-item ${i===p.page?'active':''}"><a class="page-link" href="#" onclick="loadUsers(${i})">${i}</a></li>`;
+    if (p.page < p.pages) html += `<li class="page-item"><a class="page-link" href="#" onclick="loadUsers(${p.page+1})">Next</a></li>`;
+    document.getElementById('paginationControls').innerHTML = html;
+}
+
+function editUser(id, name, email, phone, role, status) {
+    document.getElementById('editUserId').value = id;
+    document.getElementById('editUserName').value = name;
+    document.getElementById('editUserEmail').value = email;
+    document.getElementById('editUserPhone').value = phone;
+    document.getElementById('editUserRole').value = role;
+    document.getElementById('editUserStatus').value = status;
+    new bootstrap.Modal(document.getElementById('editUserModal')).show();
+}
+
+async function saveUser() {
+    const token = localStorage.getItem('token');
+    const id = document.getElementById('editUserId').value;
+    
+    try {
+        const res = await fetch(`/api/admin/users/${id}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                full_name: document.getElementById('editUserName').value,
+                email: document.getElementById('editUserEmail').value,
+                phone_number: document.getElementById('editUserPhone').value,
+                role: document.getElementById('editUserRole').value,
+                account_status: document.getElementById('editUserStatus').value
+            })
+        });
+        if ((await res.json()).success) {
+            bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+            loadUsers(currentPage);
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function deleteUser(id) {
+    if (!confirm('Delete this user?')) return;
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        if ((await res.json()).success) loadUsers(currentPage);
+    } catch (e) { console.error(e); }
+}
+
+document.getElementById('searchInput').addEventListener('keyup', (e) => { if (e.key === 'Enter') loadUsers(); });
+</script>
