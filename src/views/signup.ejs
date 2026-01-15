@@ -560,6 +560,29 @@
     .auth-card {
         margin: 1rem;
     }
+    
+    .mobile-logo {
+        display: flex !important;
+    }
+}
+
+.mobile-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: #667eea;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.mobile-logo i {
+    font-size: 2rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 @media (max-width: 480px) {
@@ -615,6 +638,10 @@
     <div class="auth-form-panel">
         <div class="auth-card">
             <div class="auth-card-header">
+                <div class="mobile-logo">
+                    <i class="ri-briefcase-4-fill"></i>
+                    <span>Job Ecosystem</span>
+                </div>
                 <h1>Create Account</h1>
                 <p>Join thousands of professionals on Job Ecosystem</p>
             </div>
