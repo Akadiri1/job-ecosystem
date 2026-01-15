@@ -1,0 +1,198 @@
+<%- include('includes/header2') %>
+
+<style>
+.page-hero {
+    background: linear-gradient(135deg, #dc3545 0%, #ff6b6b 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.page-hero h1 { font-weight: 700; font-size: 1.75rem; margin-bottom: 0.5rem; }
+
+.data-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.data-card .card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.data-table { width: 100%; }
+.data-table th { background: rgba(220, 53, 69, 0.05); font-weight: 600; font-size: 0.85rem; padding: 1rem; }
+.data-table td { padding: 0.75rem 1rem; vertical-align: middle; border-bottom: 1px solid rgba(0,0,0,0.03); }
+.data-table tbody tr:hover { background: rgba(220, 53, 69, 0.03); }
+
+.status-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+.status-badge.completed, .status-badge.success { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.status-badge.failed, .status-badge.refunded { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+.status-badge.pending { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+
+.filters-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+
+.pagination-wrapper { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+
+.stat-card { background: var(--custom-white); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(0,0,0,0.05); }
+.stat-card .stat-value { font-size: 2rem; font-weight: 700; color: #dc3545; }
+.stat-card .stat-label { color: var(--text-muted); font-size: 0.85rem; }
+</style>
+
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+        
+        <div class="page-hero">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="ri-money-dollar-circle-line me-2"></i>Payments</h1>
+                    <p class="mb-0 opacity-75">View all payment transactions</p>
+                </div>
+                <a href="/dashboard/admin" class="btn btn-light btn-sm"><i class="ri-arrow-left-line me-1"></i> Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRevenue">$0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="todayRevenue">$0</div>
+                    <div class="stat-label">Today's Revenue</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="monthRevenue">$0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="paymentCount">0</div>
+                    <div class="stat-label">Total Transactions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-row">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by user...">
+            <select class="form-select" id="statusFilter">
+                <option value="">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+                <option value="refunded">Refunded</option>
+            </select>
+            <button class="btn btn-danger" onclick="loadPayments()"><i class="ri-filter-line me-1"></i> Filter</button>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="data-card">
+            <div class="card-header">
+                <h6 class="mb-0">All Payments</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTableBody">
+                        <tr><td colspan="6" class="text-center py-4">Loading payments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <span class="text-muted" id="paginationInfo">-</span>
+                <nav><ul class="pagination pagination-sm mb-0" id="paginationControls"></ul></nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+let currentPage = 1;
+
+document.addEventListener('DOMContentLoaded', () => { loadPayments(); });
+
+async function loadPayments(page = 1) {
+    currentPage = page;
+    const token = localStorage.getItem('token');
+    const params = new URLSearchParams({
+        page, limit: 20,
+        search: document.getElementById('searchInput').value,
+        status: document.getElementById('statusFilter').value
+    });
+    
+    try {
+        const res = await fetch(`/api/admin/payments?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderPayments(data.payments);
+            // Update stats if available
+            if (data.stats) {
+                document.getElementById('totalRevenue').textContent = `$${data.stats.total || 0}`;
+                document.getElementById('todayRevenue').textContent = `$${data.stats.today || 0}`;
+                document.getElementById('monthRevenue').textContent = `$${data.stats.month || 0}`;
+            }
+            document.getElementById('paymentCount').textContent = data.pagination?.total || data.payments.length;
+            if (data.pagination) {
+                document.getElementById('paginationInfo').textContent = `Page ${data.pagination.page} of ${data.pagination.pages}`;
+                renderPagination(data.pagination);
+            }
+        }
+    } catch (e) { console.error(e); }
+}
+
+function renderPayments(payments) {
+    const tbody = document.getElementById('paymentsTableBody');
+    if (!payments.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No payments found</td></tr>'; return; }
+    
+    tbody.innerHTML = payments.map(p => `
+        <tr>
+            <td><code>${p.transaction_id || p.id?.slice(0,8) || '-'}</code></td>
+            <td>
+                <div class="fw-medium">${p.User?.full_name || 'Unknown'}</div>
+                <small class="text-muted">${p.User?.email || '-'}</small>
+            </td>
+            <td class="fw-bold">$${p.amount || 0}</td>
+            <td>${p.payment_method || '-'}</td>
+            <td><span class="status-badge ${(p.status || 'pending').toLowerCase()}">${p.status || 'pending'}</span></td>
+            <td>${new Date(p.createdAt).toLocaleDateString()}</td>
+        </tr>
+    `).join('');
+}
+
+function renderPagination(p) {
+    let html = '';
+    if (p.page > 1) html += `<li class="page-item"><a class="page-link" href="#" onclick="loadPayments(${p.page-1})">Prev</a></li>`;
+    for (let i = 1; i <= Math.min(p.pages, 5); i++) html += `<li class="page-item ${i===p.page?'active':''}"><a class="page-link" href="#" onclick="loadPayments(${i})">${i}</a></li>`;
+    if (p.page < p.pages) html += `<li class="page-item"><a class="page-link" href="#" onclick="loadPayments(${p.page+1})">Next</a></li>`;
+    document.getElementById('paginationControls').innerHTML = html;
+}
+
+document.getElementById('searchInput').addEventListener('keyup', (e) => { if (e.key === 'Enter') loadPayments(); });
+</script>

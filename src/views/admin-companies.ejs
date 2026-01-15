@@ -1,0 +1,234 @@
+<%- include('includes/header2') %>
+
+<style>
+.page-hero {
+    background: linear-gradient(135deg, #00b074 0%, #00d4aa 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.page-hero h1 { font-weight: 700; font-size: 1.75rem; margin-bottom: 0.5rem; }
+
+.data-card {
+    background: var(--custom-white);
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.data-card .card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.data-table { width: 100%; }
+.data-table th { background: rgba(0, 176, 116, 0.05); font-weight: 600; font-size: 0.85rem; padding: 1rem; }
+.data-table td { padding: 0.75rem 1rem; vertical-align: middle; border-bottom: 1px solid rgba(0,0,0,0.03); }
+.data-table tbody tr:hover { background: rgba(0, 176, 116, 0.03); }
+
+.status-badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+.status-badge.verified { background: rgba(0, 176, 116, 0.15); color: #00b074; }
+.status-badge.pending { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+.status-badge.rejected { background: rgba(220, 53, 69, 0.15); color: #dc3545; }
+
+.company-logo { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(0,0,0,0.05); }
+
+.filters-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.filters-row .form-control, .filters-row .form-select { max-width: 200px; }
+
+.pagination-wrapper { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+</style>
+
+<div class="main-content app-content">
+    <%- include(sidebar) %>
+    <div class="container-fluid">
+        
+        <div class="page-hero">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="ri-building-2-line me-2"></i>Company Management</h1>
+                    <p class="mb-0 opacity-75">View and manage all registered companies</p>
+                </div>
+                <a href="/dashboard/admin" class="btn btn-light btn-sm"><i class="ri-arrow-left-line me-1"></i> Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-row">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search companies...">
+            <select class="form-select" id="statusFilter">
+                <option value="">All Status</option>
+                <option value="verified">Verified</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <button class="btn btn-success" onclick="loadCompanies()"><i class="ri-filter-line me-1"></i> Filter</button>
+        </div>
+
+        <!-- Companies Table -->
+        <div class="data-card">
+            <div class="card-header">
+                <h6 class="mb-0">All Companies</h6>
+                <span class="text-muted" id="companyCount">Loading...</span>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Industry</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Jobs</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companiesTableBody">
+                        <tr><td colspan="7" class="text-center py-4">Loading companies...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <span class="text-muted" id="paginationInfo">-</span>
+                <nav><ul class="pagination pagination-sm mb-0" id="paginationControls"></ul></nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Company Modal -->
+<div class="modal fade" id="viewCompanyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Company Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body" id="companyDetailsBody">Loading...</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="updateCompanyStatus('verified')"><i class="ri-check-line me-1"></i> Verify</button>
+                <button type="button" class="btn btn-danger" onclick="updateCompanyStatus('rejected')"><i class="ri-close-line me-1"></i> Reject</button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/footer2') %>
+
+<script>
+let currentPage = 1;
+let currentCompanyId = null;
+
+document.addEventListener('DOMContentLoaded', () => { loadCompanies(); });
+
+async function loadCompanies(page = 1) {
+    currentPage = page;
+    const token = localStorage.getItem('token');
+    const params = new URLSearchParams({
+        page, limit: 20,
+        search: document.getElementById('searchInput').value,
+        status: document.getElementById('statusFilter').value
+    });
+    
+    try {
+        const res = await fetch(`/api/admin/companies?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderCompanies(data.companies);
+            document.getElementById('companyCount').textContent = `${data.pagination?.total || data.companies.length} companies`;
+            if (data.pagination) {
+                document.getElementById('paginationInfo').textContent = `Page ${data.pagination.page} of ${data.pagination.pages}`;
+                renderPagination(data.pagination);
+            }
+        }
+    } catch (e) { console.error(e); }
+}
+
+function renderCompanies(companies) {
+    const tbody = document.getElementById('companiesTableBody');
+    if (!companies.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No companies found</td></tr>'; return; }
+    
+    tbody.innerHTML = companies.map(c => `
+        <tr>
+            <td>
+                <div class="d-flex align-items-center">
+                    <img src="${c.logo_url || '/build/assets/images/company-logos/1.png'}" class="company-logo me-2">
+                    <div><div class="fw-medium">${c.company_name}</div><small class="text-muted">${c.website || '-'}</small></div>
+                </div>
+            </td>
+            <td>${c.industry || '-'}</td>
+            <td>${c.location || '-'}</td>
+            <td><span class="status-badge ${c.verification_status || 'pending'}">${c.verification_status || 'pending'}</span></td>
+            <td>${c.job_count || 0}</td>
+            <td>${new Date(c.createdAt).toLocaleDateString()}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewCompany('${c.id}')"><i class="ri-eye-line"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderPagination(p) {
+    let html = '';
+    if (p.page > 1) html += `<li class="page-item"><a class="page-link" href="#" onclick="loadCompanies(${p.page-1})">Prev</a></li>`;
+    for (let i = 1; i <= Math.min(p.pages, 5); i++) html += `<li class="page-item ${i===p.page?'active':''}"><a class="page-link" href="#" onclick="loadCompanies(${i})">${i}</a></li>`;
+    if (p.page < p.pages) html += `<li class="page-item"><a class="page-link" href="#" onclick="loadCompanies(${p.page+1})">Next</a></li>`;
+    document.getElementById('paginationControls').innerHTML = html;
+}
+
+async function viewCompany(id) {
+    currentCompanyId = id;
+    const token = localStorage.getItem('token');
+    document.getElementById('companyDetailsBody').innerHTML = '<div class="text-center py-4">Loading...</div>';
+    new bootstrap.Modal(document.getElementById('viewCompanyModal')).show();
+    
+    try {
+        const res = await fetch(`/api/admin/companies/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        if (data.success) {
+            const c = data.company;
+            document.getElementById('companyDetailsBody').innerHTML = `
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <img src="${c.logo_url || '/build/assets/images/company-logos/1.png'}" class="img-fluid rounded mb-3" style="max-width: 150px;">
+                        <h5>${c.company_name}</h5>
+                        <span class="status-badge ${c.verification_status || 'pending'}">${c.verification_status || 'pending'}</span>
+                    </div>
+                    <div class="col-md-8">
+                        <table class="table table-borderless">
+                            <tr><td class="fw-medium">Industry:</td><td>${c.industry || '-'}</td></tr>
+                            <tr><td class="fw-medium">Location:</td><td>${c.location || '-'}</td></tr>
+                            <tr><td class="fw-medium">Website:</td><td>${c.website ? `<a href="${c.website}" target="_blank">${c.website}</a>` : '-'}</td></tr>
+                            <tr><td class="fw-medium">Size:</td><td>${c.company_size || '-'}</td></tr>
+                            <tr><td class="fw-medium">Description:</td><td>${c.description || '-'}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function updateCompanyStatus(status) {
+    if (!currentCompanyId) return;
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`/api/admin/companies/${currentCompanyId}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ verification_status: status })
+        });
+        if ((await res.json()).success) {
+            bootstrap.Modal.getInstance(document.getElementById('viewCompanyModal')).hide();
+            loadCompanies(currentPage);
+        }
+    } catch (e) { console.error(e); }
+}
+
+document.getElementById('searchInput').addEventListener('keyup', (e) => { if (e.key === 'Enter') loadCompanies(); });
+</script>

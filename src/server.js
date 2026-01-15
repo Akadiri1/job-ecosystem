@@ -345,11 +345,11 @@ app.get('/dashboard/seeker/ai-coach', (req, res) => res.render('ai-seeker', { si
 
 // 5. ADMIN ROUTES (/dashboard/admin/...)
 app.get('/dashboard/admin/users', (req, res) => res.render('admin-users', { sidebar: 'includes/sidebar-admin' }));
-app.get('/dashboard/admin/companies', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
-app.get('/dashboard/admin/jobs', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
-app.get('/dashboard/admin/subscriptions', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
-app.get('/dashboard/admin/payments', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
-app.get('/dashboard/admin/ai-insights', (req, res) => res.render('ai-insights', { sidebar: 'includes/sidebar-admin' })); // Reuse AI dashboard
+app.get('/dashboard/admin/companies', (req, res) => res.render('admin-companies', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/jobs', (req, res) => res.render('admin-jobs', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/subscriptions', (req, res) => res.render('admin-subscriptions', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/payments', (req, res) => res.render('admin-payments', { sidebar: 'includes/sidebar-admin' }));
+app.get('/dashboard/admin/ai-insights', (req, res) => res.render('ai-insights', { sidebar: 'includes/sidebar-admin' }));
 app.get('/dashboard/admin/settings', (req, res) => res.render('admin-dashboard', { sidebar: 'includes/sidebar-admin' }));
 app.get('/dashboard/admin/user-activity', (req, res) => res.render('admin-user-activity', { sidebar: 'includes/sidebar-admin' }));
 
